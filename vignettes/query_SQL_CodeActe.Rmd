@@ -1,0 +1,263 @@
+---
+title: "Extraction de codes d'acte"
+subtitle: "query_SQL_CodeActe"
+author: "Ahmed Ghachem"
+date: "04 Octobre 2022"
+output:
+  rmarkdown::html_vignette:
+    number_sections: true
+    toc: true
+vignette: >
+  %\VignetteIndexEntry{Extraction de codes d'acte}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Installation de la librairie R *RequeteGeneriqueBDCA*
+
+## Fichier nécessaire
+
+Télécharger le fichier `RequeteGeneriqueBDCA.x.y.tar.gz` à partir de Microsoft Teams.<br>
+[INESSS - Documentation BDCA > Documents > Outils > Librairie R INESSS > RequeteGeneriqueBDCA_x.y.z.tar.gz](https://msss365.sharepoint.com/:f:/r/teams/INESSS-DocumentationBDCA/Shared%20Documents/Outils/Librairie%20R%20INESSS?csf=1&web=1&e=j5SylU).
+
+Ouvrir RStudio.
+
+Dans la console, écrire le code suivant :
+```{r, eval=FALSE}
+remotes::install_local("C:\\msXXX\\Desktop\\RequeteGenerique_x.y.z.tar.gz")
+```
+Prendre note que les «`\`» sont doubles.
+
+Si la librairie `remotes` n'est pas installée, écrire dans la console le code suivant : `install.packages("remotes")`.
+
+Avant d'installer une librairie, il est préférable de ne pas l'avoir *appelé* auparavant.
+
+Il est déconseillé de mettre à jour les librairies utilisées par *RequeteGenerique*.
+
+L'installation se termine lorsqu'on peut lire dans la console : *DONE (RequeteGenerique)*.
+
+
+## Activer la librairie
+      
+Après avoir installé la librairie *RequeteGenerique*, il suffit de l'activer pour avoir accès aux fonctions :
+```{r, eval=FALSE}
+library(RequeteGenerique)
+```
+
+---
+
+# query_SQL_CodeActe
+
+## Usage de la fonction
+
+```{r, eval=FALSE}
+query_SQL_CodeActe (
+  DateDebut,
+  DateFin,
+  CodeActe 
+  )
+```
+
+## Définition des arguments
+
+### DateDebut & DateFin
+
+Indiquer le début et la fin de la période d'étude au format `AAAA-MM-JJ`.
+```{r, eval=FALSE}
+DateDebut = "2020-01-01", DateDebut = "2020-12-31"
+```
+    
+### CodeActe
+      
+Dans un vecteur, indiquer les codes d'acte que vous aimeriez extraire.
+```{r, eval=FALSE}
+CodeActe=c(07122, 07237, 07800, 07089, 0780)
+```
+---
+# Table Résultante
+
+## Variables
+
+- **BenBanls** : Numéro d'identification du bénéficiaire. <br/>
+- **AnCivil** : Année civile de l'acte. <br/>
+- **DateActe** : Date  de l'acte au format *AAAA-MM-JJ*. <br/>
+- **CodeActe** : Actes demandés dans l'argument CodeActe. <br/>
+- **CoutActe** : Cout de l'acte. <br/>
+- **DxActe** : Num de diagnostique associé à l'acte. <br/>
+- **LieuDisp** : Code du lieu de dispensation d'un service (C:Service rendu en cabinet ou à domicile; E:Service rendu en établissement; X:Indéterminé).<br/>
+- **SecActiv** : Identifie de façon unique chacun des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.<br/>
+- **Num_ETAB_USUEL** : Numéro de l'établissement. <br/>
+- **CodEntente** : Code d'entente sert à associer les dispensateurs à un groupe spécifique.<br/>
+- **Sexe** : Sexe du bénéficiaire. <br/>
+- **DatNais** : Date de naissance du bénéficiaire au format *AAAA-MM-JJ*. <br/>
+- **datdeces** : Date de décès du bénéficiaire au format *AAAA-MM-JJ*. <br/>
+- **Age** : Age du bénéficiaire calculé jusqu'à la date de l'acte. <br/>
+- **NumDispSp** : Numéro de dispensateur. <br/>
+- **SPDisps** : Spécialité de dispensateur. <br/>
+- **NumDispRef** : Numéro de dispensateur référent. <br/>
+- **SPDispRefs** : Spécialité de dispensateur référent. <br/>
+- **NO_ETAB** : Numéro de l'établissement. <br/>
+- **Grp_Cat_Etab** : Catégorie de l'établissement. <br/>
+- **Cat_Etab** Catégorie de l'établissement. <br/>
+- **Nom_Grp_Cat_Etab** : Nom de la catégorie de l'établissement. <br/>
+- **NOM_ETAB** : Nom de l'établissement. <br/>
+- **RSS_Benf** : Régions sociosanitaires (RSS) du bénéficiaire. <br/>
+- **RLS_Benef** : Réseaux locaux de services (RLS) du bénéficiaire. <br/>
+- **NomRLS_Benef** : Nom réseaux locaux de services (RLS) du bénéficiaire. <br/>
+- **NomRSS_Benef** : Nom régions sociosanitaires (RSS) du bénéficiaire. <br/>
+- **RSS_Etab** : Régions sociosanitaires (RSS) de l'établissement. <br/>
+- **RLS_Etab** : Réseaux locaux de services (RLS) de l'établissement. <br/>
+- **NomRLS_Etab** : Nom réseaux locaux de services (RLS) de l'établissement. <br/>
+- **NomRSS_Etab** : Nom régions sociosanitaires (RSS) de l'établissement. <br/>
+
+***
+
+# Discription code SQL
+    
+## Vues utilisées
+
+- PROD.I_SMOD_SERV_MD_CM (SMOD)
+- PROD.V_FICH_ID_BEN_CM (FIPA)
+- PROD.D_DISP_SPEC_CM (FIP)
+- Prod.V_ETAB_USUEL
+ 
+## Requete SQL
+
+
+```{r, eval=FALSE}
+SELECT      
+
+-- Nom de Vue : PROD.I_SMOD_SERV_MD_CM (SMOD)
+
+BD_SMOD.SMOD_NO_INDIV_BEN_BANLS AS BenBanls,  --Identifiant banalisé
+EXTRACT (YEAR FROM BD_SMOD.SMOD_DAT_SERV) AS AnCivil,  --Année civile
+BD_SMOD.SMOD_DAT_SERV AS DateActe,  --Date Acte
+BD_SMOD.SMOD_COD_ACTE AS CodeActe,  --Code Acte
+BD_SMOD.SMOD_MNT_PAIMT AS CoutActe,  --Coût Acte
+BD_SMOD.SMOD_COD_DIAGN_PRIMR AS DxActe,  --Premier diagnostic porté par le professionnel
+BD_SMOD.SMOD_COD_LIEU_DISP AS LieuDisp,  --Code du lieu de dispensation dun service 
+BD_SMOD.ETAB_COD_SECT_ACTIV_ETAB AS SecActiv,  --secteur dactivité
+BD_SMOD.SMOD_NO_ETAB_USUEL AS Num_ETAB_USUEL,  --Ancien numéro de létablissement
+BD_SMOD.SMOD_COD_ENTEN AS CodEntente,  --Code de lentente
+
+-- Nom de vue : PROD.V_FICH_ID_BEN_CM (FIPA)
+
+BD_Caract.BENF_COD_SEXE AS Sexe,  --Sexe du bénéficiaire
+BD_Caract.BENF_DAT_NAISS AS DatNais,  --Date de naissance
+BD_Caract.BENF_DAT_DECES AS DatDeces,  --Date de décès
+CAST(((BD_SMOD.SMOD_DAT_SERV) - BD_Caract.BENF_DAT_NAISS) / 365.25 AS BIGINT) AS Age,  --Age calculé à la date de servive
+
+-- Nom de vue : PROD.D_DISP_SPEC_CM (FIP)
+
+BD_SMOD.DISP_NO_SEQ_DISP_BANLS AS NumDispSp,  --Numéro du dispensateur
+BD_Disp.DISP_COD_SPEC AS SPDisps,  --spécialité du dispensateur
+BD_SMOD.DISP_NO_SEQ_DISP_REFNT_BANLS AS NumDispRef,  --Numéro du médecin référent
+BD_DispR.DISP_COD_SPEC AS SPDispRefs,  --spécialité du médecin référent
+
+-- Nom de vue : PROD.V_ETAB_USUEL
+
+BD_Etab.ETAB_NO_ETAB AS NO_ETAB,
+BD_Etab.ETAB_COD_CATG_ETAB_EI AS Grp_Cat_Etab,  --(Urgence, Clinique externe, ...)
+BD_NomCat_Etab.ETAB_COD_REGR_CATG_ETAB_EI AS Cat_Etab, 
+BD_NomCat_Etab.ETAB_NOM_CATG_ETAB_EI AS Nom_Grp_Cat_Etab, 
+
+-- Nom de vue : RES_SSS.V_NOM_ETAB_DERN_TYP_NOM
+ 
+ BD_NomEtab.ETAB_NOM_ETAB AS NOM_ETAB, 
+
+-- Nom de vue : PROD.I_BENF_ADR_CM (FIPA)
+
+BD_RG_Benef.LGEO_COD_RSS AS RSS_Benf, --Région socio-sanitaire Bénéf
+CASE 
+WHEN BD_RG_Benef.LGEO_COD_RSS=10 THEN '1001' 
+WHEN BD_RG_Benef.LGEO_COD_RSS=17 THEN '1701' 
+WHEN BD_RG_Benef.LGEO_COD_RSS=18 THEN '1801' ELSE BD_RG_Benef.LGEO_COD_TERRI_RLS END AS RLS_Benef, 
+k.NomRLS_Benef, 
+k.NomRSS_Benef, 
+
+-- Nom de vue: PROD.V_DECOU_GEO_POSTL_DERN_CP
+
+BD_RG_Etab.LGEO_COD_RSS AS RSS_Etab, 
+BD_RG_Etab.LGEO_COD_TERRI_RLS AS RLS_Etab, 
+x.NomRLS_Etab, 
+x.NomRSS_Etab 
+
+FROM PROD.I_SMOD_SERV_MD_CM  AS  BD_SMOD 
+LEFT JOIN PROD.V_FICH_ID_BEN_CM AS BD_Caract 
+ON BD_SMOD.SMOD_NO_INDIV_BEN_BANLS = BD_Caract.BENF_NO_INDIV_BEN_BANLS 
+
+LEFT JOIN prod.D_DISP_SPEC_CM AS BD_Disp 
+ON BD_SMOD.DISP_NO_SEQ_DISP_BANLS = BD_Disp.DISP_NO_SEQ_DISP_BANLS 
+AND BD_Disp.DISP_COD_NIV_SPEC = 1 
+AND BD_SMOD.SMOD_DAT_SERV BETWEEN BD_Disp.DISP_DD_SPEC_DISP AND BD_Disp.DISP_DF_SPEC_DISP 
+
+LEFT JOIN prod.D_DISP_SPEC_CM AS BD_DispR 
+ON BD_SMOD.DISP_NO_SEQ_DISP_REFNT_BANLS = BD_DispR.DISP_NO_SEQ_DISP_BANLS 
+AND BD_DispR.DISP_COD_NIV_SPEC = 1 
+AND BD_SMOD.SMOD_DAT_SERV BETWEEN BD_DispR.DISP_DD_SPEC_DISP AND BD_DispR.DISP_DF_SPEC_DISP 
+
+-- Benef RSS, RLS
+                    
+LEFT JOIN ( 
+SELECT jj.* 
+FROM (
+SELECT BENF_NO_INDIV_BEN_BANLS, BENF_DD_ADR_BEN, BENF_DF_ADR_BEN, BENF_IND_ADR_HQ, LGEO_COD_RSS, LGEO_COD_TERRI_RLS, 
+(Row_Number() Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN DESC) AS RW) 
+FROM PROD.I_BENF_ADR_CM 
+WHERE BENF_IND_ADR_HQ IN ('N') 
+) jj 
+WHERE RW=1 
+) AS BD_RG_Benef 
+ON BD_SMOD.SMOD_NO_INDIV_BEN_BANLS=BD_RG_Benef.BENF_NO_INDIV_BEN_BANLS 
+
+LEFT JOIN ( 
+SELECT kk.* 
+FROM ( 
+SELECT	CodRLS, 
+NomRLS AS NomRLS_Benef, 
+NomRSS AS NomRSS_Benef 
+FROM DONNE_INESSS.tGI_RLS_RTS 
+) KK ) AS k 
+ON BD_RG_Benef.LGEO_COD_TERRI_RLS=k.CodRLS 
+
+-- Etablissement:Num, Catég, Nom, Num_RLS, Num_RSS, Nom_RLS, Nom_RSS
+
+LEFT JOIN prod.V_ETAB_USUEL AS BD_Etab 
+ON BD_SMOD.SMOD_NO_ETAB_USUEL = BD_Etab.ETAB_NO_ETAB_USUEL 
+AND BD_SMOD.SMOD_DAT_SERV BETWEEN BD_Etab.ETAB_DD_ETAB_USUEL AND BD_Etab.ETAB_DF_ETAB_USUEL 
+
+LEFT JOIN (SELECT ETAB_NO_ETAB, ETAB_COD_POSTL 
+FROM (SELECT ETAB_NO_ETAB, ETAB_COD_POSTL, 
+(ROW_NUMBER() OVER (PARTITION  BY ETAB_NO_ETAB ORDER BY ETAB_DD_ETAB DESC) AS RW) 
+FROM  Prod.V_ETAB 
+WHERE ETAB_NO_ETAB IS NOT NULL 
+) AS xEtab 
+WHERE RW=1) AS E 
+ON E.ETAB_NO_ETAB  = BD_Etab.ETAB_NO_ETAB 
+
+LEFT JOIN  prod.V_DECOU_GEO_POSTL_DERN_CP AS  BD_RG_Etab 
+ON E.ETAB_COD_POSTL=BD_RG_Etab.LGEO_COD_POSTL 
+
+LEFT JOIN ( 
+SELECT XX.* 
+FROM ( 
+SELECT	CodRLS, 
+NomRLS AS NomRLS_Etab, 
+NomRSS AS NomRSS_Etab 
+FROM DONNE_INESSS.tGI_RLS_RTS 
+) XX ) AS x 
+ON BD_RG_Etab.LGEO_COD_TERRI_RLS=X.CodRLS 
+
+
+LEFT JOIN PROD.V_COD_CATG_ETAB_EI AS BD_NomCat_Etab 
+ON BD_NomCat_Etab.ETAB_COD_CATG_ETAB_EI = BD_Etab.ETAB_COD_CATG_ETAB_EI 
+
+LEFT JOIN RES_SSS.V_NOM_ETAB_DERN_TYP_NOM AS BD_NomEtab 
+ON BD_Etab.ETAB_NO_ETAB = BD_NomEtab.ETAB_NO_ETAB 
+
+WHERE BD_SMOD.SMOD_COD_ACTE IN (",CodeActe,") 
+AND BD_SMOD.SMOD_DAT_SERV BETWEEN '",DateDebut,"' AND '",DateFin,"' 
+AND BD_SMOD.SMOD_COD_STA_DECIS = 'PAY' 
+
+ORDER BY 1,2,3,4 
+```
