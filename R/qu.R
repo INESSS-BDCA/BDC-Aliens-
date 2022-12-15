@@ -1,6 +1,6 @@
 #' @title qu
 #'
-#' @description La fonction `qu` permet de mettre de formater les codes d'acte et les diagnostics pour qu'ils soient laisible dans les rêquetes SQL.
+#' @description La fonction `qu` permet de formater les codes d'acte et les diagnostics pour qu'ils soient laisible dans les rêquetes SQL.
 #'
 #' @param Dx Un vecteur incluant les codes d'acte ou les diagnostics.
 #'

@@ -2,8 +2,9 @@
 
 export(SQL_CodeActe)
 export(SQL_connexion)
+export(combine_epi_soins)
 export(qu)
 export(query_SQL_CodeActe)
 import(data.table)
 import(odbc)
-import(lubridate)
+importFrom(lubridate,as_date)

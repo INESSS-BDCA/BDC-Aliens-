@@ -1,13 +1,17 @@
 #' @title Reconstitution des épisodes de soins
 #'
-#' @description La fonction `combine_epi_soin` permet de combiner et fusionner les épisodes de soins dont les périodes se chevauchent dans le temps.
+#' @description La fonction `combine_epi_soins` permet de combiner et fusionner les épisodes de soins dont les périodes se chevauchent dans le temps.
 #'
 #' @param dt Data d'analyse.
 #' @param id Nom de la colonne indiquant l'identifiant de l'individu.
 #' @param debut Nom de la colonne indiquant le début de la période.
 #' @param fin Nom de la colonne indiquant la fin de la période.
-#' @param par_cols Nom des autres colonnes qui doivent être incluses dans l'analyse. Par exemple des codes de médicaments. Par défaut `NULL`.
+#' @param par_cols Nom des autres colonnes qui doivent être incluses dans l'analyse. Par exemple des codes de médicaments ou des conditions médicales.
+#' Afin de pouvoir utiliser le paramètre `par_cols`, la base de données doit être sous forme long en fonction des ids et des variables incluses dans `par_cols`.Par défaut `NULL`.
 #' @param njours Nombre de jours max entre le début et la fin précédente pour effectuer une combinaison.
+#'
+#' @import data.table
+#' @importFrom lubridate as_date
 #'
 #' @encoding UTF-8
 #' @export
@@ -23,16 +27,10 @@
 #   DatDep = as.Date(c("2022-03-25","2022-03-17","2022-03-30",
 #                      "2022-06-15", "2022-06-19"))
 # )
-# dt <- copy(DT)
-# id = "ID"
-# debut = "DatAdm"
-# fin = "DatDep"
-# njours = 1
-# par_cols = c("DIN", "DENOM")
-# par_cols = NULL
+# Hospit<-combine_epi_soins (dt=DT, id='ID', debut='DatAdm', fin='DatDep', par_cols = 'condition', njours = 1)
 #'}
 
-combine_epi_soin <- function(dt, id, debut, fin, par_cols = NULL, njours = 1) {
+combine_epi_soins <- function(dt, id, debut, fin, par_cols = NULL, njours = 1) {
   ############################# #
   # Serait inclut dans le package inesss
   rmNA <- function(x) {
