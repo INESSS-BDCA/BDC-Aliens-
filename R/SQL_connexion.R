@@ -1,6 +1,6 @@
 #' @title SQL_connexion
 #'
-#' @descriptio Connexion entre R et SQL Teradata.
+#' @description Connexion entre R et SQL Teradata.
 #'
 #' @param uid Identifiant. Si `NULL`, le *user* est demandé lors de l'exécution.
 #' @param pwd Mot de passe. Si `NULL`, le mot de passe est demandé lors de l'exécution.

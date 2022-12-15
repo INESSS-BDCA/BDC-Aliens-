@@ -1,4 +1,4 @@
-#' @Title Code SQL: Extraction des caractéristiques du bénéficiaire
+#' @title Code SQL: Extraction des caractéristiques du bénéficiaire
 #'
 #' @description Générateur de code SQL pour l'extraction des variables suivante: BENF_NO_INDIV_BEN_BANLS, BENF_COD_SEXE, BENF_DAT_NAISS, BENF_DAT_DECES de la vue `V_FICH_ID_BEN_CM`.
 #' L'âge est calculé à une date fixe spécifiée par l'argement `date_age`.

@@ -5,18 +5,44 @@
 \alias{SQL_CodeActe}
 \title{SQL_CodeActe}
 \usage{
-SQL_CodeActe(conn, statement, DateDebut, DateFin, CodeActe)
+SQL_CodeActe(
+  conn = SQL_connexion(),
+  debut,
+  fin,
+  CodeActe,
+  Dx_table,
+  CIM,
+  by_Dx,
+  nDx,
+  date_dx_var,
+  n1,
+  n2,
+  date_age,
+  verbose
+)
 }
 \arguments{
 \item{conn}{Variable contenant la connexion entre R et Teradata. Voir \code{\link{SQL_connexion}}.}
 
-\item{statement}{Fait appel à la fonction \code{query_SQL_CodeActe}. Voir \code{\link{query_SQL_CodeActe}}.}
+\item{debut}{Date de début de la période d'étude au format \code{AAAA-MM-JJ}.}
 
-\item{DateDebut}{Date de début de la période d'étude au format \code{AAAA-MM-JJ}.}
-
-\item{DateFin}{Date de fin de la période d'étude au format \code{AAAA-MM-JJ}.}
+\item{fin}{Date de fin de la période d'étude au format \code{AAAA-MM-JJ}.}
 
 \item{CodeActe}{Vecteur comprenant les codes d'acte d'interêt.}
+
+\item{Dx_table}{\code{list} contenant les codes à analyser ou le nom d'une table qui est inclue dans la librairie.}
+
+\item{CIM}{\code{'CIM9'}, \code{'CIM10'} ou les deux. Permet de filtrer les codes de diagnostics selon le numéro de révision de la \emph{Classification statistique internationale des maladies et des problèmes de santé connexes} (CIM).}
+
+\item{by_Dx}{\code{TRUE} ou \code{FALSE}. Distinction entre les diagnostics (\code{TRUE}) ou pas (\code{FALSE}). Si \code{TRUE}, on considère chaque élément de \code{Dx_table} où chaque élément peut contenir plusieurs codes. Le nombre d'éléments sera donc le nombre maximal d'observations (lignes résultats) par individu.\cr Si \code{FALSE}, on considère tous les éléments de \code{Dx_Table} comme un seul, on aura donc au maximum une ligne résultat par individu.\cr Voir Détails.}
+
+\item{nDx}{Nombre de diagnostics qui doivent confirmer la 1re date. Par défaut 1.}
+
+\item{date_dx_var}{\verb{'admis} ou \code{'depar'}. Indique si on utilise la date d'admission ou la date de départ comme date de diagnostic pour l'étude dans les vues V_DIAGN_SEJ_HOSP_CM, V_SEJ_SERV_HOSP_CM et V_EPISO_SOIN_DURG_CM.}
+
+\item{n1, n2}{Nombre de jours requis pour confirmer le diagnostic}
+
+\item{date_age}{\code{"AAAA-MM-JJ"} indiquant la date à laquelle l'âge des bénéficaires est calculé.}
 }
 \value{
 \code{data.table} de 31 variables :
@@ -56,15 +82,25 @@ SQL_CodeActe(conn, statement, DateDebut, DateFin, CodeActe)
 }
 \description{
 La fonction \code{SQL_CodeActe} permet d'extraire les actes entre une date de début et de fin d'étude.
-La fonction \code{SQL_CodeActe} utilise la fonction générique \code{query_SQL_CodeActe}. Voir \code{\link{query_SQL_CodeActe}}
+La fonction \code{SQL_CodeActe} utilise plusieurs autres fonctions génériques telles que:
+\code{SQL_reperage_cond_med} Voir \code{\link{SQL_reperage_cond_med}}, \code{query_SQL_CodeActe} Voir \code{\link{query_SQL_CodeActe}}, et \code{query_V_FICH_ID_BEN_CM} Voir \code{\link{query_V_FICH_ID_BEN_CM}}
 }
 \examples{
 \dontrun{
-tmp<-SQL_CodeActe(conn=conn,
-                 statement=query_SQL_CodeActe(),
-                 DateDebut="2019-03-01",
-                 DateFin="2019-05-31",
-                 CodeActe=c(07122, 07237, 07800, 07089, 0780))
-}
+DT_final<-SQL_CodeActe(conn=SQL_connexion(),
+                      debut = "2021-04-01",
+                      fin = "2022-03-31",
+                      CodeActe = c('06452','06148','06154','06265','06251','06216','06208','06164','06270','06276','06274','06273','06913','06099',
+                                   '06400','06405','06406','06408','06420','06410','06411','06414','6421','6426','20017'),
+                      Dx_table = list(Prolapsus = list(CIM9 = c('5995','6180','6181','6183','6184','6185','6186','6187','6188','6189','6204'),
+                                                       CIM10 = c('N810','N811','N812','N813','N814','N815','N816','N818','N819','N993','N834','O345'))),
 
+                      CIM =  c("CIM9", "CIM10"),
+                      by_Dx = FALSE,
+                      date_dx_var = "admis",
+                      n1 = 30, n2 = 730,
+                      nDx=0 ,
+                      date_age="2022-03-31",
+                      verbose = TRUE)
+}
 }

@@ -61,7 +61,7 @@
 #'                       nDx=0 ,
 #'                       date_age="2022-03-31",
 #'                       verbose = TRUE)
-#'
+#'}
 SQL_CodeActe<-function(conn=SQL_connexion(),
                        debut,
                        fin,

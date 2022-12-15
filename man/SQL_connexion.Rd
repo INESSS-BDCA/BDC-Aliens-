@@ -20,7 +20,7 @@ SQL_connexion(uid = NULL, pwd = NULL, dsn = "PEI_PRD", encoding = "latin1")
 Connexion Teradata, sinon \code{NULL}.
 }
 \description{
-SQL_connexion
+Connexion entre R et SQL Teradata.
 }
 \examples{
 \dontrun{

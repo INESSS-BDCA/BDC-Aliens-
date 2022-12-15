@@ -3,14 +3,14 @@
 \encoding{UTF-8}
 \name{query_SQL_CodeActe}
 \alias{query_SQL_CodeActe}
-\title{query_SQL_CodeActe}
+\title{Requête SQL: query_SQL_CodeActe}
 \usage{
-query_SQL_CodeActe(DateDebut, DateFin, CodeActe)
+query_SQL_CodeActe(debut, fin, CodeActe)
 }
 \arguments{
-\item{DateDebut}{Date de début de la période d'étude au format \code{AAAA-MM-JJ}.}
+\item{debut}{Date de début de la période d'étude au format \code{AAAA-MM-JJ}.}
 
-\item{DateFin}{Date de fin de la période d'étude au format \code{AAAA-MM-JJ}.}
+\item{fin}{Date de fin de la période d'étude au format \code{AAAA-MM-JJ}.}
 
 \item{CodeActe}{Vecteur comprenant les codes d'acte d'interêt.}
 }
@@ -19,13 +19,14 @@ Chaîne de caractères, code SQL.
 }
 \description{
 La fonction \code{query_SQL_CodeActe} est une fonction intermédiaire qui est utilisée par la fonction \code{\link{SQL_CodeActe}} afin
-d'extraire les actes entre une date de début et de fin d'étude. Pour plus de détails, veuillez-vous référer à la vignette \code{query_SQL_CodeActe.html}.
+d'extraire les actes entre une date de début et de fin d'étude avec des données sur le bénéficiaire ainsi que l'établissement de soins. Pour plus de détails, veuillez-vous référer à la vignette \code{query_SQL_CodeActe.html}.
 }
 \examples{
  \dontrun{
-query_SQL_CodeActe (DateDeb="2019-03-01",
-                    DateFin="2022-05-31",
-                    CodeActe=c(07122, 07237, 07800, 07089, 0780))
+DT<-as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
+statement=query_SQL_CodeActe (debut="2019-04-01",fin="2022-03-31",
+CodeActe=c(07122, 07237, 07800, 07089, 0780))
+))
 }
 
 }
