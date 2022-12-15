@@ -1,19 +1,153 @@
 ---
-title: "RequeteGeneriqueBDCA"
-output: rmarkdown::html_vignette
+title: "SQL_CodeActe"
+#subtitle: ""
+author: "Auteurs: Ahmed Ghachem (développeur)"
+date: "date de création: 15 décembre 2022"
+output:
+  rmarkdown::html_vignette:
+    number_sections: true
+    toc: true
+params: 
+  output_dir: "C:/Users/MS069/Desktop/Ahmed/RequeteGeneriqueBDCA-1.0.0.0/vignettes"
 vignette: >
-  %\VignetteIndexEntry{RequeteGeneriqueBDCA}
+  %\VignetteIndexEntry{SQL_CodeActe}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  echo = TRUE,
+  eval = FALSE
 )
 ```
 
-```{r setup}
+# Installation de la librairie R *RequeteGeneriqueBDCA*
+
+## Fichier nécessaire
+
+Télécharger le fichier `RequeteGeneriqueBDCA.x.y.tar.gz` à partir de Microsoft Teams.<br>
+[INESSS - Documentation BDCA > Documents > Outils > Librairie R INESSS > RequeteGeneriqueBDCA_x.y.z.tar.gz](https://msss365.sharepoint.com/:f:/r/teams/INESSS-DocumentationBDCA/Shared%20Documents/Outils/Librairie%20R%20INESSS?csf=1&web=1&e=j5SylU).
+
+Ouvrir RStudio.
+
+Dans la console, écrire le code suivant :
+```{r, eval=FALSE}
+remotes::install_local("C:\\msXXX\\Desktop\\RequeteGeneriqueBDCA_x.y.z.tar.gz")
+```
+Prendre note que les «`\`» sont doubles.
+
+Si la librairie `remotes` n'est pas installée, écrire dans la console le code suivant : `install.packages("remotes")`.
+
+Avant d'installer une librairie, il est préférable de ne pas l'avoir *appelé* auparavant.
+
+Il est déconseillé de mettre à jour les librairies utilisées par *RequeteGeneriqueBDCA*.
+
+L'installation se termine lorsqu'on peut lire dans la console : *DONE (RequeteGeneriqueBDCA)*.
+
+
+## Activer la librairie
+      
+Après avoir installé la librairie *RequeteGeneriqueBDCA*, il suffit de l'activer pour avoir accès aux fonctions :
+```{r, eval=FALSE}
 library(RequeteGeneriqueBDCA)
 ```
+
+---
+
+# SQL_CodeActe
+
+La fonction `SQL_CodeActe` permet d'extraire les actes entre une date de début et de fin d'étude. Elle utilise plusieurs autres fonctions génériques telles que: 
+`SQL_reperage_cond_med` Voir \code{\link{SQL_reperage_cond_med}}, 
+`query_SQL_CodeActe` Voir \code{\link{query_SQL_CodeActe}},
+`query_V_FICH_ID_BEN_CM` Voir \code{\link{query_V_FICH_ID_BEN_CM}}
+
+## Usage de la fonction
+
+```{r, eval=FALSE}
+SQL_CodeActe(conn=SQL_connexion(),
+debut,
+fin,
+CodeActe,
+Dx_table,
+CIM,
+by_Dx,
+nDx,
+date_dx_var,
+n1,n2,
+date_age,
+verbose)
+```
+
+## Définition des arguments
+
+### debut & fin
+
+Indiquer le début et la fin de la période d'étude au format `AAAA-MM-JJ`.
+```{r, eval=FALSE}
+debut = "2020-01-01", fin = "2020-12-31"
+```
+    
+### CodeActe
+      
+Dans un vecteur, indiquer les codes d'acte que vous aimeriez extraire.
+```{r, eval=FALSE}
+CodeActe=c(07122, 07237, 07800, 07089, 0780)
+```
+---
+# Table Résultante
+
+## Variables
+
+- **ID** : Numéro d'identification du bénéficiaire. <br/>
+- **AnFinan** : Année financière de l'acte. <br/>
+- **AnCivil** : Année civile de l'acte. <br/>
+- **DateActe** : Date  de l'acte au format *AAAA-MM-JJ*. <br/>
+- **CodeActe** : Actes demandés dans l'argument CodeActe. <br/>
+- **CoutActe** : Cout de l'acte. <br/>
+- **DxActe** : Diagnostique associé à l'acte. <br/>
+- **Num_ETAB_USUEL** : Numéro de l'établissement. <br/>
+- **CodEntente** : Code d'entente sert à associer les dispensateurs à un groupe spécifique.<br/>
+- **SecActiv** : Identifie de façon unique chacun des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.<br/>
+- **Sexe** : Sexe du bénéficiaire. <br/>
+- **DatNais** : Date de naissance du bénéficiaire au format *AAAA-MM-JJ*. <br/>
+- **datdeces** : Date de décès du bénéficiaire au format *AAAA-MM-JJ*. <br/>
+- **Age** : Age du bénéficiaire calculé jusqu'à la date de l'acte. <br/>
+- **NumDispSp** : Numéro de dispensateur. <br/>
+- **SPDisp_smod** : Spécialité de dispensateur indiqué dans `SMOD`. <br/>
+- **SPDisp_fip** : Spécialité de dispensateur indiqué dans `FIP`. <br/>
+- **NumDispRef** : Numéro de dispensateur référent. <br/>
+- **SPDispRefs** : Spécialité de dispensateur référent. <br/>
+- **NO_ETAB** : Numéro de l'établissement. <br/>
+- **Cat_Etab** Catégorie de l'établissement. <br/>
+- **Nom_Cat_Etab** : Nom de la catégorie de l'établissement. <br/>
+- **NOM_ETAB** : Nom de l'établissement. <br/>
+- **RSS_Benf** : Régions sociosanitaires (RSS) du bénéficiaire. <br/>
+- **RLS_Benef** : Réseaux locaux de services (RLS) du bénéficiaire. <br/>
+- **NomRSS_Benef** : Nom régions sociosanitaires (RSS) du bénéficiaire. <br/>
+- **NomRLS_Benef** : Nom réseaux locaux de services (RLS) du bénéficiaire. <br/>
+- **RSS_Etab** : Régions sociosanitaires (RSS) de l'établissement. <br/>
+- **RLS_Etab** : Réseaux locaux de services (RLS) de l'établissement. <br/>
+- **NomRSS_Etab** : Nom régions sociosanitaires (RSS) de l'établissement. <br/>
+- **NomRLS_Etab** : Nom réseaux locaux de services (RLS) de l'établissement. <br/>
+
+***
+
+# Discription de la syntaxe SQL
+    
+## Vues utilisées
+
+- PROD.I_SMOD_SERV_MD_CM (SMOD)
+- PROD.V_FICH_ID_BEN_CM (FIPA)
+- PROD.D_DISP_SPEC_CM (FIP)
+- Prod.V_ETAB_USUEL
+- Prod.IBENEF_ADR_CM
+- DONNE_INESSS.tGI_RLS_RTS
+- Prod.V_ETAB_USUEL_DERN
+- RES_SSS.V_NOM_ETAB_DERN_TYP_NOM
+- Prod.V_RPERT_COD_ACTE
+- Prod.V_DECOU_GEO_POSTL_DERN_CP
+- Prod.V_COD_CATG_ETAB_EI
+ 
+## Syntaxe SQL

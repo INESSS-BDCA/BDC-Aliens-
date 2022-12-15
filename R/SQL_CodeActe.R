@@ -1,11 +1,12 @@
 #' @title SQL_CodeActe
 #'
 #' @description La fonction `SQL_CodeActe` permet d'extraire les actes entre une date de début et de fin d'étude.
-#' La fonction `SQL_CodeActe` utilise la fonction générique `query_SQL_CodeActe`. Voir \code{\link{query_SQL_CodeActe}}
+#' La fonction `SQL_CodeActe` utilise plusieurs autres fonctions génériques telles que:
+#' `SQL_reperage_cond_med` Voir \code{\link{SQL_reperage_cond_med}}, `query_SQL_CodeActe` Voir \code{\link{query_SQL_CodeActe}}, et `query_V_FICH_ID_BEN_CM` Voir \code{\link{query_V_FICH_ID_BEN_CM}}
 #'
+#' @inheritParams SQL_reperage_cond_med
 #' @inheritParams query_SQL_CodeActe
-#' @param conn Variable contenant la connexion entre R et Teradata. Voir \code{\link{SQL_connexion}}.
-#' @param statement Fait appel à la fonction `query_SQL_CodeActe`. Voir \code{\link{query_SQL_CodeActe}}.
+#' @inheritParams query_V_FICH_ID_BEN_CM
 #'
 #' @return `data.table` de 31 variables :
 #' * **`BenBanls`** : Numéro d'identification du bénéficiaire.

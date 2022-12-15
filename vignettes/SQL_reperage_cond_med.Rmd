@@ -1,0 +1,186 @@
+---
+title: "SQL_reperage_cond_med"
+author: "Auteur: Guillaume Boucher (développeur); Ahmed Ghachem (réviseur)"
+date: "Date de création: 15 décembre 2022"
+output:
+  rmarkdown::html_vignette:
+    number_sections: true
+    toc: true
+params: 
+  output_dir: "C:/Users/MS069/Desktop/Ahmed/RequeteGeneriqueBDCA-1.0.0.0/vignettes"
+vignette: >
+  %\VignetteIndexEntry{SQL_reperage_cond_med}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  eval = FALSE
+)
+```
+
+# SQL_reperage_cond_med 
+`SQL_reperage_cond_med` est une fonction qui permet de reperer une condition médicale basé sur les codes de diagnostic cim-9 et cim-10 dans SMOD, MEDECHO-diag, MEDECHO-sej et BDCU. Elle permet de reperer la condition médicale sans confirmation de diagnostic `nDx=0` ou avec confirmation de diagnostic en utilisant l'argument `nDx=n`. Si l'argument `nDx` est différent de 0, `SQL_reperage_cond_med` utilise l'algorithme décrit ci-dessous.   
+
+
+## Usage de la fonction
+```{r}
+SQL_reperage_cond_med(
+  conn = SQL_connexion(),
+  debut, fin,
+  Dx_table,
+  CIM = c("CIM9", "CIM10"),
+  by_Dx = TRUE,
+  date_dx_var = "admis",
+  nDx= 1,
+  n1 = 30, n2 = 730,
+  keep_all = FALSE,
+  verbose = TRUE
+)
+```
+
+## Définition des arguments
+
+### conn
+La fonction `SQL_connexion` permet à R de se connecter à Teradata. Simplenent inscrire l'identifant et le programme demandera le mot de passe lors de son exécution :
+```{r}
+conn = SQL_connexion("msXXX")
+```
+
+### debut & fin
+Date de début et de fin de la période d'étude au format AAAA-MM-JJ.
+```{r}
+debut = "2020-01-01", fin = "2020-12-31"
+```
+
+### Dx_table
+`list` contenant les codes diagnostics CIM9 et CIM10.
+```{r}
+Dx_table = list(
+  diabete = list(
+    CIM9 = c("2500%", "2501%", "2502%"),
+    CIM10 = c("E100%", "E101%", "E109%", "E110%", "E111%", "E119%", "E130%",
+              "E131%", "E139%", "E140%", "E141%", "E149%")
+  ),
+  diabete_complication = list(
+    CIM9 = paste0(2503:2509, "%"),
+    CIM10 = paste0("E", c(102:108, 112:118, 132:138, 142:148), "%")
+  )
+)
+```
+
+### CIM
+Permet de choisir le type de code diagnostic : CIM9, CIM10 ou les deux.
+```{r}
+CIM = c("CIM9", "CIM10")  # par défaut : CIM9 et CIM10
+CIM = "CIM9"  # CIM9 seulement
+CIM = "CIM10"  # CIM10 seulement
+```
+
+### by_Dx
+Vrai (`TRUE`) ou FAUX (`FALSE`).  
+
+À partir de `DX_table` créé précédemment, si `TRUE`, on aurait au maximum deux lignes par individu où la colonne `DIAGN` indiquerait `diabete` ou `diabete_complication`.  
+Si `FALSE`, on a au maximum une ligne par individu et la colonne `DIAGN` est absente, car les codes de `diabete` et `diabete_complication` sont considérés comme un seul élément d'analyse dans l'algorithme.
+```{r}
+by_Dx = TRUE  # par défaut
+by_Dx = FALSE
+```
+
+### date_dx_var
+Permet de choisir entre la date d'admission ou la date de départ comme date d'incidence dans les vues suivantes :
+
+* V_DIAGN_SEJ_HOSP_CM
+* V_SEJ_SERV_HOSP_CM
+* V_EPISO_SOIN_DURG_CM
+
+```{r}
+date_dx_var = "admis"  # par défaut
+date_dx_var = "depar"
+```
+
+### nDx
+Permet de choisir le nombre de diagnostic qui permet de confirmer le premier.
+```{r}
+nDX=1 # par défaut
+```
+
+### n1 & n2
+Permet de créer l'intervalle `[n1, n2]`. Le nombre de jours entre deux diagnostics doit se situer dans cet intervalle pour que le deuxième diagnostic confirme le premier.
+```{r}
+n1 = 30, n2 = 730
+```
+
+### keep_all
+`FALSE` supprime tous les individus qui n'ont pas de date confirmée.  
+`TRUE` permet d'avoir la liste des individus qui ont eu au moins un code diagnostic durant la période d'étude ainsi que la date la plus récente de ces codes.
+```{r}
+keep_all = FALSE  # par défaut
+keep_all = TRUE
+```
+
+### verbose
+`TRUE` ou `FALSE`. Message de progression affiché dans la console.
+```{r}
+Étape 1 :
+V_DIAGN_SEJ_HOSP_CM 
+ - diabete (1.35 secs)
+ - diabete_complication (1.01 secs)
+V_SEJ_SERV_HOSP_CM 
+ - diabete (0.68 secs)
+ - diabete_complication (0.72 secs)
+
+Étape 2 :
+V_DIAGN_SEJ_HOSP_CM 
+ - diabete (1.35 secs)
+ - diabete_complication (1.78 secs)
+V_SEJ_SERV_HOSP_CM 
+ - diabete (0.55 secs)
+ - diabete_complication (0.61 secs)
+V_EPISO_SOIN_DURG_CM 
+ - diabete (2.33 secs)
+ - diabete_complication (2.46 secs)
+I_SMOD_SERV_MD_CM 
+ - diabete (12.01 secs)
+ - diabete_complication (14.48 secs)
+
+Confirmation des diagnostics...
+Arrangement de la table finale...
+FIN.
+```
+
+---
+
+# Table Résultante
+
+## Variables
+
+**`ID` :** Numéro d'identification de l'individu.  
+**`DIAGN` :** Seulement si `by_Dx = TRUE`. Nom de l'élément inscrit dans `Dx_table`.  
+**`DI_Finale` :** Date d'incidence retenue.  
+**`DI_Hospit` :** Date d'incidence d'hospitalisation.  
+**`DI_Acte` :** Date d'incidence des actes.  
+**`DC_Acte` :** Date de confirmation de `DI_Acte`.  
+**`D_Recent` :** Date du diagnostic la plus récente **sans tenir compte de l'algorithme**.
+
+---
+
+# Algorithme
+
+## Étape 1 : MED-ÉCHO
+Pour chaque personne, repérer la 1$^{re}$ admission parmi toutes ses hospitalisations qui contient un diagnostic de la condition médicale. Rechercher dans les diagnostics hospitaliers suivants: principal, secondaires, services et décès. Ne pas tenir compte du diagnostic d’admission.
+
+* Les dates d’incidence (`DI_Hospit`) et de confirmation (`DC_Hospit`) sont égales à la date d’admission.
+
+## Étape 2 : BDCU, SMOD et MED-ÉCHO
+Pour chaque personne, repérer le 1$^{er}$ diagnostic de la condition médicale inscrit à un des trois fichiers si celui-ci est suivi d’un autre diagnostic de la condition médicale inscrit à un de ces mêmes trois fichiers dans un intervalle d’au moins `n1` jours et de moins de `n2` jours. Pour MED-ÉCHO, rechercher dans tous les diagnostics hospitaliers: admission, principal, secondaires, services et décès. Contrairement à l’étape 1, on retient ici le diagnostic à d’admission.
+
+* La date d’incidence (`DI_Acte`) est la date du 1$^{er}$ service médical rémunéré à l’acte ou à la date d’admission du séjour hospitalier ou à l’urgence, selon la source du fichier du premier diagnostic repéré.
+* La date de confirmation (`DC_Acte`) est la date du 2$^{e}$ événement repéré.
+
+## Étape 3
+Choisir la date d'incidence la plus ancienne (`DI_Finale`) entre `DI_Hospit` et `DI_Acte`.

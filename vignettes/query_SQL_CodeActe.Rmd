@@ -1,17 +1,28 @@
 ---
 title: "query_SQL_CodeActe"
 #subtitle: ""
-author: "Ahmed Ghachem (développeur); José Perez (réviseur)"
-date: "15 décembre 2022"
+author: "Auteurs: Ahmed Ghachem (développeur); José Perez (réviseur)"
+date: "Date de création: 15 décembre 2022"
 output:
   rmarkdown::html_vignette:
     number_sections: true
     toc: true
+params: 
+  output_dir: "C:/Users/MS069/Desktop/Ahmed/RequeteGeneriqueBDCA-1.0.0.0/vignettes"
 vignette: >
-  %\VignetteIndexEntry{Extraction de codes d'acte}
+  %\VignetteIndexEntry{query_SQL_CodeActe}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  eval = FALSE
+)
+```
 
 # Installation de la librairie R *RequeteGeneriqueBDCA*
 
@@ -48,7 +59,7 @@ library(RequeteGeneriqueBDCA)
 
 # query_SQL_CodeActe
 
-`query_SQL_CodeActe` est une fonction intermédiaire qui retourne une syntaxe sql laquelle est utilisée par la fonction \code{\link{SQL_CodeActe}} afin d'extraire les actes entre une date de début et de fin d'une étude. Les caractéristiques du bénéficiaire ainsi que de l'établissement de soins sont également fournies.
+`query_SQL_CodeActe` est une fonction intermédiaire qui retourne une syntaxe sql, laquelle est utilisée par la fonction \code{\link{SQL_CodeActe}} afin d'extraire les actes entre une date de début et de fin d'une étude. Les caractéristiques du bénéficiaire ainsi que de l'établissement de soins sont également fournies.
 
 ## La fonction
 
@@ -142,7 +153,6 @@ CodeActe=c(07122, 07237, 07800, 07089, 0780)
 - Prod.V_COD_CATG_ETAB_EI
  
 ## Syntaxe SQL
-
 
 ```{r, eval=FALSE}
 SELECT
