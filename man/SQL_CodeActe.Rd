@@ -42,7 +42,7 @@ SQL_CodeActe(
 
 \item{n1, n2}{Nombre de jours requis pour confirmer le diagnostic}
 
-\item{date_age}{\code{"AAAA-MM-JJ"} indiquant la date à laquelle l'âge des bénéficaires est calculé.}
+\item{date_age}{\code{"AAAA-MM-JJ"} indique la date à laquelle l'âge des bénéficaires est calculé.}
 }
 \value{
 \code{data.table} de 31 variables :

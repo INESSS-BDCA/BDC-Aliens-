@@ -5,7 +5,7 @@
 #'
 #' @param debut Date de début de la période d'étude.
 #' @param fin Date de fin de la période d'étude.
-#' @param date_age `"AAAA-MM-JJ"` indiquant la date à laquelle l'âge des bénéficaires est calculé.
+#' @param date_age `"AAAA-MM-JJ"` indique la date à laquelle l'âge des bénéficaires est calculé.
 #'
 #' @return chaîne de caractères, code SQL.
 #' @keywords internal

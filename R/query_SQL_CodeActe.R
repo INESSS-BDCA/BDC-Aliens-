@@ -33,21 +33,14 @@ SELECT
 -- Nom de vue : Prod.I_SMOD_SERV_MD_CM (SMOD)
 
 BD_SMOD.SMOD_NO_INDIV_BEN_BANLS AS ID, --Identifiant du bénéficiaire banalisé
-
-/* Il est possible de classer les actes par année financière.
-Pour ce faire, on propose d'appliquer la ligne de programmation suivante : */
 case when EXTRACT(MONTH FROM SMOD_DAT_SERV) between 4 and 12 THEN EXTRACT(YEAR FROM SMOD_DAT_SERV)
 ELSE EXTRACT(YEAR FROM SMOD_DAT_SERV)-1 end AS AnFinan, --Année financière
 Extract (YEAR From BD_SMOD.SMOD_DAT_SERV) AS AnCivil,  --Année civile
-
 BD_SMOD.SMOD_DAT_SERV AS DateActe,  --Date Acte
 BD_SMOD.SMOD_COD_ACTE AS CodeActe,  --Code Acte
 BD_SMOD.SMOD_MNT_PAIMT AS CoutActe,  --Coût Acte
 BD_SMOD.SMOD_COD_DIAGN_PRIMR AS DxActe,  --Premier diagnostic porté par le professionnel
 BD_SMOD.SMOD_NO_ETAB_USUEL AS Num_ETAB_USUEL,  --Ancien numéro de l'établissement
-
-/* Ces variables sont souvent optionnelles, la variable la plus intéressante serait la catégorie d'établissement en format : 0X0 (voir plus bas) */
-BD_SMOD.SMOD_COD_LIEU_DISP AS LieuDisp,  --Code du lieu de dispensation du service
 BD_SMOD.SMOD_COD_ENTEN AS CodEntente,  --Code de l'entente
 BD_SMOD.ETAB_COD_SECT_ACTIV_ETAB AS SecActiv,  --secteur d'activité
 
@@ -61,7 +54,6 @@ Cast(((BD_SMOD.SMOD_DAT_SERV) - BD_Caract.BENF_DAT_NAISS) / 365.25 AS BIGINT) AS
 -- Nom de vue : PROD.D_DISP_SPEC_CM (FIP)
 
 BD_SMOD.DISP_NO_SEQ_DISP_BANLS AS NumDispSp,  --Numéro du dispensateur
-
 BD_SMOD.SMOD_COD_SPEC AS SPDisp_smod, --Spécialité du dispensateur (SMOD)
 BD_Disp.DISP_COD_SPEC AS SPDisp_fip,  --Spécialité du dispensateur (FIP)
 BD_SMOD.DISP_NO_SEQ_DISP_REFNT_BANLS AS NumDispRef,  --Numéro du médecin référent
@@ -113,13 +105,12 @@ AND BD_SMOD.SMOD_DAT_SERV BETWEEN BD_DispR.DISP_DD_SPEC_DISP AND BD_DispR.DISP_D
 /**********************************************************
 Découpage géographique du bénéficiaire : codes RSS et RLS
 ***********************************************************/
-/*
-On sélectionne la dernière adresse du bénéficiaire durant la période sélectionnée.
+/*On sélectionne la dernière adresse du bénéficiaire durant la période sélectionnée.
 Autres méthodes :
 1) cibler la première adresse de la période
 2) cibler l'adresse dans laquelle le BEN a résidé le plus longtemps durant la période
-3) cibler l'adresse à une date fixe (p. ex. 31 mars, 1 juillet, mi-année)
-*/
+3) cibler l'adresse à une date fixe (p. ex. 31 mars, 1 juillet, mi-année)*/
+
 LEFT JOIN (
 			SELECT
 			BENF_NO_INDIV_BEN_BANLS,
@@ -134,6 +125,7 @@ LEFT JOIN (
 			ON BD_SMOD.SMOD_NO_INDIV_BEN_BANLS=BD_Adr.BENF_NO_INDIV_BEN_BANLS
 
 /* On ajoute ici les NOMS des codes RSS et RLS du bénéficiaire : ceci serait optionnel si la requête est trop lourde */
+
 LEFT JOIN (
 SELECT
 CodRLS,
@@ -145,8 +137,8 @@ ON BD_Adr.LGEO_COD_TERRI_RLS=BD_NomReg_Ben.CodRLS
 /*********************************************************************************************************************
 Découpage géographique de l'établissement : numéro unique, catégorie, nom de l'étab, code et nom RSS, code et nom RLS
 **********************************************************************************************************************/
-
 /* On ajoute ici le numéro d'établissement (unique : ETAB_NO_ETAB), le code postal de l'établissement et la catégorie de l'établissement */
+
 LEFT JOIN (
 			SELECT BD_Etab.ETAB_NO_ETAB_USUEL, BD_Etab.ETAB_NO_ETAB, BD_Etab.ETAB_COD_POSTL,
 			BD_Decoup_Etab.LGEO_COD_RSS, BD_Decoup_Etab.LGEO_COD_TERRI_RLS,
@@ -160,37 +152,22 @@ LEFT JOIN (
 ON BD_SMOD.SMOD_NO_ETAB_USUEL=BD_Etab.ETAB_NO_ETAB_USUEL
 
 /* On ajoute le NOM de l'établissement */
+
 LEFT JOIN (SELECT ETAB_NO_ETAB, ETAB_NOM_ETAB FROM RES_SSS.V_NOM_ETAB_DERN_TYP_NOM) AS BD_NomEtab
 ON BD_Etab.ETAB_NO_ETAB = BD_NomEtab.ETAB_NO_ETAB
 
 /* On ajoute ici les NOMS des codes RSS et RLS de l'établissement : ceci serait optionnel si la requête est trop lourde */
+
 LEFT JOIN (SELECT CodRLS, NomRLS AS NomRLS_Etab, NomRSS AS NomRSS_Etab FROM DONNE_INESSS.tGI_RLS_RTS) AS BD_NomReg_Etab
 ON BD_Etab.LGEO_COD_TERRI_RLS=BD_NomReg_Etab.CodRLS
 
 WHERE BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY')
-/*
-1) On pourrait sélectionner 1 année ou plusieurs années en format année financière (01 avril au 31 mars) ou année civile (01 janvier au 31 décembre)
-2) Puis, à noter que plus d'années sont ciblées, plus le nombre d'observations augmente et ceci pourrait bloquer la requête
-3) Toutefois, la sélection des observations sous la base de codes de diagnostic ou d'actes pourrait aussi un impact sur le nombre de lignes à retenir
-*/
 AND BD_SMOD.SMOD_DAT_SERV BETWEEN '",debut,"' AND '",fin,"'
-
-/*
-On utilise plus fréquemment le code de diagnostic comme critère de sélection,
-donc, il faudra ajouter la condition qui soit la plus pertinente pour exécuter cette requête
-Options :
-a) 1 code précis, fonction : IN
-b) 1 code dont la racine du code est connue, fonction : LIKE XX%
-c) plusieurs codes connus : IN
-d) plusieurs codes dont la racine du code est connue, fonction : LIKE ANY XX%
-*/
-/* Exemples : */
 AND BD_SMOD.SMOD_COD_ACTE IN (",qu(CodeActe),")
 
-/*
-Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à de consultations
-sinon à des suppléments monétaires associés à une demande de facturation
-*/
+/*Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à de consultations
+sinon à des suppléments monétaires associés à une demande de facturation */
+
 AND BD_SMOD.SMOD_COD_ACTE NOT IN (
 									SELECT DISTINCT NMOD_COD_ACTE
 									FROM Prod.V_RPERT_COD_ACTE

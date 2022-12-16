@@ -42,6 +42,7 @@
 #' * **`NomRSS_Etab`**: Nom régions sociosanitaires (RSS) de l'établissement.
 #'
 #' @encoding UTF-8
+#' @import dplyr
 #' @export
 #'
 #' @examples

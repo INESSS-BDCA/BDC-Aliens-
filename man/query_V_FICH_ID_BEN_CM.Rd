@@ -12,7 +12,7 @@ query_V_FICH_ID_BEN_CM(debut, fin, date_age)
 
 \item{fin}{Date de fin de la période d'étude.}
 
-\item{date_age}{\code{"AAAA-MM-JJ"} indiquant la date à laquelle l'âge des bénéficaires est calculé.}
+\item{date_age}{\code{"AAAA-MM-JJ"} indique la date à laquelle l'âge des bénéficaires est calculé.}
 }
 \value{
 chaîne de caractères, code SQL.

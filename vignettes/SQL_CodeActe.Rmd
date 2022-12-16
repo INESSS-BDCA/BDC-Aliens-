@@ -2,7 +2,7 @@
 title: "SQL_CodeActe"
 #subtitle: ""
 author: "Auteurs: Ahmed Ghachem (développeur)"
-date: "date de création: 15 décembre 2022"
+date: "Date de création: 15 décembre 2022"
 output:
   rmarkdown::html_vignette:
     number_sections: true
@@ -58,10 +58,15 @@ library(RequeteGeneriqueBDCA)
 
 # SQL_CodeActe
 
-La fonction `SQL_CodeActe` permet d'extraire les actes entre une date de début et de fin d'étude. Elle utilise plusieurs autres fonctions génériques telles que: 
-`SQL_reperage_cond_med` Voir \code{\link{SQL_reperage_cond_med}}, 
-`query_SQL_CodeActe` Voir \code{\link{query_SQL_CodeActe}},
-`query_V_FICH_ID_BEN_CM` Voir \code{\link{query_V_FICH_ID_BEN_CM}}
+La fonction `SQL_CodeActe` est une `child_function` qui permet d'extraire des actes entre une date de début et de fin d'une étude. Elle appelle plusieurs autres fonctions `parent_function` génériques telles que: 
+[SQL_reperage_cond_med](SQL_reperage_cond_med.html),<br/> 
+[query_SQL_CodeActe](uery_SQL_CodeActe.html),<br/>
+[query_V_FICH_ID_BEN_CM](query_V_FICH_ID_BEN_CM.html)<br/>
+
+Trois principales étapes sont effectuées: <br/>
+1) la création de la cohorte de l'étude en utilisant les Dx cim-9 et/ou cim-10 via la fonction `SQL_reperage_cond_med`<br/> 
+2) l'extraction des actes pour cette cohorte via la fonction `query_SQL_CodeActe`<br/>
+3) l'ajout des caractéristiques des benéficiaires ainsi que l'établissement de soins. Les caractéristiques des bénéficiaires et de l'établissement de soins pour les personnes ayant eu un code d'acte à l'intérieur de la période de l'étude sont extraits via la fonction `query_SQL_CodeActe`, alors que pour ceux qui n'ont pas eu d'acte sont extraits via la fonction `query_V_FICH_ID_BEN_CM`.    
 
 ## Usage de la fonction
 
@@ -81,26 +86,110 @@ verbose)
 ```
 
 ## Définition des arguments
+### conn
+La fonction `SQL_connexion` permet à R de se connecter à Teradata. Simplenent inscrire l'identifant et le programme demandera le mot de passe lors de son exécution :
+```{r}
+conn = SQL_connexion("msXXX")
+```
 
 ### debut & fin
-
-Indiquer le début et la fin de la période d'étude au format `AAAA-MM-JJ`.
-```{r, eval=FALSE}
+Date de début et de fin de la période d'étude au format AAAA-MM-JJ.
+```{r}
 debut = "2020-01-01", fin = "2020-12-31"
 ```
-    
-### CodeActe
-      
-Dans un vecteur, indiquer les codes d'acte que vous aimeriez extraire.
-```{r, eval=FALSE}
-CodeActe=c(07122, 07237, 07800, 07089, 0780)
+
+### Dx_table
+`list` contenant les codes diagnostics CIM9 et CIM10.
+```{r}
+Dx_table = list(
+  diabete = list(
+    CIM9 = c("2500%", "2501%", "2502%"),
+    CIM10 = c("E100%", "E101%", "E109%", "E110%", "E111%", "E119%", "E130%",
+              "E131%", "E139%", "E140%", "E141%", "E149%")),
+  diabete_complication = list(
+    CIM9 = paste0(2503:2509, "%"),
+    CIM10 = paste0("E", c(102:108, 112:118, 132:138, 142:148), "%")
+  )
+)
 ```
+
+### CIM
+Permet de choisir le type de code diagnostic : CIM9, CIM10 ou les deux.
+```{r}
+CIM = c("CIM9", "CIM10")  # par défaut : CIM9 et CIM10
+CIM = "CIM9"  # CIM9 seulement
+CIM = "CIM10"  # CIM10 seulement
+```
+
+### by_Dx
+Vrai (`TRUE`) ou FAUX (`FALSE`).  
+
+À partir de `DX_table` créé précédemment, si `TRUE`, on aurait au maximum deux lignes par individu où la colonne `DIAGN` indiquerait `diabete` ou `diabete_complication`.  
+Si `FALSE`, on a au maximum une ligne par individu et la colonne `DIAGN` est absente, car les codes de `diabete` et `diabete_complication` sont considérés comme un seul élément d'analyse dans l'algorithme.
+```{r}
+by_Dx = TRUE  # par défaut
+by_Dx = FALSE
+```
+
+### date_dx_var
+Permet de choisir entre la date d'admission ou la date de départ comme date d'incidence dans les vues suivantes :
+
+* V_DIAGN_SEJ_HOSP_CM
+* V_SEJ_SERV_HOSP_CM
+* V_EPISO_SOIN_DURG_CM
+
+```{r}
+date_dx_var = "admis"  # par défaut
+date_dx_var = "depar"
+```
+
+### nDx
+Permet de choisir le nombre de diagnostic qui permet de confirmer le premier.
+```{r}
+nDX=1 # par défaut
+```
+
+### n1 & n2
+Permet de créer l'intervalle `[n1, n2]`. Le nombre de jours entre deux diagnostics doit se situer dans cet intervalle pour que le deuxième diagnostic confirme le premier.
+```{r}
+n1 = 30, n2 = 730
+```
+
+### date_age 
+Permet d'indiquer une date `"AAAA-MM-JJ"` à laquelle l'âge des bénéficaires qui n'ont pas eu d'acte est calculé.
+```{r}
+date_age="2022-03-01"
+```
+### verbose
+`TRUE` ou `FALSE`. Message de progression affiché dans la console.
+```{r}
+Création de la cohorte:
+nDx=0 : Extraction des résultats (Pas de confirmation nécessaire).
+V_DIAGN_SEJ_HOSP_CM 
+ - Prolapsus (2.92 secs)
+V_SEJ_SERV_HOSP_CM 
+ - Prolapsus (1.47 secs)
+V_EPISO_SOIN_DURG_CM 
+ - Prolapsus (2.32 secs)
+I_SMOD_SERV_MD_CM 
+ - Prolapsus (7.82 secs)
+Arrangement de la table finale...
+FIN de création de la cohorte.
+Extraction des actes:
+ - Temps d'exécution (15.18 secs)
+Ajout des caractéristiques des bénéficiaires qui n'ont pas eu d'acte dans la période d'étude:
+ - Temps d'exécution (5.27 mins)
+Préparation de la base de données finale:
+ - Temps d'exécution (9.36 secs)
+```
+
 ---
 # Table Résultante
-
 ## Variables
 
 - **ID** : Numéro d'identification du bénéficiaire. <br/>
+- **DI_Finale** : Date d'incidence retenue. <br/>
+- **D_Recent** : Date la plus récente observée. </br> 
 - **AnFinan** : Année financière de l'acte. <br/>
 - **AnCivil** : Année civile de l'acte. <br/>
 - **DateActe** : Date  de l'acte au format *AAAA-MM-JJ*. <br/>
@@ -108,12 +197,8 @@ CodeActe=c(07122, 07237, 07800, 07089, 0780)
 - **CoutActe** : Cout de l'acte. <br/>
 - **DxActe** : Diagnostique associé à l'acte. <br/>
 - **Num_ETAB_USUEL** : Numéro de l'établissement. <br/>
-- **CodEntente** : Code d'entente sert à associer les dispensateurs à un groupe spécifique.<br/>
-- **SecActiv** : Identifie de façon unique chacun des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.<br/>
-- **Sexe** : Sexe du bénéficiaire. <br/>
-- **DatNais** : Date de naissance du bénéficiaire au format *AAAA-MM-JJ*. <br/>
-- **datdeces** : Date de décès du bénéficiaire au format *AAAA-MM-JJ*. <br/>
-- **Age** : Age du bénéficiaire calculé jusqu'à la date de l'acte. <br/>
+- **CodEntente** : Code d'entente sert à associer les dispensateurs à un groupe spécifique.Voir domaine de valeur:[SMOD_COD_ENTEN](https://msss365.sharepoint.com/teams/INESSS-DocumentationBDCA/Lists/Var/DispForm.aspx?ID=181) <br/>
+- **SecActiv** : Identifie de façon unique chacun des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.Voir domain de valeur [ETAB_COD_SECT_ACTIV_ETAB](https://msss365.sharepoint.com/teams/INESSS-DocumentationBDCA/Lists/Var/DispForm.aspx?ID=206)<br/>
 - **NumDispSp** : Numéro de dispensateur. <br/>
 - **SPDisp_smod** : Spécialité de dispensateur indiqué dans `SMOD`. <br/>
 - **SPDisp_fip** : Spécialité de dispensateur indiqué dans `FIP`. <br/>
@@ -121,33 +206,25 @@ CodeActe=c(07122, 07237, 07800, 07089, 0780)
 - **SPDispRefs** : Spécialité de dispensateur référent. <br/>
 - **NO_ETAB** : Numéro de l'établissement. <br/>
 - **Cat_Etab** Catégorie de l'établissement. <br/>
-- **Nom_Cat_Etab** : Nom de la catégorie de l'établissement. <br/>
 - **NOM_ETAB** : Nom de l'établissement. <br/>
-- **RSS_Benf** : Régions sociosanitaires (RSS) du bénéficiaire. <br/>
-- **RLS_Benef** : Réseaux locaux de services (RLS) du bénéficiaire. <br/>
-- **NomRSS_Benef** : Nom régions sociosanitaires (RSS) du bénéficiaire. <br/>
-- **NomRLS_Benef** : Nom réseaux locaux de services (RLS) du bénéficiaire. <br/>
 - **RSS_Etab** : Régions sociosanitaires (RSS) de l'établissement. <br/>
 - **RLS_Etab** : Réseaux locaux de services (RLS) de l'établissement. <br/>
 - **NomRSS_Etab** : Nom régions sociosanitaires (RSS) de l'établissement. <br/>
 - **NomRLS_Etab** : Nom réseaux locaux de services (RLS) de l'établissement. <br/>
+- **Sexe** : Sexe du bénéficiaire. <br/>
+- **DatNais** : Date de naissance du bénéficiaire au format *AAAA-MM-JJ*. <br/>
+- **datdeces** : Date de décès du bénéficiaire au format *AAAA-MM-JJ*. <br/>
+- **Age** : Age du bénéficiaire calculé jusqu'à la date de l'acte. <br/>
+- **RSS_Benf** : Régions sociosanitaires (RSS) du bénéficiaire. <br/>
+- **RLS_Benef** : Réseaux locaux de services (RLS) du bénéficiaire. <br/>
+- **NomRSS_Benef** : Nom régions sociosanitaires (RSS) du bénéficiaire. <br/>
+- **NomRLS_Benef** : Nom réseaux locaux de services (RLS) du bénéficiaire. <br/>
 
 ***
-
 # Discription de la syntaxe SQL
     
-## Vues utilisées
+Veuillez-svp consulter les vignettes des `parent_function` suivantes:
 
-- PROD.I_SMOD_SERV_MD_CM (SMOD)
-- PROD.V_FICH_ID_BEN_CM (FIPA)
-- PROD.D_DISP_SPEC_CM (FIP)
-- Prod.V_ETAB_USUEL
-- Prod.IBENEF_ADR_CM
-- DONNE_INESSS.tGI_RLS_RTS
-- Prod.V_ETAB_USUEL_DERN
-- RES_SSS.V_NOM_ETAB_DERN_TYP_NOM
-- Prod.V_RPERT_COD_ACTE
-- Prod.V_DECOU_GEO_POSTL_DERN_CP
-- Prod.V_COD_CATG_ETAB_EI
- 
-## Syntaxe SQL
+[SQL_reperage_cond_med](SQL_reperage_cond_med.html)<br/> 
+[query_SQL_CodeActe](query_SQL_CodeActe.html)<br/>
+[query_V_FICH_ID_BEN_CM](query_V_FICH_ID_BEN_CM.html)<br/>

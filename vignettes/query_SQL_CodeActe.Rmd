@@ -59,7 +59,7 @@ library(RequeteGeneriqueBDCA)
 
 # query_SQL_CodeActe
 
-`query_SQL_CodeActe` est une fonction intermédiaire qui retourne une syntaxe sql, laquelle est utilisée par la fonction \code{\link{SQL_CodeActe}} afin d'extraire les actes entre une date de début et de fin d'une étude. Les caractéristiques du bénéficiaire ainsi que de l'établissement de soins sont également fournies.
+La fonction `query_SQL_CodeActe` est une `parent_function` qui retourne une syntaxe sql pour extraire les actes, les caractéristiques des dénéficiaires ainsi que l'établissement du soins. Elle est appellée par la fonction [SQL_CodeActe](SQL_CodeActe.html).
 
 ## La fonction
 

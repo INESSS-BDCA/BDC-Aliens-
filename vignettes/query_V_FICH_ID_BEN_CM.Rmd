@@ -1,0 +1,184 @@
+---
+title: "query_V_FICH_ID_BEN_CM"
+#subtitle: ""
+author: "Auteurs: Ahmed Ghachem (développeur)"
+date: "Date de création: 16 décembre 2022"
+output:
+  rmarkdown::html_vignette:
+    number_sections: true
+    toc: true
+params: 
+  output_dir: "C:/Users/MS069/Desktop/Ahmed/RequeteGeneriqueBDCA-1.0.0.0/vignettes"
+vignette: >
+  %\VignetteIndexEntry{query_V_FICH_ID_BEN_CM}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  eval = FALSE
+)
+```
+
+# Installation de la librairie R *RequeteGeneriqueBDCA*
+
+## Fichier nécessaire
+
+Télécharger le fichier `RequeteGeneriqueBDCA.x.y.tar.gz` à partir de Microsoft Teams.<br>
+[INESSS - Documentation BDCA > Documents > Outils > Librairie R INESSS > RequeteGeneriqueBDCA_x.y.z.tar.gz](https://msss365.sharepoint.com/:f:/r/teams/INESSS-DocumentationBDCA/Shared%20Documents/Outils/Librairie%20R%20INESSS?csf=1&web=1&e=j5SylU).
+
+Ouvrir RStudio.
+
+Dans la console, écrire le code suivant :
+```{r, eval=FALSE}
+remotes::install_local("C:\\msXXX\\Desktop\\RequeteGeneriqueBDCA_x.y.z.tar.gz")
+```
+Prendre note que les «`\`» sont doubles.
+
+Si la librairie `remotes` n'est pas installée, écrire dans la console le code suivant : `install.packages("remotes")`.
+
+Avant d'installer une librairie, il est préférable de ne pas l'avoir *appelé* auparavant.
+
+Il est déconseillé de mettre à jour les librairies utilisées par *RequeteGeneriqueBDCA*.
+
+L'installation se termine lorsqu'on peut lire dans la console : *DONE (RequeteGeneriqueBDCA)*.
+
+
+## Activer la librairie
+      
+Après avoir installé la librairie *RequeteGeneriqueBDCA*, il suffit de l'activer pour avoir accès aux fonctions :
+```{r, eval=FALSE}
+library(RequeteGeneriqueBDCA)
+```
+
+---
+
+# query_V_FICH_ID_BEN_CM
+
+
+
+La fonction `query_V_FICH_ID_BEN_CM` est une `parent_function` qui retourne une syntaxe sql pour extraire les caractéristiques des bénéficiaires à partir de la vue `V_FICH_ID_BEN_CM`. Elle est appellée par la fonction [SQL_CodeActe](SQL_CodeActe.html).
+
+## La fonction
+
+```{r, eval=FALSE}
+query_V_FICH_ID_BEN_CM(
+  debut,
+  fin,
+  date_age 
+  )
+```
+
+## Usage de la fonction
+
+```{r, eval=FALSE}
+odbc::dbGetQuery(conn=SQL_connexion(),
+statement=query_V_FICH_ID_BEN_CM(
+  debut,
+  fin,
+  date_age 
+  )
+```
+
+## Définition des arguments
+
+### debut & fin
+
+Permet d'indiquer le début et la fin de la période d'étude au format `AAAA-MM-JJ`.
+```{r, eval=FALSE}
+debut = "2020-01-01", fin = "2020-12-31"
+```
+    
+### date_age 
+Permet d'indiquer une date `"AAAA-MM-JJ"` à laquelle l'âge des bénéficaires est calculé.
+```{r,eval=FALSE}
+date_age="2022-03-01"
+```
+
+---
+
+# Table Résultante
+
+## Variables
+- **ID** : Numéro d'identification du bénéficiaire. <br/>
+- **Sexe** : Sexe du bénéficiaire. <br/>
+- **DatNais** : Date de naissance du bénéficiaire au format *AAAA-MM-JJ*. <br/>
+- **datdeces** : Date de décès du bénéficiaire au format *AAAA-MM-JJ*. <br/>
+- **Age** : Age du bénéficiaire calculé jusqu'à la date de l'acte. <br/>
+- **RSS_Benf** : Régions sociosanitaires (RSS) du bénéficiaire. <br/>
+- **RLS_Benef** : Réseaux locaux de services (RLS) du bénéficiaire. <br/>
+- **NomRSS_Benef** : Nom régions sociosanitaires (RSS) du bénéficiaire. <br/>
+- **NomRLS_Benef** : Nom réseaux locaux de services (RLS) du bénéficiaire. <br/>
+
+***
+
+# Discription de la syntaxe SQL
+    
+## Vues utilisées
+- PROD.V_FICH_ID_BEN_CM 
+- Prod.I_BENF_ADR_CM
+- DONNE_INESSS.tGI_RLS_RTS
+
+## Syntaxe SQL
+```{r,eval=FALSE}
+SELECT
+B.BENF_NO_INDIV_BEN_BANLS AS ID,
+B.BENF_COD_SEXE AS Sexe,  --Sexe du bénéficiaire
+B.BENF_DAT_NAISS AS DatNais,  --Date de naissance
+B.BENF_DAT_DECES AS DatDeces, --Date de décès
+CAST(((CAST('",date_age,"' AS DATE FORMAT 'yyyy-mm-dd')) - B.BENF_DAT_NAISS) / 365.25 AS BIGINT) AS Age,
+
+/* On fait le recodage du code RSS pour le code RLS 1610, les variables avec les NOMS (RSS) sont correctes  */
+CASE WHEN BD_Adr.LGEO_COD_RSS=16 AND BD_Adr.LGEO_COD_TERRI_RLS IN ('1610') THEN 15
+ELSE BD_Adr.LGEO_COD_RSS END AS RSS_Benf,
+BD_NomReg_Ben.NomRSS_Benef,
+
+/* On ajoute un codes RLS fonctionnel pour les régions sans RLS on fait le recodgae de code RLS 1610, les variables avec les NOMS (RLS) sont correctes */
+CASE
+WHEN BD_Adr.LGEO_COD_RSS=10 THEN '1001'
+WHEN BD_Adr.LGEO_COD_RSS=17 THEN '1701'
+WHEN BD_Adr.LGEO_COD_RSS=18 THEN '1801'
+WHEN BD_Adr.LGEO_COD_TERRI_RLS IN ('1610') THEN '0511' ELSE BD_Adr.LGEO_COD_TERRI_RLS END AS RLS_Benef,
+BD_NomReg_Ben.NomRLS_Benef
+
+
+FROM PROD.V_FICH_ID_BEN_CM AS B
+
+/**********************************************************
+  Découpage géographique du bénéficiaire : codes RSS et RLS
+***********************************************************/
+/* On sélectionne la dernière adresse du bénéficiaire durant la période sélectionnée.
+Autres méthodes :
+1) cibler la première adresse de la période
+2) cibler ladresse dans laquelle le BEN a résidé le plus longtemps durant la période
+3) cibler ladresse à une date fixe (p. ex. 31 mars, 01 juillet, mi-année)*/
+  
+  LEFT JOIN (
+    SELECT
+    BENF_NO_INDIV_BEN_BANLS,
+    BENF_DD_ADR_BEN,
+    BENF_DF_ADR_BEN,
+    LGEO_COD_RSS,
+    LGEO_COD_TERRI_RLS
+    FROM Prod.I_BENF_ADR_CM
+    WHERE BENF_IND_ADR_HQ IN ('N') AND BENF_COD_TYP_ADR IN ('R')
+    AND (BENF_DD_ADR_BEN<='",fin,"' AND BENF_DF_ADR_BEN>='",debut,"')
+    QUALIFY Row_Number()Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN DESC)=1
+  ) AS BD_Adr
+ON B.BENF_NO_INDIV_BEN_BANLS=BD_Adr.BENF_NO_INDIV_BEN_BANLS
+
+/* On ajoute ici les NOMS des codes RSS et RLS du bénéficiaire : ceci serait optionnel si la requête est trop lourde */
+  LEFT JOIN (
+    SELECT
+    CodRLS,
+    NomRLS AS NomRLS_Benef,
+    NomRSS AS NomRSS_Benef
+    FROM DONNE_INESSS.tGI_RLS_RTS) AS BD_NomReg_Ben
+ON BD_Adr.LGEO_COD_TERRI_RLS=BD_NomReg_Ben.CodRLS
+ORDER BY 1
+```
+
