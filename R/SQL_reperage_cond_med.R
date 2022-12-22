@@ -123,6 +123,11 @@ SQL_reperage_cond_med <- function(
   } else {
     verbose <- TRUE
   }
+  if (any(names(dotargs) == "cohort")) {
+    cohort <- dotargs$cohort
+  } else {
+    cohort <- NULL
+  }
 
   ### Algorithme de repérage d'une condition médicale - étape 1 - MEDECHO
   # Extraction de tous les Dx selon les critères de l'étape 1

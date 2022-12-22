@@ -7,6 +7,7 @@
 \usage{
 SQL_CodeActe(
   conn = SQL_connexion(),
+  cohort = NULL,
   debut,
   fin,
   CodeActe,
@@ -18,11 +19,14 @@ SQL_CodeActe(
   n1,
   n2,
   date_age,
-  verbose
+  verbose = TRUE,
+  keep_all = FALSE
 )
 }
 \arguments{
 \item{conn}{Variable contenant la connexion entre R et Teradata. Voir \code{\link{SQL_connexion}}.}
+
+\item{cohort}{Cohorte d'étude. Vecteur comprenant les numéros d'identification des bénéficiaires.}
 
 \item{debut}{Date de début de la période d'étude au format \code{AAAA-MM-JJ}.}
 
@@ -43,41 +47,47 @@ SQL_CodeActe(
 \item{n1, n2}{Nombre de jours requis pour confirmer le diagnostic}
 
 \item{date_age}{\code{"AAAA-MM-JJ"} indique la date à laquelle l'âge des bénéficaires est calculé.}
+
+\item{verbose}{\code{TRUE} ou \code{FALSE}. Affiche le temps qui a été nécessaire pour extraire les diagnostics. Utile pour suivre le déroulement de l'extraction.}
+
+\item{keep_all}{\code{TRUE} ou \code{FALSE}. Par défaut \code{FALSE}, soit filter les observations ayant eu un DX et un code d'acte. Si \code{TRUE} garder toutes les observations, soit ceux qui ont eu un DX et qui ont eu ou pas un code d'acte.
+Si \code{cohort} est fournit, keep_all \code{TRUE} garde toutes les observations demandées par \code{cohort}. Si keep_all \code{FALSE} filtrer les observations demandées par \code{cohort}qui ont eu un code d'acte.}
 }
 \value{
-\code{data.table} de 31 variables :
+\code{data.table} de 33 variables :
 \itemize{
-\item \strong{\code{BenBanls}} : Numéro d'identification du bénéficiaire.
-\item \strong{\code{AnCivil}} : L'année civil de l'acte.
-\item \strong{\code{DateActe}} : La date de l'acte au format \code{AAAA-MM-JJ}.
-\item \strong{\code{CodeActe}} : Les actes demandés dans l'argument \code{CodeActe}.
-\item \strong{\code{CoutActe}} : Le coût de de l'acte.
-\item \strong{\code{DxActe}}: Num de diagnostique associé à l'acte.
-\item \strong{\code{LieuDisp}}: Code du lieu de dispensation d'un service (C:Service rendu en cabinet ou à domicile; E:Service rendu en établissement; X:Indéterminé).
-\item \strong{\code{SecActiv}}: Identifie de façon unique chacun des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.
-\item \strong{\code{Num_ETAB_USUEL}}: Numéro de l'établissement.
-\item \strong{\code{CodEntente}}: Code d'entente. Il utile pour associer les dispensateurs à un groupe spécifique.
-\item \strong{\code{Sexe}}: Sexe du bénéficiaire.
-\item \strong{\code{DatNais}}: Date de naissance du bénéficiaire au format \code{AAAA-MM-JJ}.
-\item \strong{\code{datdeces}}: Date de décès du bénéficiaire au format \code{AAAA-MM-JJ}.
-\item \strong{\code{Age}}: Age du bénéficiaire calculé jusqu'à la date de l'acte.
-\item \strong{\code{NumDispSp}}: Numéro de dispensateur.
-\item \strong{\code{SPDisps}}: Spécialité de dispensateur.
-\item \strong{\code{NumDispRef}}: Numéro de dispensateur référent.
-\item \strong{\code{SPDispRefs}}: Spécialité de dispensateur référent.
-\item \strong{\code{NO_ETAB}}: Numéro de l'établissement.
-\item \strong{\code{Grp_Cat_Etab}}: Catégorie de l'établissement.
-\item \strong{\code{Cat_Etab}} Catégorie de l'établissement: .
-\item \strong{\code{Nom_Grp_Cat_Etab}}: Nom de la catégorie de l'établissement.
-\item \strong{\code{NOM_ETAB}}: Nom de l'établissement.
-\item \strong{\code{RSS_Benf}}: Régions sociosanitaires (RSS) du bénéficiaire.
-\item \strong{\code{RLS_Benef}}: Réseaux locaux de services (RLS) du bénéficiaire.
-\item \strong{\code{NomRLS_Benef}}: Nom réseaux locaux de services (RLS) du bénéficiaire.
-\item \strong{\code{NomRSS_Benef}}: Nom régions sociosanitaires (RSS) du bénéficiaire.
-\item \strong{\code{RSS_Etab}}: Régions sociosanitaires (RSS) de l'établissement.
-\item \strong{\code{RLS_Etab}}: Réseaux locaux de services (RLS) de l'établissement.
-\item \strong{\code{NomRLS_Etab}}: Nom réseaux locaux de services (RLS) de l'établissement.
-\item \strong{\code{NomRSS_Etab}}: Nom régions sociosanitaires (RSS) de l'établissement.
+\item \strong{\code{ID}} : Numéro d'identification du bénéficiaire. <br/>
+\item \strong{\code{DI_Finale}} : Date d'incidence retenue. <br/>
+\item \strong{\code{D_Recent}} : Date la plus récente observée. </br>
+\item \strong{\code{AnFinan}} : Année financière de l'acte. <br/>
+\item \strong{\code{AnCivil}} : Année civile de l'acte. <br/>
+\item \strong{\code{DateActe}} : Date  de l'acte au format \emph{AAAA-MM-JJ}. <br/>
+\item \strong{\code{CodeActe}} : Actes demandés dans l'argument CodeActe. <br/>
+\item \strong{\code{CoutActe}} : Cout de l'acte. <br/>
+\item \strong{\code{DxActe}} : Diagnostique associé à l'acte. <br/>
+\item \strong{\code{Num_ETAB_USUEL}} : Numéro de l'établissement. <br/>
+\item \strong{\code{CodEntente}} : Code d'entente sert à associer les dispensateurs à un groupe spécifique.<br/>
+\item \strong{\code{SecActiv}} : Identifie de façon unique chacun des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.<br/>
+\item \strong{\code{NumDispSp}} : Numéro de dispensateur. <br/>
+\item \strong{\code{SPDisp_smod}} : Spécialité de dispensateur indiqué dans \code{SMOD}. <br/>
+\item \strong{\code{SPDisp_fip}} : Spécialité de dispensateur indiqué dans \code{FIP}. <br/>
+\item \strong{\code{NumDispRef}} : Numéro de dispensateur référent. <br/>
+\item \strong{\code{SPDispRefs}} : Spécialité de dispensateur référent. <br/>
+\item \strong{\code{NO_ETAB}} : Numéro de l'établissement. <br/>
+\item \strong{\code{Cat_Etab}} : Catégorie de l'établissement. <br/>
+\item \strong{\code{NOM_ETAB}} : Nom de l'établissement. <br/>
+\item \strong{\code{RSS_Etab}} : Régions sociosanitaires (RSS) de l'établissement. <br/>
+\item \strong{\code{RLS_Etab}} : Réseaux locaux de services (RLS) de l'établissement. <br/>
+\item \strong{\code{NomRSS_Etab}} : Nom régions sociosanitaires (RSS) de l'établissement. <br/>
+\item \strong{\code{NomRLS_Etab}} : Nom réseaux locaux de services (RLS) de l'établissement. <br/>
+\item \strong{\code{Sexe}} : Sexe du bénéficiaire. <br/>
+\item \strong{\code{DatNais}} : Date de naissance du bénéficiaire au format \emph{AAAA-MM-JJ}. <br/>
+\item \strong{\code{datdeces}} : Date de décès du bénéficiaire au format \emph{AAAA-MM-JJ}. <br/>
+\item \strong{\code{Age}} : Age du bénéficiaire calculé jusqu'à la date de l'acte. <br/>
+\item \strong{\code{RSS_Benf}} : Régions sociosanitaires (RSS) du bénéficiaire. <br/>
+\item \strong{\code{RLS_Benef}} : Réseaux locaux de services (RLS) du bénéficiaire. <br/>
+\item \strong{\code{NomRSS_Benef}} : Nom régions sociosanitaires (RSS) du bénéficiaire. <br/>
+\item \strong{\code{NomRLS_Benef}} : Nom réseaux locaux de services (RLS) du bénéficiaire. <br/>
 }
 }
 \description{
@@ -87,13 +97,13 @@ La fonction \code{SQL_CodeActe} utilise plusieurs autres fonctions génériques 
 }
 \examples{
 \dontrun{
-DT_final<-SQL_CodeActe(conn=SQL_connexion(),
-                      debut = "2021-04-01",
+DT_final<-SQL_CodeActe(conn=SQL_connexion("ms069a"),
+                      cohort = NULL,
+                      debut = "2022-02-01",
                       fin = "2022-03-31",
-                      CodeActe = c('06452','06148','06154','06265','06251','06216','06208','06164','06270','06276','06274','06273','06913','06099',
-                                   '06400','06405','06406','06408','06420','06410','06411','06414','6421','6426','20017'),
-                      Dx_table = list(Prolapsus = list(CIM9 = c('5995','6180','6181','6183','6184','6185','6186','6187','6188','6189','6204'),
-                                                       CIM10 = c('N810','N811','N812','N813','N814','N815','N816','N818','N819','N993','N834','O345'))),
+                      CodeActe = c('06452','06148','06154','06265','06251','06216','06208'),
+                      Dx_table = list(Prolapsus = list(CIM9 = c('5995','6180','6181','6183'),
+                                                       CIM10 = c('N810','N811','N812','N813'))),
 
                       CIM =  c("CIM9", "CIM10"),
                       by_Dx = FALSE,
@@ -101,6 +111,7 @@ DT_final<-SQL_CodeActe(conn=SQL_connexion(),
                       n1 = 30, n2 = 730,
                       nDx=0 ,
                       date_age="2022-03-31",
-                      verbose = TRUE)
+                      verbose = TRUE,
+                      keep_all=FALSE)
 }
 }
