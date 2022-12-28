@@ -8,6 +8,7 @@
 #' @inheritParams query_SQL_CodeActe
 #' @inheritParams query_V_FICH_ID_BEN_CM
 #' @param cohort Cohorte d'étude. Vecteur comprenant les numéros d'identification des bénéficiaires.
+#' @param omni_spec peut prendre la valeur `omni`(extraction des actes facturés par les omi) ,`spec` (extraction des actes facturés par les spec) ou `all` (pas de spécification).
 #' @param verbose `TRUE` ou `FALSE`. Affiche le temps qui a été nécessaire pour extraire les diagnostics. Utile pour suivre le déroulement de l'extraction.
 #' @param keep_all `TRUE` ou `FALSE`. Par défaut `FALSE`, soit filter les observations ayant eu un DX et un code d'acte. Si `TRUE` garder toutes les observations, soit ceux qui ont eu un DX et qui ont eu ou pas un code d'acte.
 #' Si `cohort` est fournit, keep_all `TRUE` garde toutes les observations demandées par `cohort`. Si keep_all `FALSE` filtrer les observations demandées par `cohort`qui ont eu un code d'acte.
@@ -19,7 +20,7 @@
 #' * **`D_Recent`** : Date la plus récente observée. </br>
 #' * **`AnFinan`** : Année financière de l'acte. <br/>
 #' * **`AnCivil`** : Année civile de l'acte. <br/>
-#' * **`DateActe`** : Date  de l'acte au format *AAAA-MM-JJ*. <br/>
+#' * **`DateActe`** : Date  de l'acte au format `AAAA-MM-JJ`. <br/>
 #' * **`CodeActe`** : Actes demandés dans l'argument CodeActe. <br/>
 #' * **`CoutActe`** : Cout de l'acte. <br/>
 #' * **`DxActe`** : Diagnostique associé à l'acte. <br/>
@@ -39,8 +40,8 @@
 #' * **`NomRSS_Etab`** : Nom régions sociosanitaires (RSS) de l'établissement. <br/>
 #' * **`NomRLS_Etab`** : Nom réseaux locaux de services (RLS) de l'établissement. <br/>
 #' * **`Sexe`** : Sexe du bénéficiaire. <br/>
-#' * **`DatNais`** : Date de naissance du bénéficiaire au format *AAAA-MM-JJ*. <br/>
-#' * **`datdeces`** : Date de décès du bénéficiaire au format *AAAA-MM-JJ*. <br/>
+#' * **`DatNais`** : Date de naissance du bénéficiaire au format `AAAA-MM-JJ`. <br/>
+#' * **`datdeces`** : Date de décès du bénéficiaire au format `AAAA-MM-JJ`. <br/>
 #' * **`Age`** : Age du bénéficiaire calculé jusqu'à la date de l'acte. <br/>
 #' * **`RSS_Benf`** : Régions sociosanitaires (RSS) du bénéficiaire. <br/>
 #' * **`RLS_Benef`** : Réseaux locaux de services (RLS) du bénéficiaire. <br/>
@@ -58,6 +59,7 @@
 #'                       debut = "2022-02-01",
 #'                       fin = "2022-03-31",
 #'                       CodeActe = c('06452','06148','06154','06265','06251','06216','06208'),
+#'                       omni_spec="all",
 #'                       Dx_table = list(Prolapsus = list(CIM9 = c('5995','6180','6181','6183'),
 #'                                                        CIM10 = c('N810','N811','N812','N813'))),
 #'
@@ -75,6 +77,7 @@ SQL_CodeActe<-function(conn=SQL_connexion(),
                        debut,
                        fin,
                        CodeActe,
+                       omni_spec,
                        Dx_table,
                        CIM,
                        by_Dx,
@@ -113,7 +116,7 @@ SQL_CodeActe<-function(conn=SQL_connexion(),
   t1 <- Sys.time()
 
   DT<-as.data.table(odbc::dbGetQuery(conn=conn,
-                                     statement=query_SQL_CodeActe(debut=debut,fin=fin,CodeActe=CodeActe)))
+                                     statement=query_SQL_CodeActe(debut=debut,fin=fin,CodeActe=CodeActe,omni_spec=omni_spec)))
 
   t2 <- Sys.time()
   if (verbose) {

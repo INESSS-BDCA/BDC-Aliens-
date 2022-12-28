@@ -8,7 +8,7 @@ output:
     number_sections: true
     toc: true
 params: 
-  output_dir: "C:/Users/MS069/Desktop/Ahmed/RequeteGeneriqueBDCA-1.0.0.0/vignettes"
+  output_dir: "C:/Users/MS069/Desktop/Ahmed/INESSS-BDCA/vignettes"
 vignette: >
   %\VignetteIndexEntry{SQL_CodeActe}
   %\VignetteEngine{knitr::rmarkdown}
@@ -75,6 +75,7 @@ SQL_CodeActe(conn=SQL_connexion(),
 debut,
 fin,
 CodeActe,
+omni_spec,
 Dx_table,
 CIM,
 by_Dx,
@@ -96,6 +97,20 @@ conn = SQL_connexion("msXXX")
 Date de début et de fin de la période d'étude au format AAAA-MM-JJ.
 ```{r}
 debut = "2020-01-01", fin = "2020-12-31"
+```
+
+### codeActe
+Vecteur comprenant les codes d'acte d'interêt.
+```{r}
+CodeActe = c('06452','06148','06154','06265','06251','06216','06208','06164','06270','06276')
+```
+
+### omni_spec
+Permet d'extraire les actes facturés par les omnipraticiens et/ou les spécialistes.
+```{r}
+omni_spec="all"
+omni_spec="omni"
+omni_spec="spec"
 ```
 
 ### Dx_table

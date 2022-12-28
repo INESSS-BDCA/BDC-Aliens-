@@ -8,7 +8,7 @@ output:
     number_sections: true
     toc: true
 params: 
-  output_dir: "C:/Users/MS069/Desktop/Ahmed/RequeteGeneriqueBDCA-1.0.0.0/vignettes"
+  output_dir: "C:/Users/MS069/Desktop/Ahmed/INESSS-BDCA/vignettes"
 vignette: >
   %\VignetteIndexEntry{query_SQL_CodeActe}
   %\VignetteEngine{knitr::rmarkdown}
@@ -67,7 +67,8 @@ La fonction `query_SQL_CodeActe` est une `parent_function` qui retourne une synt
 query_SQL_CodeActe(
   debut,
   fin,
-  CodeActe 
+  CodeActe,
+  omni_spec
   )
 ```
 
@@ -78,7 +79,8 @@ odbc::dbGetQuery(conn=SQL_connexion(),
 statement=query_SQL_CodeActe(
   debut,
   fin,
-  CodeActe 
+  CodeActe,
+  omni_spec
   )
 ```
 
@@ -95,7 +97,17 @@ debut = "2020-01-01", fin = "2020-12-31"
       
 Dans un vecteur, indiquer les codes d'acte que vous aimeriez extraire.
 ```{r, eval=FALSE}
-CodeActe=c(07122, 07237, 07800, 07089, 0780)
+CodeActe=c('06452','06148','06154','06265','06251','06216','06208','06164','06270','06276')
+```
+
+    
+### omni_spec
+      
+Permet d'extraire les actes facturés par les omnipraticiens et/ou les spécialistes.
+```{r, eval=FALSE}
+omni_spec="all"
+omni_spec="omni"
+omni_spec="spec"
 ```
 ---
 # Table Résultante
@@ -294,9 +306,12 @@ ON BD_Etab.LGEO_COD_TERRI_RLS=BD_NomReg_Etab.CodRLS
 WHERE BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY')
 AND BD_SMOD.SMOD_DAT_SERV BETWEEN '",debut,"' AND '",fin,"'
 AND BD_SMOD.SMOD_COD_ACTE IN (",qu(CodeActe),")
-
-/* Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à des consultations,
-mais plutôt à des suppléments monétaires associés à une demande de facturation */
+/* query_SQL_CodeActe.where_SMOD_COD_SPEC(omni_spec):
+  si omni_spec=="all": extraction des actes facturés par les omni et les spécialistes
+  si omni_spec=="omni": AND SMOD_COD_SPEC IS NULL
+  si omni_spec=="spec": AND SMOD_COD_SPEC IS NOT NULL*/
+  
+/* Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à des consultations, mais, plutôt à des suppléments monétaires associés à une demande de facturation */
   
 AND BD_SMOD.SMOD_COD_ACTE NOT IN (
 									SELECT DISTINCT NMOD_COD_ACTE

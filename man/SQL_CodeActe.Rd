@@ -11,6 +11,7 @@ SQL_CodeActe(
   debut,
   fin,
   CodeActe,
+  omni_spec,
   Dx_table,
   CIM,
   by_Dx,
@@ -33,6 +34,8 @@ SQL_CodeActe(
 \item{fin}{Date de fin de la période d'étude au format \code{AAAA-MM-JJ}.}
 
 \item{CodeActe}{Vecteur comprenant les codes d'acte d'interêt.}
+
+\item{omni_spec}{peut prendre la valeur \code{omni}(extraction des actes facturés par les omi) ,\code{spec} (extraction des actes facturés par les spec) ou \code{all} (pas de spécification).}
 
 \item{Dx_table}{\code{list} contenant les codes à analyser ou le nom d'une table qui est inclue dans la librairie.}
 
@@ -61,7 +64,7 @@ Si \code{cohort} est fournit, keep_all \code{TRUE} garde toutes les observations
 \item \strong{\code{D_Recent}} : Date la plus récente observée. </br>
 \item \strong{\code{AnFinan}} : Année financière de l'acte. <br/>
 \item \strong{\code{AnCivil}} : Année civile de l'acte. <br/>
-\item \strong{\code{DateActe}} : Date  de l'acte au format \emph{AAAA-MM-JJ}. <br/>
+\item \strong{\code{DateActe}} : Date  de l'acte au format \code{AAAA-MM-JJ}. <br/>
 \item \strong{\code{CodeActe}} : Actes demandés dans l'argument CodeActe. <br/>
 \item \strong{\code{CoutActe}} : Cout de l'acte. <br/>
 \item \strong{\code{DxActe}} : Diagnostique associé à l'acte. <br/>
@@ -81,8 +84,8 @@ Si \code{cohort} est fournit, keep_all \code{TRUE} garde toutes les observations
 \item \strong{\code{NomRSS_Etab}} : Nom régions sociosanitaires (RSS) de l'établissement. <br/>
 \item \strong{\code{NomRLS_Etab}} : Nom réseaux locaux de services (RLS) de l'établissement. <br/>
 \item \strong{\code{Sexe}} : Sexe du bénéficiaire. <br/>
-\item \strong{\code{DatNais}} : Date de naissance du bénéficiaire au format \emph{AAAA-MM-JJ}. <br/>
-\item \strong{\code{datdeces}} : Date de décès du bénéficiaire au format \emph{AAAA-MM-JJ}. <br/>
+\item \strong{\code{DatNais}} : Date de naissance du bénéficiaire au format \code{AAAA-MM-JJ}. <br/>
+\item \strong{\code{datdeces}} : Date de décès du bénéficiaire au format \code{AAAA-MM-JJ}. <br/>
 \item \strong{\code{Age}} : Age du bénéficiaire calculé jusqu'à la date de l'acte. <br/>
 \item \strong{\code{RSS_Benf}} : Régions sociosanitaires (RSS) du bénéficiaire. <br/>
 \item \strong{\code{RLS_Benef}} : Réseaux locaux de services (RLS) du bénéficiaire. <br/>
@@ -102,6 +105,7 @@ DT_final<-SQL_CodeActe(conn=SQL_connexion("ms069a"),
                       debut = "2022-02-01",
                       fin = "2022-03-31",
                       CodeActe = c('06452','06148','06154','06265','06251','06216','06208'),
+                      omni_spec="all",
                       Dx_table = list(Prolapsus = list(CIM9 = c('5995','6180','6181','6183'),
                                                        CIM10 = c('N810','N811','N812','N813'))),
 

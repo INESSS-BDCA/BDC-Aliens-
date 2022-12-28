@@ -5,7 +5,7 @@
 \alias{query_SQL_CodeActe}
 \title{Requête SQL: query_SQL_CodeActe}
 \usage{
-query_SQL_CodeActe(debut, fin, CodeActe)
+query_SQL_CodeActe(debut, fin, CodeActe, omni_spec)
 }
 \arguments{
 \item{debut}{Date de début de la période d'étude au format \code{AAAA-MM-JJ}.}
@@ -13,6 +13,8 @@ query_SQL_CodeActe(debut, fin, CodeActe)
 \item{fin}{Date de fin de la période d'étude au format \code{AAAA-MM-JJ}.}
 
 \item{CodeActe}{Vecteur comprenant les codes d'acte d'interêt.}
+
+\item{omni_spec}{peut prendre la valeur \code{omni},\code{spec} ou \code{all}. Si omi_spec == "omni" (AND SMOD_COD_SPEC IS NULL),Si omi_spec == "spec" (AND SMOD_COD_SPEC IS NOT NULL), et si omni_spec=="all" (\verb{/*AND SMOD_COD_SPEC IS NOT NULL*/})}
 }
 \value{
 Chaîne de caractères, code SQL.
@@ -25,7 +27,8 @@ d'extraire les actes entre une date de début et de fin d'étude avec des donné
  \dontrun{
 DT<-as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
 statement=query_SQL_CodeActe (debut="2019-04-01",fin="2022-03-31",
-CodeActe=c(07122, 07237, 07800, 07089, 0780))
+CodeActe=c(07122, 07237, 07800, 07089, 0780),
+omni_spec="all")
 ))
 }
 

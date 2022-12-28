@@ -7,7 +7,7 @@
 #' @param debut Date de début de la période d'étude au format `AAAA-MM-JJ`.
 #' @param fin Date de fin de la période d'étude au format `AAAA-MM-JJ`.
 #' @param CodeActe Vecteur comprenant les codes d'acte d'interêt.
-#'
+#' @param omni_spec peut prendre la valeur `omni`,`spec` ou `all`. Si omi_spec == "omni" (AND SMOD_COD_SPEC IS NULL),Si omi_spec == "spec" (AND SMOD_COD_SPEC IS NOT NULL), et si omni_spec=="all" (`/*AND SMOD_COD_SPEC IS NOT NULL*/`)
 #' @return Chaîne de caractères, code SQL.
 #'
 #' @encoding UTF-8
@@ -18,16 +18,17 @@
 #'  \dontrun{
 #'DT<-as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
 #'statement=query_SQL_CodeActe (debut="2019-04-01",fin="2022-03-31",
-#'CodeActe=c(07122, 07237, 07800, 07089, 0780))
+#'CodeActe=c(07122, 07237, 07800, 07089, 0780),
+#'omni_spec="all")
 #' ))
 #' }
 #'
 
 
-query_SQL_CodeActe<-function(debut, fin, CodeActe){
+query_SQL_CodeActe<-function(debut, fin, CodeActe,omni_spec){
 
-return (paste0("
-SELECT
+return (paste0(
+"SELECT
 
 -- Sources des variables :
 -- Nom de vue : Prod.I_SMOD_SERV_MD_CM (SMOD)
@@ -140,12 +141,19 @@ Découpage géographique de l'établissement : numéro unique, catégorie, nom d
 /* On ajoute ici le numéro d'établissement (unique : ETAB_NO_ETAB), le code postal de l'établissement et la catégorie de l'établissement */
 
 LEFT JOIN (
-			SELECT BD_Etab.ETAB_NO_ETAB_USUEL, BD_Etab.ETAB_NO_ETAB, BD_Etab.ETAB_COD_POSTL,
-			BD_Decoup_Etab.LGEO_COD_RSS, BD_Decoup_Etab.LGEO_COD_TERRI_RLS,
-			BD_Catg_etab.ETAB_COD_CATG_ETAB_EI, BD_NomCatg_etab.ETAB_NOM_CATG_ETAB_EI
+			SELECT
+			BD_Etab.ETAB_NO_ETAB_USUEL,
+			BD_Etab.ETAB_NO_ETAB,
+			BD_Etab.ETAB_COD_POSTL,
+			BD_Decoup_Etab.LGEO_COD_RSS,
+			BD_Decoup_Etab.LGEO_COD_TERRI_RLS,
+			BD_Catg_etab.ETAB_COD_CATG_ETAB_EI,
+			BD_NomCatg_etab.ETAB_NOM_CATG_ETAB_EI
 			FROM V_ETAB_USUEL_DERN AS BD_Etab
 			LEFT JOIN Prod.V_DECOU_GEO_POSTL_DERN_CP AS BD_Decoup_Etab ON BD_Etab.ETAB_COD_POSTL=BD_Decoup_Etab.LGEO_COD_POSTL
-			LEFT JOIN (SELECT DISTINCT ETAB_NO_ETAB, ETAB_COD_CATG_ETAB_EI FROM V_ETAB_USUEL
+			LEFT JOIN (SELECT DISTINCT
+			ETAB_NO_ETAB,
+			ETAB_COD_CATG_ETAB_EI FROM V_ETAB_USUEL
 			QUALIFY Row_Number()Over (PARTITION BY ETAB_NO_ETAB ORDER BY ETAB_DD_ETAB_USUEL DESC)=1) AS BD_Catg_etab ON BD_Etab.ETAB_NO_ETAB=BD_Catg_etab.ETAB_NO_ETAB
 			LEFT JOIN Prod.V_COD_CATG_ETAB_EI AS BD_NomCatg_etab ON BD_Catg_etab.ETAB_COD_CATG_ETAB_EI=BD_NomCatg_etab.ETAB_COD_CATG_ETAB_EI
 			) AS BD_Etab
@@ -163,10 +171,11 @@ ON BD_Etab.LGEO_COD_TERRI_RLS=BD_NomReg_Etab.CodRLS
 
 WHERE BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY')
 AND BD_SMOD.SMOD_DAT_SERV BETWEEN '",debut,"' AND '",fin,"'
-AND BD_SMOD.SMOD_COD_ACTE IN (",qu(CodeActe),")
+AND BD_SMOD.SMOD_COD_ACTE IN (",qu(CodeActe),")\n",
+query_SQL_CodeActe.where_SMOD_COD_SPEC(omni_spec),
 
-/*Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à de consultations
-sinon à des suppléments monétaires associés à une demande de facturation */
+"/*Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à des consultations,
+mais, plutôt à des suppléments monétaires associés à une demande de facturation */
 
 AND BD_SMOD.SMOD_COD_ACTE NOT IN (
 									SELECT DISTINCT NMOD_COD_ACTE
@@ -181,4 +190,39 @@ ORDER BY 1,2,3,4
 ))
 
 }
+
+#' @title query_SQL_CodeActe
+#' @description Section `where` du code SQL où on demande les actes facturés par les omipraticiens et/ou spécialistes.
+#' @encoding UTF-8
+#' @keywords internal
+query_SQL_CodeActe.where_SMOD_COD_SPEC <- function(omni_spec) {
+    switch(omni_spec,
+           "omni" = {
+             # Exécuter le code approprié si omni_spec est égal à "omin"
+             return(paste0(
+               indent(),
+               "AND SMOD_COD_SPEC IS NULL\n"
+             ))
+           },
+           "spec" = {
+             # Exécuter le code approprié si omni_spec est égal à "spec"
+             return(paste0(
+               indent(),
+             "AND SMOD_COD_SPEC IS NOT NULL\n"
+             ))
+           },
+           "all" = {
+             # Exécuter le code approprié si omni_spec est égal à "all"
+             return(paste0(
+               indent(),
+               "/*AND SMOD_COD_SPEC IS NULL*/\n"
+             ))
+           })
+  }
+
+
+
+
+
+
 
