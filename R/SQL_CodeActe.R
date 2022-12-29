@@ -2,18 +2,18 @@
 #'
 #' @description La fonction `SQL_CodeActe` permet d'extraire les actes entre une date de début et de fin d'étude.
 #' La fonction `SQL_CodeActe` utilise plusieurs autres fonctions génériques telles que:
-#' `SQL_reperage_cond_med` Voir \code{\link{SQL_reperage_cond_med}}, `query_SQL_CodeActe` Voir \code{\link{query_SQL_CodeActe}}, et `query_V_FICH_ID_BEN_CM` Voir \code{\link{query_V_FICH_ID_BEN_CM}}
+#' `SQL_reperage_cond_med` pour la création de la cohorte. Voir \code{\link{SQL_reperage_cond_med}}, `query_I_SMOD_SERV_MD_CM_AG` pour l'extraction des actes,
+#' ainsi que les caractéristiques de bénéficiaire et de l'établissement de soins. Voir \code{\link{query_I_SMOD_SERV_MD_CM_AG}}, et finalement, `query_V_FICH_ID_BEN_CM`
+#' pour l'extraction des caractéristiques de bénéficiaire faisant partie de la cohorte, mais n'ayant pas eu d'acte dans la période d'étude. Voir \code{\link{query_V_FICH_ID_BEN_CM}}
 #'
 #' @inheritParams SQL_reperage_cond_med
-#' @inheritParams query_SQL_CodeActe
+#' @inheritParams query_I_SMOD_SERV_MD_CM_AG
 #' @inheritParams query_V_FICH_ID_BEN_CM
-#' @param cohort Cohorte d'étude. Vecteur comprenant les numéros d'identification des bénéficiaires.
-#' @param omni_spec peut prendre la valeur `omni`(extraction des actes facturés par les omi) ,`spec` (extraction des actes facturés par les spec) ou `all` (pas de spécification).
+#' @param cohort `vecteur` indiquant les numéros d'identification des bénéficiaires définisant la cohorte de l'étude.
 #' @param verbose `TRUE` ou `FALSE`. Affiche le temps qui a été nécessaire pour extraire les diagnostics. Utile pour suivre le déroulement de l'extraction.
 #' @param keep_all `TRUE` ou `FALSE`. Par défaut `FALSE`, soit filter les observations ayant eu un DX et un code d'acte. Si `TRUE` garder toutes les observations, soit ceux qui ont eu un DX et qui ont eu ou pas un code d'acte.
 #' Si `cohort` est fournit, keep_all `TRUE` garde toutes les observations demandées par `cohort`. Si keep_all `FALSE` filtrer les observations demandées par `cohort`qui ont eu un code d'acte.
-
-
+#'
 #' @return `data.table` de 33 variables :
 #' * **`ID`** : Numéro d'identification du bénéficiaire. <br/>
 #' * **`DI_Finale`** : Date d'incidence retenue. <br/>
@@ -56,8 +56,8 @@
 #' \dontrun{
 #'DT_final<-SQL_CodeActe(conn=SQL_connexion("ms069a"),
 #'                       cohort = NULL,
-#'                       debut = "2022-02-01",
-#'                       fin = "2022-03-31",
+#'                       debut = "2020-01-01",
+#'                       fin = "2020-12-31",
 #'                       CodeActe = c('06452','06148','06154','06265','06251','06216','06208'),
 #'                       omni_spec="all",
 #'                       Dx_table = list(Prolapsus = list(CIM9 = c('5995','6180','6181','6183'),
@@ -116,7 +116,12 @@ SQL_CodeActe<-function(conn=SQL_connexion(),
   t1 <- Sys.time()
 
   DT<-as.data.table(odbc::dbGetQuery(conn=conn,
-                                     statement=query_SQL_CodeActe(debut=debut,fin=fin,CodeActe=CodeActe,omni_spec=omni_spec)))
+                                     statement=query_I_SMOD_SERV_MD_CM_AG(query="extraction_acte",
+                                                                          debut=debut,
+                                                                          fin=fin,
+                                                                          diagn,
+                                                                          CodeActe=CodeActe,
+                                                                          omni_spec=omni_spec)))
 
   t2 <- Sys.time()
   if (verbose) {

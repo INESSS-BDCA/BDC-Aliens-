@@ -41,7 +41,7 @@ query_V_DIAGN_SEJ_HOSP_CM <- function(
 
 }
 
-#' @title query_V_DIAGN_SEJ_HOSP_CM
+#' @title query_V_DIAGN_SEJ_HOSP_CM.date_dx_var
 #' @description Retourne le nom de la variable à utiliser selon la valeur de la variable `date_dx_var`.
 #' @encoding UTF-8
 #' @return "SHOP_DAT_ADMIS_SEJ_HOSP" ou "SHOP_DAT_DEPAR_SEJ_HOSP"
@@ -56,7 +56,7 @@ query_V_DIAGN_SEJ_HOSP_CM.date_dx_var <- function(date_dx_var) {
   }
 }
 
-#' @title query_V_DIAGN_SEJ_HOSP_CM
+#' @title query_V_DIAGN_SEJ_HOSP_CM.where_diagn
 #' @description Section `where` du code SQL où on demande les codes de diagnostics.
 #' @encoding UTF-8
 #' @keywords internal
@@ -92,7 +92,7 @@ query_V_DIAGN_SEJ_HOSP_CM.where_diagn <- function(diagn) {
   }
 }
 
-#' @title query_V_DIAGN_SEJ_HOSP_CM
+#' @title query_V_DIAGN_SEJ_HOSP_CM.where_typ_diagn
 #' @description Section `where` du code SQL où on demande les types de codes de diagnostics. Voir variable `SHOP_TYP_DIAGN_SEJ_HOSP`.
 #' @encoding UTF-8
 #' @keywords internal

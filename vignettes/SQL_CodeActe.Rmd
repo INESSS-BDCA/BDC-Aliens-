@@ -1,7 +1,7 @@
 ---
 title: "SQL_CodeActe"
 #subtitle: ""
-author: "Auteurs: Ahmed Ghachem (développeur)"
+author: "Auteurs: Ahmed Ghachem"
 date: "Date de création: 15 décembre 2022"
 output:
   rmarkdown::html_vignette:
@@ -58,32 +58,34 @@ library(RequeteGeneriqueBDCA)
 
 # SQL_CodeActe
 
-La fonction `SQL_CodeActe` est une `child_function` qui permet d'extraire des actes entre une date de début et de fin d'une étude. Elle appelle plusieurs autres fonctions `parent_function` génériques telles que: 
+La fonction `SQL_CodeActe` est une `child_function` qui permet d'extraire des actes entre une date de début et de fin d'une étude. Elle appelle plusieurs  fonctions `parent_function` génériques telles que: 
 [SQL_reperage_cond_med](SQL_reperage_cond_med.html),<br/> 
-[query_SQL_CodeActe](uery_SQL_CodeActe.html),<br/>
+[query_I_SMOD_SERV_MD_CM_AG](query_I_SMOD_SERV_MD_CM_AG.html),<br/>
 [query_V_FICH_ID_BEN_CM](query_V_FICH_ID_BEN_CM.html)<br/>
 
 Trois principales étapes sont effectuées: <br/>
 1) la création de la cohorte de l'étude en utilisant les Dx cim-9 et/ou cim-10 via la fonction `SQL_reperage_cond_med`<br/> 
-2) l'extraction des actes pour cette cohorte via la fonction `query_SQL_CodeActe`<br/>
-3) l'ajout des caractéristiques des benéficiaires ainsi que l'établissement de soins. Les caractéristiques des bénéficiaires et de l'établissement de soins pour les personnes ayant eu un code d'acte à l'intérieur de la période de l'étude sont extraits via la fonction `query_SQL_CodeActe`, alors que pour ceux qui n'ont pas eu d'acte sont extraits via la fonction `query_V_FICH_ID_BEN_CM`.    
+2) l'extraction des actes pour cette cohorte via la fonction `query_I_SMOD_SERV_MD_CM_AG`<br/>
+3) l'ajout des caractéristiques des benéficiaires ainsi que l'établissement de soins. Les caractéristiques des bénéficiaires et de l'établissement de soins pour les personnes ayant eu un code d'acte à l'intérieur de la période de l'étude sont extraits via la fonction `query_I_SMOD_SERV_MD_CM_AG`, alors que pour ceux qui n'ont pas eu d'acte, leurs caractéristiques sont extraits via la fonction `query_V_FICH_ID_BEN_CM`.    
 
 ## Usage de la fonction
 
 ```{r, eval=FALSE}
 SQL_CodeActe(conn=SQL_connexion(),
-debut,
-fin,
-CodeActe,
-omni_spec,
-Dx_table,
-CIM,
-by_Dx,
-nDx,
-date_dx_var,
-n1,n2,
-date_age,
-verbose)
+             cohort,
+             debut,
+             fin,
+             CodeActe,
+             omni_spec,
+             Dx_table,
+             CIM,
+             by_Dx,
+             nDx,
+             date_dx_var,
+             n1,n2,
+             date_age,
+             verbose,
+             keep_all)
 ```
 
 ## Définition des arguments
@@ -93,10 +95,17 @@ La fonction `SQL_connexion` permet à R de se connecter à Teradata. Simplenent 
 conn = SQL_connexion("msXXX")
 ```
 
+### cohorte
+Vecteur indiquant les numéros d'identification des bénéficiaires définisant la cohorte de l'étude.
+```{r}
+cohort<-cohort$BENF_NO_INDIV_BEN_BANLS
+```
+
 ### debut & fin
 Date de début et de fin de la période d'étude au format AAAA-MM-JJ.
 ```{r}
-debut = "2020-01-01", fin = "2020-12-31"
+debut = "2020-01-01" 
+fin = "2020-12-31"
 ```
 
 ### codeActe
@@ -167,7 +176,8 @@ nDX=1 # par défaut
 ### n1 & n2
 Permet de créer l'intervalle `[n1, n2]`. Le nombre de jours entre deux diagnostics doit se situer dans cet intervalle pour que le deuxième diagnostic confirme le premier.
 ```{r}
-n1 = 30, n2 = 730
+n1 = 30 
+n2 = 730
 ```
 
 ### date_age 
@@ -177,7 +187,7 @@ date_age="2022-03-01"
 ```
 ### verbose
 `TRUE` ou `FALSE`. Message de progression affiché dans la console.
-```{r}
+
 Création de la cohorte:
 nDx=0 : Extraction des résultats (Pas de confirmation nécessaire).
 V_DIAGN_SEJ_HOSP_CM 
@@ -196,7 +206,10 @@ Ajout des caractéristiques des bénéficiaires qui n'ont pas eu d'acte dans la 
  - Temps d'exécution (5.27 mins)
 Préparation de la base de données finale:
  - Temps d'exécution (9.36 secs)
-```
+
+
+### keep_all
+`TRUE` ou `FALSE`. Par défaut `FALSE`, soit filter les observations ayant eu un DX et un code d'acte. Si `TRUE` garder toutes les observations, soit ceux qui ont eu un DX et qui ont eu ou pas un code d'acte. Si `cohort` est fournit, keep_all `TRUE` garde toutes les observations demandées par `cohort`. Si keep_all `FALSE` filtrer les observations demandées par `cohort`qui ont eu un code d'acte.
 
 ---
 # Table Résultante
@@ -241,5 +254,5 @@ Préparation de la base de données finale:
 Veuillez-svp consulter les vignettes des `parent_function` suivantes:
 
 [SQL_reperage_cond_med](SQL_reperage_cond_med.html)<br/> 
-[query_SQL_CodeActe](query_SQL_CodeActe.html)<br/>
+[query_I_SMOD_SERV_MD_CM_AG](query_I_SMOD_SERV_MD_CM_AG.html)<br/>
 [query_V_FICH_ID_BEN_CM](query_V_FICH_ID_BEN_CM.html)<br/>

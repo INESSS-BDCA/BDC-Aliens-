@@ -3,7 +3,7 @@
 \encoding{UTF-8}
 \name{query_V_DIAGN_SEJ_HOSP_CM.date_dx_var}
 \alias{query_V_DIAGN_SEJ_HOSP_CM.date_dx_var}
-\title{query_V_DIAGN_SEJ_HOSP_CM}
+\title{query_V_DIAGN_SEJ_HOSP_CM.date_dx_var}
 \usage{
 query_V_DIAGN_SEJ_HOSP_CM.date_dx_var(date_dx_var)
 }

@@ -27,15 +27,16 @@ SQL_CodeActe(
 \arguments{
 \item{conn}{Variable contenant la connexion entre R et Teradata. Voir \code{\link{SQL_connexion}}.}
 
-\item{cohort}{Cohorte d'étude. Vecteur comprenant les numéros d'identification des bénéficiaires.}
+\item{cohort}{\code{vecteur} indiquant les numéros d'identification des bénéficiaires définisant la cohorte de l'étude.}
 
 \item{debut}{Date de début de la période d'étude au format \code{AAAA-MM-JJ}.}
 
 \item{fin}{Date de fin de la période d'étude au format \code{AAAA-MM-JJ}.}
 
-\item{CodeActe}{Vecteur comprenant les codes d'acte d'interêt.}
+\item{CodeActe}{\code{vecteur} indiquant les codes d'acte d'interêt.}
 
-\item{omni_spec}{peut prendre la valeur \code{omni}(extraction des actes facturés par les omi) ,\code{spec} (extraction des actes facturés par les spec) ou \code{all} (pas de spécification).}
+\item{omni_spec}{peut prendre la valeur \code{omni}(extraction des actes facturés par les omni: SMOD_COD_SPEC IS NULL),
+\code{spec} (extraction des actes facturés par les spec: SMOD_COD_SPEC IS NOT NULL) ou \code{all} (pas de spécification).}
 
 \item{Dx_table}{\code{list} contenant les codes à analyser ou le nom d'une table qui est inclue dans la librairie.}
 
@@ -96,14 +97,16 @@ Si \code{cohort} est fournit, keep_all \code{TRUE} garde toutes les observations
 \description{
 La fonction \code{SQL_CodeActe} permet d'extraire les actes entre une date de début et de fin d'étude.
 La fonction \code{SQL_CodeActe} utilise plusieurs autres fonctions génériques telles que:
-\code{SQL_reperage_cond_med} Voir \code{\link{SQL_reperage_cond_med}}, \code{query_SQL_CodeActe} Voir \code{\link{query_SQL_CodeActe}}, et \code{query_V_FICH_ID_BEN_CM} Voir \code{\link{query_V_FICH_ID_BEN_CM}}
+\code{SQL_reperage_cond_med} pour la création de la cohorte. Voir \code{\link{SQL_reperage_cond_med}}, \code{query_I_SMOD_SERV_MD_CM_AG} pour l'extraction des actes,
+ainsi que les caractéristiques de bénéficiaire et de l'établissement de soins. Voir \code{\link{query_I_SMOD_SERV_MD_CM_AG}}, et finalement, \code{query_V_FICH_ID_BEN_CM}
+pour l'extraction des caractéristiques de bénéficiaire faisant partie de la cohorte, mais n'ayant pas eu d'acte dans la période d'étude. Voir \code{\link{query_V_FICH_ID_BEN_CM}}
 }
 \examples{
 \dontrun{
 DT_final<-SQL_CodeActe(conn=SQL_connexion("ms069a"),
                       cohort = NULL,
-                      debut = "2022-02-01",
-                      fin = "2022-03-31",
+                      debut = "2020-01-01",
+                      fin = "2020-12-31",
                       CodeActe = c('06452','06148','06154','06265','06251','06216','06208'),
                       omni_spec="all",
                       Dx_table = list(Prolapsus = list(CIM9 = c('5995','6180','6181','6183'),

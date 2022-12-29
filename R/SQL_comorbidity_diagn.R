@@ -316,9 +316,14 @@ SQL_comorbidity_diagn.I_SMOD_SERV_MD_CM <- function(
     }
     # Extraction des diagn selon l'année
     DT[[i]] <- as.data.table(odbc::dbGetQuery(
-      conn = conn, statement = query_I_SMOD_SERV_MD_CM(
-        debut = deb, fin = fi,
-        diagn = diagn
+      conn = conn, statement = query_I_SMOD_SERV_MD_CM_AG(
+        query="extraction_Dx",
+        debut = deb,
+        fin = fi,
+        diagn = diagn,
+        omni_spec,
+        CodeActe
+
       )
     ))
     if (!is.null(ids)) {

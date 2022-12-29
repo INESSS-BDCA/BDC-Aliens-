@@ -3,7 +3,7 @@
 \encoding{UTF-8}
 \name{query_V_DIAGN_SEJ_HOSP_CM.where_diagn}
 \alias{query_V_DIAGN_SEJ_HOSP_CM.where_diagn}
-\title{query_V_DIAGN_SEJ_HOSP_CM}
+\title{query_V_DIAGN_SEJ_HOSP_CM.where_diagn}
 \usage{
 query_V_DIAGN_SEJ_HOSP_CM.where_diagn(diagn)
 }
