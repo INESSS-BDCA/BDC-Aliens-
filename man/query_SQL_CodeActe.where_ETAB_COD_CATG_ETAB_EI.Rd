@@ -8,6 +8,6 @@
 query_SQL_CodeActe.where_ETAB_COD_CATG_ETAB_EI(catg_etab)
 }
 \description{
-Section \code{where} du code SQL où on demande les visites en ambulatoire.
+Section \code{where} du code SQL où on demande les visites en ambulatoire ou dans d'autres établissements.
 }
 \keyword{internal}

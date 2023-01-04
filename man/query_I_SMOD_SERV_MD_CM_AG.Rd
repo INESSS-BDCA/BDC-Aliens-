@@ -28,14 +28,17 @@ query_I_SMOD_SERV_MD_CM_AG(
 \code{spec} (extraction des actes facturés par les spec: SMOD_COD_SPEC IS NOT NULL) ou \code{all} (pas de spécification).}
 
 \item{CodeActe}{\code{vecteur} indiquant les codes d'acte d'interêt.}
+
+\item{catg_etab}{peut prendre la valeur \code{ambulatoire} (pour les actes facturés en ambulatoire) ou \code{all} (pas de spécification).}
 }
 \value{
 chaîne de caractères, code SQL.
 }
 \description{
-\code{query_I_SMOD_SERV_MD_CM_AG} est une fonction multi-tâches. Elle utilise la vue \code{I_SMOD_SERV_MD_CM} pour générer un code SQL qui permet :
+\code{query_I_SMOD_SERV_MD_CM_AG} est une fonction multi-tâches. Elle utilise principalement la vue \code{I_SMOD_SERV_MD_CM} jumlée avec d'autres vues pour générer un code SQL qui permet :
 \enumerate{
 \item d'extraire les diagnostics pour créer par exemple une cohorte.
+\item d'extraire les dates de visites.
 \item de calculer le nombre d'acte par bénéficiaire entre la date de début et de fin d'une étude.
 \item d'extraire les codes d'actes, avec les caractéristiques de bénéficiaire et de l'établissement de soins.
 }
@@ -43,36 +46,51 @@ chaîne de caractères, code SQL.
 \examples{
  \dontrun{
  **Extraction des diagnostics:**
-DT<-as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
+DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
 statement=query_I_SMOD_SERV_MD_CM_AG (
 query="extraction_Dx",
 debut="2021-04-01",
 fin="2022-03-31",
 diagn=c('5995\%','6180\%','6181\%','6183\%','6184\%','N810\%','N811\%','N812\%')
-CodeActe,
-omni_spec)
+CodeActe=NULL,
+omni_spec,
+catg_etab="all")
+))
+
+#'  **Extraction des dates de visites:**
+DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
+statement=query_I_SMOD_SERV_MD_CM_AG (
+query="date_visite",
+debut="2021-04-01",
+fin="2022-03-31",
+diagn,
+CodeActe=c('07122', '07237', '07800', '07089', '0780'), #Si CodeActe=NULL, l'extrcation inclut tout les actes facturés à l'intérieur de la période d'étude.
+omni_spec="all",
+catg_etab="all")
 ))
 
  **Calcul du nombre d'acte par bénéficiaire:**
-DT<-as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
+DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
 statement=query_I_SMOD_SERV_MD_CM_AG (
 query="calcul_Nb_acte",
 debut="2021-04-01",
 fin="2022-03-31",
 diagn,
-CodeActe=c('07122', '07237', '07800', '07089', '0780'), #Si CodeActe est non spécifié, le calcul se fait sur tout les actes facturés à l'intérieur de la période d'étude.
-omni_spec="all")
+CodeActe=c('07122', '07237', '07800', '07089', '0780'), #Si CodeActe=NULL, le calcul se fait sur tout les actes facturés à l'intérieur de la période d'étude.
+omni_spec="all",
+catg_etab="all")
 ))
 
 **Extraction des codes d'actes:**
-DT<-as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
+DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
 statement=query_I_SMOD_SERV_MD_CM_AG (
 query="extraction_acte",
 debut="2021-04-01",
 fin="2022-03-31",
 diagn,
 CodeActe=c('07122', '07237', '07800', '07089', '0780'),
-omni_spec="all")
+omni_spec="all",
+catg_etab="all")
 ))
 }
 

@@ -14,39 +14,39 @@
 #' @param keep_all `TRUE` ou `FALSE`. Par défaut `FALSE`, soit filter les observations ayant eu un DX et un code d'acte. Si `TRUE` garder toutes les observations, soit ceux qui ont eu un DX et qui ont eu ou pas un code d'acte.
 #' Si `cohort` est fournit, keep_all `TRUE` garde toutes les observations demandées par `cohort`. Si keep_all `FALSE` filtrer les observations demandées par `cohort`qui ont eu un code d'acte.
 #'
-#' @return `data.table` de 33 variables :
-#' * **`ID`** : Numéro d'identification du bénéficiaire. <br/>
-#' * **`DI_Finale`** : Date d'incidence retenue. <br/>
-#' * **`D_Recent`** : Date la plus récente observée. </br>
-#' * **`AnFinan`** : Année financière de l'acte. <br/>
-#' * **`AnCivil`** : Année civile de l'acte. <br/>
-#' * **`DateActe`** : Date  de l'acte au format `AAAA-MM-JJ`. <br/>
-#' * **`CodeActe`** : Actes demandés dans l'argument CodeActe. <br/>
-#' * **`CoutActe`** : Cout de l'acte. <br/>
-#' * **`DxActe`** : Diagnostique associé à l'acte. <br/>
-#' * **`Num_ETAB_USUEL`** : Numéro de l'établissement. <br/>
-#' * **`CodEntente`** : Code d'entente sert à associer les dispensateurs à un groupe spécifique.<br/>
-#' * **`SecActiv`** : Identifie de façon unique chacun des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.<br/>
-#' * **`NumDispSp`** : Numéro de dispensateur. <br/>
-#' * **`SPDisp_smod`** : Spécialité de dispensateur indiqué dans `SMOD`. <br/>
-#' * **`SPDisp_fip`** : Spécialité de dispensateur indiqué dans `FIP`. <br/>
-#' * **`NumDispRef`** : Numéro de dispensateur référent. <br/>
-#' * **`SPDispRefs`** : Spécialité de dispensateur référent. <br/>
-#' * **`NO_ETAB`** : Numéro de l'établissement. <br/>
-#' * **`Cat_Etab`** : Catégorie de l'établissement. <br/>
-#' * **`NOM_ETAB`** : Nom de l'établissement. <br/>
-#' * **`RSS_Etab`** : Régions sociosanitaires (RSS) de l'établissement. <br/>
-#' * **`RLS_Etab`** : Réseaux locaux de services (RLS) de l'établissement. <br/>
-#' * **`NomRSS_Etab`** : Nom régions sociosanitaires (RSS) de l'établissement. <br/>
-#' * **`NomRLS_Etab`** : Nom réseaux locaux de services (RLS) de l'établissement. <br/>
-#' * **`Sexe`** : Sexe du bénéficiaire. <br/>
-#' * **`DatNais`** : Date de naissance du bénéficiaire au format `AAAA-MM-JJ`. <br/>
-#' * **`datdeces`** : Date de décès du bénéficiaire au format `AAAA-MM-JJ`. <br/>
-#' * **`Age`** : Age du bénéficiaire calculé jusqu'à la date de l'acte. <br/>
-#' * **`RSS_Benf`** : Régions sociosanitaires (RSS) du bénéficiaire. <br/>
-#' * **`RLS_Benef`** : Réseaux locaux de services (RLS) du bénéficiaire. <br/>
-#' * **`NomRSS_Benef`** : Nom régions sociosanitaires (RSS) du bénéficiaire. <br/>
-#' * **`NomRLS_Benef`** : Nom réseaux locaux de services (RLS) du bénéficiaire. <br/>
+#' @return `data.table` de 32 variables :
+#' * **`ID`** : Numéro d'identification du bénéficiaire.
+#' * **`DI_Finale`** : Date d'incidence retenue.
+#' * **`D_Recent`** : Date la plus récente observée.
+#' * **`AnFinan`** : Année financière de l'acte.
+#' * **`AnCivil`** : Année civile de l'acte.
+#' * **`DateActe`** : Date  de l'acte au format `AAAA-MM-JJ`.
+#' * **`CodeActe`** : Actes demandés dans l'argument CodeActe.
+#' * **`CoutActe`** : Cout de l'acte.
+#' * **`DxActe`** : Diagnostique associé à l'acte.
+#' * **`Num_ETAB_USUEL`** : Numéro de l'établissement.
+#' * **`CodEntente`** : Code d'entente sert à associer les dispensateurs à un groupe spécifique.
+#' * **`SecActiv`** : Identifie de façon unique chacun des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.
+#' * **`NumDispSp`** : Numéro de dispensateur.
+#' * **`SPDisp_smod`** : Spécialité de dispensateur indiqué dans `SMOD`.
+#' * **`SPDisp_fip`** : Spécialité de dispensateur indiqué dans `FIP`.
+#' * **`NumDispRef`** : Numéro de dispensateur référent.
+#' * **`SPDispRefs`** : Spécialité de dispensateur référent.
+#' * **`NO_ETAB`** : Numéro de l'établissement.
+#' * **`Cat_Etab`** : Catégorie de l'établissement.
+#' * **`NOM_ETAB`** : Nom de l'établissement.
+#' * **`RSS_Etab`** : Régions sociosanitaires (RSS) de l'établissement.
+#' * **`RLS_Etab`** : Réseaux locaux de services (RLS) de l'établissement.
+#' * **`NomRSS_Etab`** : Nom régions sociosanitaires (RSS) de l'établissement.
+#' * **`NomRLS_Etab`** : Nom réseaux locaux de services (RLS) de l'établissement.
+#' * **`Sexe`** : Sexe du bénéficiaire.
+#' * **`DatNais`** : Date de naissance du bénéficiaire au format `AAAA-MM-JJ`.
+#' * **`datdeces`** : Date de décès du bénéficiaire au format `AAAA-MM-JJ`.
+#' * **`Age`** : Age du bénéficiaire calculé jusqu'à la date de l'acte.
+#' * **`RSS_Benf`** : Régions sociosanitaires (RSS) du bénéficiaire.
+#' * **`RLS_Benef`** : Réseaux locaux de services (RLS) du bénéficiaire.
+#' * **`NomRSS_Benef`** : Nom régions sociosanitaires (RSS) du bénéficiaire.
+#' * **`NomRLS_Benef`** : Nom réseaux locaux de services (RLS) du bénéficiaire.
 #'
 #' @encoding UTF-8
 #' @import dplyr

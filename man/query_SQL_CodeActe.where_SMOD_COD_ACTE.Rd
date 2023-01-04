@@ -8,6 +8,6 @@
 query_SQL_CodeActe.where_SMOD_COD_ACTE(CodeActe)
 }
 \description{
-Section \code{where} du code SQL où on demande les actes.
+Section \code{where} du code SQL où on demande des actes spécifiques et tous actes confondus.
 }
 \keyword{internal}

@@ -58,40 +58,40 @@ SQL_CodeActe(
 Si \code{cohort} est fournit, keep_all \code{TRUE} garde toutes les observations demandées par \code{cohort}. Si keep_all \code{FALSE} filtrer les observations demandées par \code{cohort}qui ont eu un code d'acte.}
 }
 \value{
-\code{data.table} de 33 variables :
+\code{data.table} de 32 variables :
 \itemize{
-\item \strong{\code{ID}} : Numéro d'identification du bénéficiaire. <br/>
-\item \strong{\code{DI_Finale}} : Date d'incidence retenue. <br/>
-\item \strong{\code{D_Recent}} : Date la plus récente observée. </br>
-\item \strong{\code{AnFinan}} : Année financière de l'acte. <br/>
-\item \strong{\code{AnCivil}} : Année civile de l'acte. <br/>
-\item \strong{\code{DateActe}} : Date  de l'acte au format \code{AAAA-MM-JJ}. <br/>
-\item \strong{\code{CodeActe}} : Actes demandés dans l'argument CodeActe. <br/>
-\item \strong{\code{CoutActe}} : Cout de l'acte. <br/>
-\item \strong{\code{DxActe}} : Diagnostique associé à l'acte. <br/>
-\item \strong{\code{Num_ETAB_USUEL}} : Numéro de l'établissement. <br/>
-\item \strong{\code{CodEntente}} : Code d'entente sert à associer les dispensateurs à un groupe spécifique.<br/>
-\item \strong{\code{SecActiv}} : Identifie de façon unique chacun des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.<br/>
-\item \strong{\code{NumDispSp}} : Numéro de dispensateur. <br/>
-\item \strong{\code{SPDisp_smod}} : Spécialité de dispensateur indiqué dans \code{SMOD}. <br/>
-\item \strong{\code{SPDisp_fip}} : Spécialité de dispensateur indiqué dans \code{FIP}. <br/>
-\item \strong{\code{NumDispRef}} : Numéro de dispensateur référent. <br/>
-\item \strong{\code{SPDispRefs}} : Spécialité de dispensateur référent. <br/>
-\item \strong{\code{NO_ETAB}} : Numéro de l'établissement. <br/>
-\item \strong{\code{Cat_Etab}} : Catégorie de l'établissement. <br/>
-\item \strong{\code{NOM_ETAB}} : Nom de l'établissement. <br/>
-\item \strong{\code{RSS_Etab}} : Régions sociosanitaires (RSS) de l'établissement. <br/>
-\item \strong{\code{RLS_Etab}} : Réseaux locaux de services (RLS) de l'établissement. <br/>
-\item \strong{\code{NomRSS_Etab}} : Nom régions sociosanitaires (RSS) de l'établissement. <br/>
-\item \strong{\code{NomRLS_Etab}} : Nom réseaux locaux de services (RLS) de l'établissement. <br/>
-\item \strong{\code{Sexe}} : Sexe du bénéficiaire. <br/>
-\item \strong{\code{DatNais}} : Date de naissance du bénéficiaire au format \code{AAAA-MM-JJ}. <br/>
-\item \strong{\code{datdeces}} : Date de décès du bénéficiaire au format \code{AAAA-MM-JJ}. <br/>
-\item \strong{\code{Age}} : Age du bénéficiaire calculé jusqu'à la date de l'acte. <br/>
-\item \strong{\code{RSS_Benf}} : Régions sociosanitaires (RSS) du bénéficiaire. <br/>
-\item \strong{\code{RLS_Benef}} : Réseaux locaux de services (RLS) du bénéficiaire. <br/>
-\item \strong{\code{NomRSS_Benef}} : Nom régions sociosanitaires (RSS) du bénéficiaire. <br/>
-\item \strong{\code{NomRLS_Benef}} : Nom réseaux locaux de services (RLS) du bénéficiaire. <br/>
+\item \strong{\code{ID}} : Numéro d'identification du bénéficiaire.
+\item \strong{\code{DI_Finale}} : Date d'incidence retenue.
+\item \strong{\code{D_Recent}} : Date la plus récente observée.
+\item \strong{\code{AnFinan}} : Année financière de l'acte.
+\item \strong{\code{AnCivil}} : Année civile de l'acte.
+\item \strong{\code{DateActe}} : Date  de l'acte au format \code{AAAA-MM-JJ}.
+\item \strong{\code{CodeActe}} : Actes demandés dans l'argument CodeActe.
+\item \strong{\code{CoutActe}} : Cout de l'acte.
+\item \strong{\code{DxActe}} : Diagnostique associé à l'acte.
+\item \strong{\code{Num_ETAB_USUEL}} : Numéro de l'établissement.
+\item \strong{\code{CodEntente}} : Code d'entente sert à associer les dispensateurs à un groupe spécifique.
+\item \strong{\code{SecActiv}} : Identifie de façon unique chacun des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.
+\item \strong{\code{NumDispSp}} : Numéro de dispensateur.
+\item \strong{\code{SPDisp_smod}} : Spécialité de dispensateur indiqué dans \code{SMOD}.
+\item \strong{\code{SPDisp_fip}} : Spécialité de dispensateur indiqué dans \code{FIP}.
+\item \strong{\code{NumDispRef}} : Numéro de dispensateur référent.
+\item \strong{\code{SPDispRefs}} : Spécialité de dispensateur référent.
+\item \strong{\code{NO_ETAB}} : Numéro de l'établissement.
+\item \strong{\code{Cat_Etab}} : Catégorie de l'établissement.
+\item \strong{\code{NOM_ETAB}} : Nom de l'établissement.
+\item \strong{\code{RSS_Etab}} : Régions sociosanitaires (RSS) de l'établissement.
+\item \strong{\code{RLS_Etab}} : Réseaux locaux de services (RLS) de l'établissement.
+\item \strong{\code{NomRSS_Etab}} : Nom régions sociosanitaires (RSS) de l'établissement.
+\item \strong{\code{NomRLS_Etab}} : Nom réseaux locaux de services (RLS) de l'établissement.
+\item \strong{\code{Sexe}} : Sexe du bénéficiaire.
+\item \strong{\code{DatNais}} : Date de naissance du bénéficiaire au format \code{AAAA-MM-JJ}.
+\item \strong{\code{datdeces}} : Date de décès du bénéficiaire au format \code{AAAA-MM-JJ}.
+\item \strong{\code{Age}} : Age du bénéficiaire calculé jusqu'à la date de l'acte.
+\item \strong{\code{RSS_Benf}} : Régions sociosanitaires (RSS) du bénéficiaire.
+\item \strong{\code{RLS_Benef}} : Réseaux locaux de services (RLS) du bénéficiaire.
+\item \strong{\code{NomRSS_Benef}} : Nom régions sociosanitaires (RSS) du bénéficiaire.
+\item \strong{\code{NomRLS_Benef}} : Nom réseaux locaux de services (RLS) du bénéficiaire.
 }
 }
 \description{
