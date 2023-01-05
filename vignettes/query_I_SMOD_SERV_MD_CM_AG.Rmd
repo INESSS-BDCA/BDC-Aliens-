@@ -561,11 +561,16 @@ ON BD_Etab.LGEO_COD_TERRI_RLS=BD_NomReg_Etab.CodRLS
 
 WHERE BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY')
 AND BD_SMOD.SMOD_DAT_SERV BETWEEN '",debut,"' AND '",fin,"'
-AND BD_SMOD.SMOD_COD_ACTE IN (",qu(CodeActe),")
+/*query_SQL_CodeActe.where_SMOD_COD_ACTE (CodeActe)
+  si CodeActe=NULL: extraction de tous les actes dans la période détude, sinon extraction des actes indiqués dans le vecteur CodeActe*/
 /* query_SQL_CodeActe.where_SMOD_COD_SPEC(omni_spec):
-  si omni_spec=="all": extraction des actes facturés par les omni et les spécialistes
-  si omni_spec=="omni": AND SMOD_COD_SPEC IS NULL
-  si omni_spec=="spec": AND SMOD_COD_SPEC IS NOT NULL*/
+  si omni_spec="all": extraction des actes facturés par les omni et les spécialistes
+  si omni_spec="omni": AND SMOD_COD_SPEC IS NULL
+  si omni_spec="spec": AND SMOD_COD_SPEC IS NOT NULL*/
+/* query_SQL_CodeActe.where_ETAB_COD_CATG_ETAB_EI(catg_etab),
+  si catg_etab="all": extraction des visites effectuées dans toutes les catégories détablissement confondues
+  si catg_etab="ambulatoire": AND (ETAB_COD_CATG_ETAB_EI IN ('54X', '55X', '57X', '9X2', '8X5', '4X1','0X1') OR BD_SMOD.SMOD_NO_ETAB_USUEL IS NULL) 
+*/    
   
 /* Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à des consultations, mais, plutôt à des suppléments monétaires associés à une demande de facturation */
   

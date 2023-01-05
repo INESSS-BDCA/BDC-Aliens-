@@ -60,6 +60,7 @@
 #'                       fin = "2020-12-31",
 #'                       CodeActe = c('06452','06148','06154','06265','06251','06216','06208'),
 #'                       omni_spec="all",
+#'                       catg_etab="all",
 #'                       Dx_table = list(Prolapsus = list(CIM9 = c('5995','6180','6181','6183'),
 #'                                                        CIM10 = c('N810','N811','N812','N813'))),
 #'
@@ -78,6 +79,7 @@ SQL_CodeActe<-function(conn=SQL_connexion(),
                        fin,
                        CodeActe,
                        omni_spec,
+                       catg_etab,
                        Dx_table,
                        CIM,
                        by_Dx,
@@ -115,13 +117,14 @@ SQL_CodeActe<-function(conn=SQL_connexion(),
 
   t1 <- Sys.time()
 
-  DT<-as.data.table(odbc::dbGetQuery(conn=conn,
+  DT<-data.table::as.data.table(odbc::dbGetQuery(conn=conn,
                                      statement=query_I_SMOD_SERV_MD_CM_AG(query="extraction_acte",
                                                                           debut=debut,
                                                                           fin=fin,
                                                                           diagn,
                                                                           CodeActe=CodeActe,
-                                                                          omni_spec=omni_spec)))
+                                                                          omni_spec=omni_spec,
+                                                                          catg_etab = catg_etab)))
 
   t2 <- Sys.time()
   if (verbose) {

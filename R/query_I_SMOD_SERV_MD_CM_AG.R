@@ -34,7 +34,7 @@
 #'catg_etab="all")
 #' ))
 #'
-#'#'  **Extraction des dates de visites:**
+#' **Extraction des dates de visites:**
 #'DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
 #'statement=query_I_SMOD_SERV_MD_CM_AG (
 #'query="date_visite",
@@ -94,11 +94,11 @@ query_I_SMOD_SERV_MD_CM_AG <- function(query,debut, fin, diagn,omni_spec,CodeAct
             return(paste0(
               "SELECT
                 ID,
-                Date_visit
+                Date_visite
                 FROM(
                   SELECT DISTINCT
                     BD_SMOD.SMOD_NO_INDIV_BEN_BANLS AS ID,
-                    BD_SMOD.SMOD_DAT_SERV AS Date_visit,
+                    BD_SMOD.SMOD_DAT_SERV AS Date_visite,
                     BD_SMOD.DISP_NO_SEQ_DISP_BANLS,
                     CASE WHEN BD_SMOD.SMOD_NO_ETAB_USUEL IS NULL THEN 99999 ELSE BD_SMOD.SMOD_NO_ETAB_USUEL END AS NO_ETAB_USUEL
 
@@ -187,8 +187,8 @@ query_I_SMOD_SERV_MD_CM_AG <- function(query,debut, fin, diagn,omni_spec,CodeAct
 
             WHERE BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY')
             AND BD_SMOD.SMOD_DAT_SERV BETWEEN '",debut,"' AND '",fin,"'\n",
-              query_SQL_CodeActe.where_SMOD_COD_SPEC(omni_spec),
               query_SQL_CodeActe.where_SMOD_COD_ACTE (CodeActe),
+              query_SQL_CodeActe.where_SMOD_COD_SPEC(omni_spec),
               query_SQL_CodeActe.where_ETAB_COD_CATG_ETAB_EI(catg_etab),
               "AND SMOD_COD_ACTE NOT IN (
             SELECT DISTINCT
@@ -237,8 +237,6 @@ query_I_SMOD_SERV_MD_CM_AG <- function(query,debut, fin, diagn,omni_spec,CodeAct
 
             BD_Etab.ETAB_NO_ETAB AS NO_ETAB,
             BD_Etab.ETAB_COD_CATG_ETAB_EI AS Cat_Etab, --(Urgence, Clinique externe, ...)
-            /* Cette variable pourrait être optionnelle, car le format caractère prend beaucoup de place dans le fichier sortant */
-            BD_Etab.ETAB_NOM_CATG_ETAB_EI AS Nom_Cat_Etab,
 
             -- Nom de vue : RES_SSS.V_NOM_ETAB_DERN_TYP_NOM
 
@@ -346,6 +344,7 @@ query_I_SMOD_SERV_MD_CM_AG <- function(query,debut, fin, diagn,omni_spec,CodeAct
             AND BD_SMOD.SMOD_DAT_SERV BETWEEN '",debut,"' AND '",fin,"'\n",
               query_SQL_CodeActe.where_SMOD_COD_ACTE (CodeActe),
               query_SQL_CodeActe.where_SMOD_COD_SPEC(omni_spec),
+              query_SQL_CodeActe.where_ETAB_COD_CATG_ETAB_EI(catg_etab),
               "/*Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à des consultations,
             mais, plutôt à des suppléments monétaires associés à une demande de facturation */
             AND BD_SMOD.SMOD_COD_ACTE NOT IN (
@@ -420,7 +419,7 @@ query_SQL_CodeActe.where_ETAB_COD_CATG_ETAB_EI <- function(catg_etab) {
          "ambulatoire" = {
            return(paste0(
              indent(),
-             "AND (ETAB_COD_CATG_ETAB_EI IN ('54X', '55X', '57X', '9X2', '8X5', '4X1','0X1') OR BD_SMOD.SMOD_NO_ETAB_USUEL IS NULL)\n"
+             "AND (BD_Etab.ETAB_COD_CATG_ETAB_EI IN ('54X', '55X', '57X', '9X2', '8X5', '4X1','0X1') OR BD_SMOD.SMOD_NO_ETAB_USUEL IS NULL)\n"
            ))
          })
 }

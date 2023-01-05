@@ -58,7 +58,7 @@ library(RequeteGeneriqueBDCA)
 
 # SQL_CodeActe
 
-La fonction `SQL_CodeActe` est une `child_function` qui permet d'extraire des actes entre une date de début et de fin d'une étude. Elle appelle plusieurs  fonctions `parent_function` génériques telles que: 
+La fonction `SQL_CodeActe` est une `child_function` qui permet d'extraire des actes entre une date de début et de fin d'une étude. Elle appelle plusieurs  fonctions `parent_function` génériques telles que:<br/> 
 [SQL_reperage_cond_med](SQL_reperage_cond_med.html),<br/> 
 [query_I_SMOD_SERV_MD_CM_AG](query_I_SMOD_SERV_MD_CM_AG.html),<br/>
 [query_V_FICH_ID_BEN_CM](query_V_FICH_ID_BEN_CM.html)<br/>
@@ -188,24 +188,24 @@ date_age="2022-03-01"
 ### verbose
 `TRUE` ou `FALSE`. Message de progression affiché dans la console.
 
-Création de la cohorte:
-nDx=0 : Extraction des résultats (Pas de confirmation nécessaire).
-V_DIAGN_SEJ_HOSP_CM 
- - Prolapsus (2.92 secs)
-V_SEJ_SERV_HOSP_CM 
- - Prolapsus (1.47 secs)
-V_EPISO_SOIN_DURG_CM 
- - Prolapsus (2.32 secs)
-I_SMOD_SERV_MD_CM 
+Création de la cohorte:<br/>
+nDx=0 : Extraction des résultats (Pas de confirmation nécessaire).<br/>
+V_DIAGN_SEJ_HOSP_CM <br/>
+ - Prolapsus (2.92 secs)<br/>
+V_SEJ_SERV_HOSP_CM <br/>
+ - Prolapsus (1.47 secs)<br/>
+V_EPISO_SOIN_DURG_CM <br/>
+ - Prolapsus (2.32 secs)<br/>
+I_SMOD_SERV_MD_CM <br/>
  - Prolapsus (7.82 secs)
-Arrangement de la table finale...
-FIN de création de la cohorte.
-Extraction des actes:
- - Temps d'exécution (15.18 secs)
-Ajout des caractéristiques des bénéficiaires qui n'ont pas eu d'acte dans la période d'étude:
- - Temps d'exécution (5.27 mins)
-Préparation de la base de données finale:
- - Temps d'exécution (9.36 secs)
+Arrangement de la table finale...<br/>
+FIN de création de la cohorte.<br/>
+Extraction des actes:<br/>
+ - Temps d'exécution (15.18 secs)<br/>
+Ajout des caractéristiques des bénéficiaires qui n'ont pas eu d'acte dans la période d'étude:<br/>
+ - Temps d'exécution (5.27 mins)<br/>
+Préparation de la base de données finale:<br/>
+ - Temps d'exécution (9.36 secs)<br/>
 
 
 ### keep_all
