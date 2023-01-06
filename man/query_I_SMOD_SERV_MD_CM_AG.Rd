@@ -12,11 +12,13 @@ query_I_SMOD_SERV_MD_CM_AG(
   diagn,
   omni_spec,
   CodeActe,
-  catg_etab
+  catg_etab,
+  code_stat_decis
 )
 }
 \arguments{
-\item{query}{indiquant si on veut extraire des diagnostics "extraction_Dx", ou calculer le nombre d'acte "calcul_Nb_acte", ou extraire des codes d'actes "extraction_acte".}
+\item{query}{indiquant si on veut effectuer 1) une extraction brute des vaiables pertinantes dans SMOD "extraction_SMOD", 2) une extraction brute des vaiables pertinantes dans SMOD jumlées avec d'autres bases de données "extraction_SMOD_combin",
+3) une extraction des diagnostics "extraction_Dx", 4) une extraction des dates de visites, ou 5) calculer le nombre d'acte "calcul_Nb_acte".}
 
 \item{debut}{Date de début de la période d'étude au format \code{"AAAA-MM-JJ"}.}
 
@@ -30,69 +32,20 @@ query_I_SMOD_SERV_MD_CM_AG(
 \item{CodeActe}{\code{vecteur} indiquant les codes d'acte d'interêt.}
 
 \item{catg_etab}{peut prendre la valeur \code{ambulatoire} (pour les actes facturés en ambulatoire) ou \code{all} (pas de spécification).}
+
+\item{code_stat_decis}{peut prendre la valeur \code{PAY-PPY}, \code{PAY}, ou \code{PPY}}
 }
 \value{
 chaîne de caractères, code SQL.
 }
 \description{
-\code{query_I_SMOD_SERV_MD_CM_AG} est une fonction multi-tâches. Elle utilise principalement la vue \code{I_SMOD_SERV_MD_CM} jumlée avec d'autres vues pour générer un code SQL qui permet :
+\code{query_I_SMOD_SERV_MD_CM_AG} est une fonction multi-tâches. Elle utilise principalement la vue \code{I_SMOD_SERV_MD_CM} jumlée avec d'autres vues pour générer un code SQL qui permet :\cr
 \enumerate{
-\item d'extraire les diagnostics pour créer par exemple une cohorte.
-\item d'extraire les dates de visites.
+\item d'extraire les variables pertinantes de la base de données SMOD.\cr
+\item d'extraire les variables pertinantes de la base de données SMOD, jumlées avec d'autres bases de données pour rajouter les caractéristiques de dispensateur, du bénéficiaire et de l'établissement de soins.\cr
+\item d'extraire les diagnostics pour créer par exemple une cohorte.\cr
+\item d'extraire les dates de visites (services).
 \item de calculer le nombre d'acte par bénéficiaire entre la date de début et de fin d'une étude.
-\item d'extraire les codes d'actes, avec les caractéristiques de bénéficiaire et de l'établissement de soins.
 }
-}
-\examples{
- \dontrun{
- **Extraction des diagnostics:**
-DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
-statement=query_I_SMOD_SERV_MD_CM_AG (
-query="extraction_Dx",
-debut="2021-04-01",
-fin="2022-03-31",
-diagn=c('5995\%','6180\%','6181\%','6183\%','6184\%','N810\%','N811\%','N812\%')
-CodeActe=NULL,
-omni_spec,
-catg_etab="all")
-))
-
-#'  **Extraction des dates de visites:**
-DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
-statement=query_I_SMOD_SERV_MD_CM_AG (
-query="date_visite",
-debut="2021-04-01",
-fin="2022-03-31",
-diagn,
-CodeActe=c('07122', '07237', '07800', '07089', '0780'), #Si CodeActe=NULL, l'extrcation inclut tout les actes facturés à l'intérieur de la période d'étude.
-omni_spec="all",
-catg_etab="all")
-))
-
- **Calcul du nombre d'acte par bénéficiaire:**
-DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
-statement=query_I_SMOD_SERV_MD_CM_AG (
-query="calcul_Nb_acte",
-debut="2021-04-01",
-fin="2022-03-31",
-diagn,
-CodeActe=c('07122', '07237', '07800', '07089', '0780'), #Si CodeActe=NULL, le calcul se fait sur tout les actes facturés à l'intérieur de la période d'étude.
-omni_spec="all",
-catg_etab="all")
-))
-
-**Extraction des codes d'actes:**
-DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
-statement=query_I_SMOD_SERV_MD_CM_AG (
-query="extraction_acte",
-debut="2021-04-01",
-fin="2022-03-31",
-diagn,
-CodeActe=c('07122', '07237', '07800', '07089', '0780'),
-omni_spec="all",
-catg_etab="all")
-))
-}
-
 }
 \keyword{internal}

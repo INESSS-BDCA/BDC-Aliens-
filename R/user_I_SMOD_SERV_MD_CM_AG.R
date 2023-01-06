@@ -159,24 +159,159 @@
 
 
 user_I_SMOD_SERV_MD_CM_AG<-function(task,
-                                        conn=SQL_connexion(),
-                                        cohort=NULL,
-                                        debut,
-                                        fin,
-                                        CodeActe,
-                                        omni_spec,
-                                        catg_etab,
-                                        Dx_table,
-                                        CIM,
-                                        by_Dx,
-                                        nDx,
-                                        date_dx_var,
-                                        n1,n2,
-                                        date_age,
-                                        verbose=TRUE,
-                                        keep_all=FALSE
+                                    conn=SQL_connexion(),
+                                    cohort=NULL,
+                                    debut,
+                                    fin,
+                                    CodeActe,
+                                    omni_spec,
+                                    catg_etab,
+                                    code_stat_decis,
+                                    Dx_table,
+                                    CIM,
+                                    by_Dx,
+                                    nDx,
+                                    date_dx_var,
+                                    n1,n2,
+                                    date_age,
+                                    verbose=TRUE,
+                                    keep_all=FALSE
 ){
   switch (task,
+          "extraction_SMOD"={},
+          "extraction_SMOD_combin"={
+            # Création de la cohorte en utilisant les Dx cim-9 et/ou cim-10 ####
+            if (verbose) {
+              cat("Création de la cohorte:\n")
+            }
+
+            DX<-SQL_reperage_cond_med (
+              conn = conn,
+              debut=debut,
+              fin=fin,
+              Dx_table=Dx_table,
+              CIM = CIM,
+              nDx = nDx,
+              by_Dx = by_Dx,
+              date_dx_var=date_dx_var,
+              n1 = n1,
+              n2 = n2,
+              verbose = verbose
+
+            )
+
+            # Extraction d'acte ####
+            if (verbose) {
+              cat("Extraction des actes:\n")
+            }
+
+            t1 <- Sys.time()
+
+            DT<-data.table::as.data.table(odbc::dbGetQuery(conn=conn,
+                                                           statement=query_I_SMOD_SERV_MD_CM_AG(query="extraction_SMOD_combin",
+                                                                                                debut=debut,
+                                                                                                fin=fin,
+                                                                                                diagn,
+                                                                                                CodeActe=CodeActe,
+                                                                                                omni_spec=omni_spec,
+                                                                                                catg_etab = catg_etab,
+                                                                                                code_stat_decis=code_stat_decis)))
+
+            t2 <- Sys.time()
+            if (verbose) {
+              cat(" - ","Temps d'exécution",
+                  " (",round(as.numeric(difftime(t2, t1)), 2),
+                  " ",attr(difftime(t2, t1), "units"), ")\n",
+                  sep = "")
+            }
+
+            DT_final<-left_join(DX,DT, by="ID")
+
+
+            # Ajout caractéristiques Benef ####
+
+            if(keep_all==TRUE){
+
+              if (verbose) {
+                cat("Ajout des caractéristiques des bénéficiaires qui n'ont pas eu d'acte dans la période d'étude:\n")
+              }
+              t1 <- Sys.time()
+              DT1<-as.data.table(odbc::dbGetQuery(conn=conn,
+                                                  statement=query_V_FICH_ID_BEN_CM(debut=debut, fin=fin, date_age=date_age)
+              ))
+              t2 <- Sys.time()
+              if (verbose) {
+                cat(" - ","Temps d'exécution",
+                    " (",round(as.numeric(difftime(t2, t1)), 2),
+                    " ",attr(difftime(t2, t1), "units"), ")\n",
+                    sep = "")
+              }
+
+              DT_final <- left_join(DT_final, DT1, by="ID") %>%
+                mutate(Sexe=ifelse(is.na(Sexe.x), Sexe.y, Sexe.x),
+                       DatNais =as.Date(ifelse(is.na(DatNais.x), DatNais.y, DatNais.x),origin="1970-01-01"),
+                       DatDeces=as.Date(ifelse(is.na(DatDeces.x), DatDeces.y, DatDeces.x),origin="1970-01-01"),
+                       Age=ifelse(is.na(as.integer(as.character(Age.x))), as.integer(as.character(Age.y)), as.integer(as.character(Age.x))),
+                       RSS_Benf=ifelse(is.na(RSS_Benf.x), RSS_Benf.y, RSS_Benf.x),
+                       NomRSS_Benef=ifelse(is.na(NomRSS_Benef.x), NomRSS_Benef.y, NomRSS_Benef.x),
+                       RLS_Benef=ifelse(is.na(RLS_Benef.x), RLS_Benef.y, RLS_Benef.x),
+                       NomRLS_Benef=ifelse(is.na(NomRLS_Benef.x), NomRLS_Benef.y, NomRLS_Benef.x)) %>%
+                mutate(NumDispSp=bit64::as.integer64(as.character(NumDispSp)),
+                       NumDispRef=bit64::as.integer64(as.character(NumDispRef))) %>%
+                select(-c(Sexe.x,Sexe.y,DatNais.x,DatNais.y,DatDeces.y, DatDeces.x,Age.y, Age.x,RSS_Benf.y, RSS_Benf.x,NomRSS_Benef.y, NomRSS_Benef.x,RLS_Benef.y, RLS_Benef.x,NomRLS_Benef.y, NomRLS_Benef.x))
+
+            }
+
+
+            # Préparation de la base de données finale ####
+            if (verbose) {
+              cat("Préparation de la base de données finale:\n")
+            }
+
+            if (verbose && keep_all==FALSE) {
+              if (length(cohort)>0) {
+                cat("Garder les IDs demandés dans la cohorte\n")
+              }
+              if (is.null(cohort)){
+                cat("Garder les IDs qui ont eu un Dx et un code d'acte\n")
+              }
+            }
+
+            t1 <- Sys.time()
+
+            if(is.null(cohort) && keep_all==FALSE){
+              DT_final<-DT_final %>% filter(!is.na(DateActe))
+            }
+            else if(length(cohort) > 0 && keep_all==FALSE){
+              cohort<-cohort %>% data.frame() %>% rename(ID=".") %>% left_join(DT_final,by="ID") %>% filter(!is.na(DateActe))
+              DT_final<-cohort
+            }
+            else if (length(cohort) > 0 && keep_all== TRUE){
+              cohort<-cohort %>% data.frame() %>% rename(ID=".") %>% left_join(DT_final,by="ID")
+              DT_final<-cohort
+            }
+            else{
+              DT_final
+            }
+
+            t2 <- Sys.time()
+            if (verbose) {
+              cat(" - ","Temps d'exécution",
+                  " (",round(as.numeric(difftime(t2, t1)), 2),
+                  " ",attr(difftime(t2, t1), "units"), ")\n",
+                  sep = "")
+            }
+
+            if (verbose) {
+              if (nrow(DT_final) == 0) {
+                cat("Aucune observation n'a été trouvée. Veuillez-svp vérifier si les Dx et les codes d'acte sont corrects ou si les Dx match avec les actes")
+                return(NULL)
+              }
+            }
+
+            return(DT_final)
+
+          },
           "date_visite"={
             # Création de la cohorte en utilisant les Dx cim-9 et/ou cim-10 ####
             if (verbose) {
@@ -424,137 +559,6 @@ user_I_SMOD_SERV_MD_CM_AG<-function(task,
 
             return(DT_final)
 
-          },
-          "extraction_acte"={
-            # Création de la cohorte en utilisant les Dx cim-9 et/ou cim-10 ####
-            if (verbose) {
-              cat("Création de la cohorte:\n")
-            }
-
-            DX<-SQL_reperage_cond_med (
-              conn = conn,
-              debut=debut,
-              fin=fin,
-              Dx_table=Dx_table,
-              CIM = CIM,
-              nDx = nDx,
-              by_Dx = by_Dx,
-              date_dx_var=date_dx_var,
-              n1 = n1,
-              n2 = n2,
-              verbose = verbose
-
-            )
-
-            # Extraction d'acte ####
-            if (verbose) {
-              cat("Extraction des actes:\n")
-            }
-
-            t1 <- Sys.time()
-
-            DT<-data.table::as.data.table(odbc::dbGetQuery(conn=conn,
-                                                           statement=query_I_SMOD_SERV_MD_CM_AG(query="extraction_acte",
-                                                                                                debut=debut,
-                                                                                                fin=fin,
-                                                                                                diagn,
-                                                                                                CodeActe=CodeActe,
-                                                                                                omni_spec=omni_spec,
-                                                                                                catg_etab = catg_etab)))
-
-            t2 <- Sys.time()
-            if (verbose) {
-              cat(" - ","Temps d'exécution",
-                  " (",round(as.numeric(difftime(t2, t1)), 2),
-                  " ",attr(difftime(t2, t1), "units"), ")\n",
-                  sep = "")
-            }
-
-            DT_final<-left_join(DX,DT, by="ID")
-
-
-            # Ajout caractéristiques Benef ####
-
-            if(keep_all==TRUE){
-
-              if (verbose) {
-                cat("Ajout des caractéristiques des bénéficiaires qui n'ont pas eu d'acte dans la période d'étude:\n")
-              }
-              t1 <- Sys.time()
-              DT1<-as.data.table(odbc::dbGetQuery(conn=conn,
-                                                  statement=query_V_FICH_ID_BEN_CM(debut=debut, fin=fin, date_age=date_age)
-              ))
-              t2 <- Sys.time()
-              if (verbose) {
-                cat(" - ","Temps d'exécution",
-                    " (",round(as.numeric(difftime(t2, t1)), 2),
-                    " ",attr(difftime(t2, t1), "units"), ")\n",
-                    sep = "")
-              }
-
-              DT_final <- left_join(DT_final, DT1, by="ID") %>%
-                mutate(Sexe=ifelse(is.na(Sexe.x), Sexe.y, Sexe.x),
-                       DatNais =as.Date(ifelse(is.na(DatNais.x), DatNais.y, DatNais.x),origin="1970-01-01"),
-                       DatDeces=as.Date(ifelse(is.na(DatDeces.x), DatDeces.y, DatDeces.x),origin="1970-01-01"),
-                       Age=ifelse(is.na(as.integer(as.character(Age.x))), as.integer(as.character(Age.y)), as.integer(as.character(Age.x))),
-                       RSS_Benf=ifelse(is.na(RSS_Benf.x), RSS_Benf.y, RSS_Benf.x),
-                       NomRSS_Benef=ifelse(is.na(NomRSS_Benef.x), NomRSS_Benef.y, NomRSS_Benef.x),
-                       RLS_Benef=ifelse(is.na(RLS_Benef.x), RLS_Benef.y, RLS_Benef.x),
-                       NomRLS_Benef=ifelse(is.na(NomRLS_Benef.x), NomRLS_Benef.y, NomRLS_Benef.x)) %>%
-                mutate(NumDispSp=bit64::as.integer64(as.character(NumDispSp)),
-                       NumDispRef=bit64::as.integer64(as.character(NumDispRef))) %>%
-                select(-c(Sexe.x,Sexe.y,DatNais.x,DatNais.y,DatDeces.y, DatDeces.x,Age.y, Age.x,RSS_Benf.y, RSS_Benf.x,NomRSS_Benef.y, NomRSS_Benef.x,RLS_Benef.y, RLS_Benef.x,NomRLS_Benef.y, NomRLS_Benef.x))
-
-            }
-
-
-            # Préparation de la base de données finale ####
-            if (verbose) {
-              cat("Préparation de la base de données finale:\n")
-            }
-
-            if (verbose && keep_all==FALSE) {
-              if (length(cohort)>0) {
-                cat("Garder les IDs demandés dans la cohorte\n")
-              }
-              if (is.null(cohort)){
-                cat("Garder les IDs qui ont eu un Dx et un code d'acte\n")
-              }
-            }
-
-            t1 <- Sys.time()
-
-            if(is.null(cohort) && keep_all==FALSE){
-              DT_final<-DT_final %>% filter(!is.na(DateActe))
-            }
-            else if(length(cohort) > 0 && keep_all==FALSE){
-              cohort<-cohort %>% data.frame() %>% rename(ID=".") %>% left_join(DT_final,by="ID") %>% filter(!is.na(DateActe))
-              DT_final<-cohort
-            }
-            else if (length(cohort) > 0 && keep_all== TRUE){
-              cohort<-cohort %>% data.frame() %>% rename(ID=".") %>% left_join(DT_final,by="ID")
-              DT_final<-cohort
-            }
-            else{
-              DT_final
-            }
-
-            t2 <- Sys.time()
-            if (verbose) {
-              cat(" - ","Temps d'exécution",
-                  " (",round(as.numeric(difftime(t2, t1)), 2),
-                  " ",attr(difftime(t2, t1), "units"), ")\n",
-                  sep = "")
-            }
-
-            if (verbose) {
-              if (nrow(DT_final) == 0) {
-                cat("Aucune observation n'a été trouvée. Veuillez-svp vérifier si les Dx et les codes d'acte sont corrects ou si les Dx match avec les actes")
-                return(NULL)
-              }
-            }
-
-            return(DT_final)
-
-          })
+          }
+)
 }
