@@ -4,8 +4,8 @@
 #' 1) d'extraire les variables pertinantes de la base de données SMOD.\cr
 #' 2) d'extraire les variables pertinantes de la base de données SMOD, jumlées avec d'autres bases de données pour rajouter les caractéristiques de dispensateur, du bénéficiaire et de l'établissement de soins.\cr
 #' 3) d'extraire les diagnostics pour créer par exemple une cohorte.\cr
-#' 4) d'extraire les dates de visites (services).
-#' 5) de calculer le nombre d'acte par bénéficiaire entre la date de début et de fin d'une étude.
+#' 4) d'extraire les dates de visites (services).\cr
+#' 5) de calculer le nombre d'acte par bénéficiaire entre la date de début et de fin d'une étude.\cr
 #'
 #' @param query indiquant si on veut effectuer 1) une extraction brute des vaiables pertinantes dans SMOD "extraction_SMOD", 2) une extraction brute des vaiables pertinantes dans SMOD jumlées avec d'autres bases de données "extraction_SMOD_combin",
 #' 3) une extraction des diagnostics "extraction_Dx", 4) une extraction des dates de visites, ou 5) calculer le nombre d'acte "calcul_Nb_acte".
@@ -24,74 +24,60 @@
 #' @export
 #'
 #' @examples
-#'\dontrun{
+#' \dontrun{
 #' **Extraction brute des variables pertinantes dans SMOD:**
-#'DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
+#'DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion("ms069a"),
 #'statement=query_I_SMOD_SERV_MD_CM_AG (
 #'query="extraction_SMOD",
 #'debut="2021-04-01",
 #'fin="2022-03-31",
-#'diagn,
 #'CodeActe=c('07122', '07237', '07800', '07089', '0780'),
-#'omni_spec="all",
-#'catg_etab="all",
-#'code_stat_decis="PAY-PPY")
-#' ))
+#'code_stat_decis="PAY-PPY")))
 #'
 #' **Extraction brute des variables pertinantes dans SMOD combiné avec d'autres bases de données:**
-#'DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
+#'DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion("ms069a"),
 #'statement=query_I_SMOD_SERV_MD_CM_AG (
 #'query="extraction_SMOD_combin",
 #'debut="2021-04-01",
 #'fin="2022-03-31",
-#'diagn,
 #'CodeActe=c('07122', '07237', '07800', '07089', '0780'),
 #'omni_spec="all",
 #'catg_etab="all",
-#'code_stat_decis="PAY-PPY")
-#' ))
+#'code_stat_decis="PAY-PPY")))
 #'
 #'  **Extraction des diagnostics:**
-#'DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
+#'DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion("ms069a"),
 #'statement=query_I_SMOD_SERV_MD_CM_AG (
 #'query="extraction_Dx",
 #'debut="2021-04-01",
 #'fin="2022-03-31",
-#'diagn=c('5995%','6180%','6181%','6183%','6184%','N810%','N811%','N812%')
-#'CodeActe=NULL,
-#'omni_spec,
-#'catg_etab="all",
-#'code_stat_decis="PAY-PPY")
-#' ))
+#'diagn=c('5995%','6180%','6181%','6183%','6184%','N810%','N811%','N812%'),
+#'code_stat_decis="PAY-PPY")))
 #'
 #' **Extraction des dates de visites:**
-#'DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
+#'DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion("ms069a"),
 #'statement=query_I_SMOD_SERV_MD_CM_AG (
 #'query="date_visite",
 #'debut="2021-04-01",
 #'fin="2022-03-31",
-#'diagn,
 #'CodeActe=c('07122', '07237', '07800', '07089', '0780'), #Si CodeActe=NULL, l'extrcation inclut tout les actes facturés à l'intérieur de la période d'étude.
 #'omni_spec="all",
 #'catg_etab="all",
-#'code_stat_decis="PAY-PPY")
-#' ))
+#'code_stat_decis="PAY-PPY")))
 #'
 #'  **Calcul du nombre d'acte par bénéficiaire:**
-#'DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
+#'DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion("ms069a"),
 #'statement=query_I_SMOD_SERV_MD_CM_AG (
 #'query="calcul_Nb_acte",
 #'debut="2021-04-01",
 #'fin="2022-03-31",
-#'diagn,
 #'CodeActe=c('07122', '07237', '07800', '07089', '0780'), #Si CodeActe=NULL, le calcul se fait sur tout les actes facturés à l'intérieur de la période d'étude.
 #'omni_spec="all",
 #'catg_etab="all",
-#'code_stat_decis="PAY-PPY")
-#' ))
+#'code_stat_decis="PAY-PPY")))
 #'}
-#'
-query_I_SMOD_SERV_MD_CM_AG <- function(query,debut, fin, diagn,omni_spec,CodeActe,catg_etab,code_stat_decis) {
+
+query_I_SMOD_SERV_MD_CM_AG <- function(query,debut, fin, diagn,CodeActe,omni_spec,catg_etab,code_stat_decis) {
   switch (query,
           "extraction_SMOD"={
             return(paste0(
@@ -111,14 +97,14 @@ query_I_SMOD_SERV_MD_CM_AG <- function(query,debut, fin, diagn,omni_spec,CodeAct
 
             BD_SMOD.DISP_NO_SEQ_DISP_BANLS AS NumDispSp,  --Numéro du dispensateur
             BD_SMOD.SMOD_COD_ROLE, --Code des rôles selon l'entente
-            BD_SMOD.SMOD_COD_SPEC AS SPDisp_smod, --Spécialité du dispensateur (SMOD)
+            BD_SMOD.SMOD_COD_SPEC AS SMOD_COD_SPEC, --Spécialité du dispensateur (SMOD)
             BD_SMOD.DISP_NO_SEQ_DISP_REFNT_BANLS AS NumDispRef,  --Numéro du médecin référent
 
 
 
-            BD_SMOD.SMOD_COD_ENTEN AS CodEntente,  --Code de l'entente
+            BD_SMOD.SMOD_COD_ENTEN AS SMOD_COD_ENTEN,  --Code de l'entente
             BD_SMOD.SMOD_NO_ETAB_USUEL AS Num_ETAB_USUEL,  --Ancien numéro de l'établissement
-            BD_SMOD.ETAB_COD_SECT_ACTIV_ETAB AS SecActiv,  --secteur d'activité
+            BD_SMOD.ETAB_COD_SECT_ACTIV_ETAB AS ETAB_COD_SECT_ACTIV_ETAB  --secteur d'activité
 
             FROM Prod.I_SMOD_SERV_MD_CM AS BD_SMOD
             WHERE BD_SMOD.SMOD_DAT_SERV BETWEEN '",debut,"' AND '",fin,"'\n",
@@ -149,8 +135,9 @@ query_I_SMOD_SERV_MD_CM_AG <- function(query,debut, fin, diagn,omni_spec,CodeAct
             BD_SMOD.SMOD_MNT_PAIMT AS CoutActe,  --Coût Acte
             BD_SMOD.SMOD_COD_DIAGN_PRIMR AS DxActe,  --Premier diagnostic porté par le professionnel
             BD_SMOD.SMOD_NO_ETAB_USUEL AS Num_ETAB_USUEL,  --Ancien numéro de l'établissement
-            BD_SMOD.SMOD_COD_ENTEN AS CodEntente,  --Code de l'entente
-            BD_SMOD.ETAB_COD_SECT_ACTIV_ETAB AS SecActiv,  --secteur d'activité
+            BD_SMOD.SMOD_COD_ROLE, --Code des rôles selon l'entente
+            BD_SMOD.SMOD_COD_ENTEN AS SMOD_COD_ENTEN,  --Code de l'entente
+            BD_SMOD.ETAB_COD_SECT_ACTIV_ETAB AS ETAB_COD_SECT_ACTIV_ETAB,  --secteur d'activité
 
             -- Nom de vue : PROD.V_FICH_ID_BEN_CM (FIPA)
 
@@ -162,7 +149,7 @@ query_I_SMOD_SERV_MD_CM_AG <- function(query,debut, fin, diagn,omni_spec,CodeAct
             -- Nom de vue : PROD.D_DISP_SPEC_CM (FIP)
 
             BD_SMOD.DISP_NO_SEQ_DISP_BANLS AS NumDispSp,  --Numéro du dispensateur
-            BD_SMOD.SMOD_COD_SPEC AS SPDisp_smod, --Spécialité du dispensateur (SMOD)
+            BD_SMOD.SMOD_COD_SPEC AS SMOD_COD_SPEC, --Spécialité du dispensateur (SMOD)
             BD_Disp.DISP_COD_SPEC AS SPDisp_fip,  --Spécialité du dispensateur (FIP)
             BD_SMOD.DISP_NO_SEQ_DISP_REFNT_BANLS AS NumDispRef,  --Numéro du médecin référent
             BD_DispR.DISP_COD_SPEC AS SPDispRefs,  --Spécialité du médecin référent
@@ -469,7 +456,7 @@ query_SQL_CodeActe.where_SMOD_COD_ACTE <- function(CodeActe) {
 #' @encoding UTF-8
 #' @keywords internal
 query_SQL_CodeActe.where_SMOD_COD_STA_DECIS <- function(code_stat_decis) {
-  switch(catg_etab,
+  switch(code_stat_decis,
          "PAY" = {
            return(paste0(
              indent(),

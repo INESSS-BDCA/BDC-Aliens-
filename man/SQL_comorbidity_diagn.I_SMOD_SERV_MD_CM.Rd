@@ -12,7 +12,8 @@ SQL_comorbidity_diagn.I_SMOD_SERV_MD_CM(
   fin,
   diag_desc,
   sourc_desc,
-  date_dx_var
+  date_dx_var,
+  code_stat_decis
 )
 }
 \description{

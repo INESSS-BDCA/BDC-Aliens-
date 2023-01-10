@@ -19,7 +19,8 @@ SQL_comorbidity_diagn(
   date_dx_var = "depar",
   typ_diagn = c("A", "P", "S"),
   exclu_diagn = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  code_stat_decis = c("PAY", "PPY", "PAY-PPY")
 )
 }
 \arguments{

@@ -107,7 +107,7 @@ SQL_reperage_cond_med <- function(
     nDx = 1,
     by_Dx = TRUE,
     date_dx_var = "admis",
-    n1 = 30, n2 = 730,
+    n1 = 30, n2 = 730,code_stat_decis=code_stat_decis,
     ...
 ) {
 
@@ -143,7 +143,7 @@ SQL_reperage_cond_med <- function(
       dt_desc = list(V_DIAGN_SEJ_HOSP_CM = "MEDECHO", V_SEJ_SERV_HOSP_CM = "MEDECHO"),
       date_dx_var = date_dx_var,
       typ_diagn = c("P", "S", "D"),
-      exclu_diagn = NULL, verbose = verbose
+      exclu_diagn = NULL, verbose = verbose,code_stat_decis=code_stat_decis
     )
     if (verbose) {
       cat("\n")  # retour de ligne pour l'affichage de l'étape 2
@@ -191,7 +191,7 @@ SQL_reperage_cond_med <- function(
                    V_EPISO_SOIN_DURG_CM = "BDCU", I_SMOD_SERV_MD_CM = "SMOD"),
     date_dx_var = date_dx_var,
     typ_diagn = c("A", "P", "S", "D"),
-    exclu_diagn = NULL, verbose = verbose
+    exclu_diagn = NULL, verbose = verbose,code_stat_decis=code_stat_decis
   )
   if (nDx > 0 && verbose) {
     cat("\n")

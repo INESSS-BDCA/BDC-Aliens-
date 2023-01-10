@@ -22,13 +22,13 @@ SQL_diagn <- function(
     dt_desc = list(V_DIAGN_SEJ_HOSP_CM = 'MEDECHO', V_SEJ_SERV_HOSP_CM = 'MEDECHO',
                    V_EPISO_SOIN_DURG_CM = 'BDCU', I_SMOD_SERV_MD_CM = 'SMOD'),
     date_dx_var = 'admis', typ_diagn = c('A', 'P', 'S', 'D'),
-    exclu_diagn = NULL, verbose = TRUE
+    exclu_diagn = NULL, verbose = TRUE,code_stat_decis=code_stat_decis
 ) {
   ### Même fonction que SQL_comorbidity_diagn
   return(SQL_comorbidity_diagn(
     conn, cohort, debut, fin, Dx_table, CIM,
     dt_source, dt_desc,
     date_dx_var, typ_diagn,
-    exclu_diagn, verbose
+    exclu_diagn, verbose,code_stat_decis
   ))
 }

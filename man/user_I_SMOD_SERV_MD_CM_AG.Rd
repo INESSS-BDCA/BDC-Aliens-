@@ -65,153 +65,31 @@ user_I_SMOD_SERV_MD_CM_AG(
 Si \code{cohort} est fournit, keep_all \code{TRUE} garde toutes les observations demandées par \code{cohort}. Si keep_all \code{FALSE} filtrer les observations demandées par \code{cohort}qui ont eu un code d'acte.}
 }
 \value{
-\strong{Extraction des diagnostics:}
-\code{data.table} de 12 variables :
-\itemize{
-\item \strong{\code{ID}} : Numéro d'identification du bénéficiaire.
-\item \strong{\code{DI_Finale}} : Date d'incidence retenue.
-\item \strong{\code{D_Recent}} : Date la plus récente observée.
-\item \strong{\code{Date_visite}} : Date de visite (service) au format \code{AAAA-MM-JJ}.
-\item \strong{\code{Sexe}} : Sexe du bénéficiaire.
-\item \strong{\code{DatNais}} : Date de naissance du bénéficiaire au format \code{AAAA-MM-JJ}.
-\item \strong{\code{datdeces}} : Date de décès du bénéficiaire au format \code{AAAA-MM-JJ}.
-\item \strong{\code{Age}} : Age du bénéficiaire calculé jusqu'à la date de l'acte.
-\item \strong{\code{RSS_Benf}} : Régions sociosanitaires (RSS) du bénéficiaire.
-\item \strong{\code{RLS_Benef}} : Réseaux locaux de services (RLS) du bénéficiaire.
-\item \strong{\code{NomRSS_Benef}} : Nom régions sociosanitaires (RSS) du bénéficiaire.
-\item \strong{\code{NomRLS_Benef}} : Nom réseaux locaux de services (RLS) du bénéficiaire.
-}
+\strong{Extraction des variables pertinantes de SMOD:}
+\code{data.table} de 19 variables si la cohorte est fournie par l'analyste, sinon 21 variables s'il y a une création de cohorte.
+
+\strong{Extraction des variables pertinantes de SMOD combinées avec d'autres bases de données:}
+\code{data.table} de 36 variables si la cohorte est fournie par l'analyste, sinon 38 variables s'il y a une création de cohorte.
+
+\strong{Extraction des dates de visites:}
+\code{data.table} de 10 variables si la cohorte est fournie par l'analyste, sinon 12 variables s'il y a une création de cohorte.
 
 \strong{Calcul du nombre d'acte par bénéficiaire:}
-\code{data.table} de 12 variables :
-\itemize{
-\item \strong{\code{ID}} : Numéro d'identification du bénéficiaire.
-\item \strong{\code{DI_Finale}} : Date d'incidence retenue.
-\item \strong{\code{D_Recent}} : Date la plus récente observée.
-\item \strong{\code{nb_actes}} : nombre d'acte par bénéficiaire.
-\item \strong{\code{Sexe}} : Sexe du bénéficiaire.
-\item \strong{\code{DatNais}} : Date de naissance du bénéficiaire au format \code{AAAA-MM-JJ}.
-\item \strong{\code{datdeces}} : Date de décès du bénéficiaire au format \code{AAAA-MM-JJ}.
-\item \strong{\code{Age}} : Age du bénéficiaire calculé jusqu'à la date de l'acte.
-\item \strong{\code{RSS_Benf}} : Régions sociosanitaires (RSS) du bénéficiaire.
-\item \strong{\code{RLS_Benef}} : Réseaux locaux de services (RLS) du bénéficiaire.
-\item \strong{\code{NomRSS_Benef}} : Nom régions sociosanitaires (RSS) du bénéficiaire.
-\item \strong{\code{NomRLS_Benef}} : Nom réseaux locaux de services (RLS) du bénéficiaire.
-\strong{Extraction des codes d'actes:}
-\code{data.table} de 32 variables :
-\item \strong{\code{ID}} : Numéro d'identification du bénéficiaire.
-\item \strong{\code{DI_Finale}} : Date d'incidence retenue.
-\item \strong{\code{D_Recent}} : Date la plus récente observée.
-\item \strong{\code{AnFinan}} : Année financière de l'acte.
-\item \strong{\code{AnCivil}} : Année civile de l'acte.
-\item \strong{\code{DateActe}} : Date  de l'acte au format \code{AAAA-MM-JJ}.
-\item \strong{\code{CodeActe}} : Actes demandés dans l'argument CodeActe.
-\item \strong{\code{CoutActe}} : Cout de l'acte.
-\item \strong{\code{DxActe}} : Diagnostique associé à l'acte.
-\item \strong{\code{Num_ETAB_USUEL}} : Numéro de l'établissement.
-\item \strong{\code{CodEntente}} : Code d'entente sert à associer les dispensateurs à un groupe spécifique.
-\item \strong{\code{SecActiv}} : Identifie de façon unique chacun des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.
-\item \strong{\code{NumDispSp}} : Numéro de dispensateur.
-\item \strong{\code{SPDisp_smod}} : Spécialité de dispensateur indiqué dans \code{SMOD}.
-\item \strong{\code{SPDisp_fip}} : Spécialité de dispensateur indiqué dans \code{FIP}.
-\item \strong{\code{NumDispRef}} : Numéro de dispensateur référent.
-\item \strong{\code{SPDispRefs}} : Spécialité de dispensateur référent.
-\item \strong{\code{NO_ETAB}} : Numéro de l'établissement.
-\item \strong{\code{Cat_Etab}} : Catégorie de l'établissement.
-\item \strong{\code{NOM_ETAB}} : Nom de l'établissement.
-\item \strong{\code{RSS_Etab}} : Régions sociosanitaires (RSS) de l'établissement.
-\item \strong{\code{RLS_Etab}} : Réseaux locaux de services (RLS) de l'établissement.
-\item \strong{\code{NomRSS_Etab}} : Nom régions sociosanitaires (RSS) de l'établissement.
-\item \strong{\code{NomRLS_Etab}} : Nom réseaux locaux de services (RLS) de l'établissement.
-\item \strong{\code{Sexe}} : Sexe du bénéficiaire.
-\item \strong{\code{DatNais}} : Date de naissance du bénéficiaire au format \code{AAAA-MM-JJ}.
-\item \strong{\code{datdeces}} : Date de décès du bénéficiaire au format \code{AAAA-MM-JJ}.
-\item \strong{\code{Age}} : Age du bénéficiaire calculé jusqu'à la date de l'acte.
-\item \strong{\code{RSS_Benf}} : Régions sociosanitaires (RSS) du bénéficiaire.
-\item \strong{\code{RLS_Benef}} : Réseaux locaux de services (RLS) du bénéficiaire.
-\item \strong{\code{NomRSS_Benef}} : Nom régions sociosanitaires (RSS) du bénéficiaire.
-\item \strong{\code{NomRLS_Benef}} : Nom réseaux locaux de services (RLS) du bénéficiaire.
-}
+\code{data.table} de 10 variables si la cohorte est fournie par l'analyste, sinon 12 variables s'il y a une création de cohorte.
 }
 \description{
 La fonction \code{user_I_SMOD_SERV_MD_CM_AG} est destinée aux utilisateurs. Elle permet d'exécuter la rêquette SQL retournée par la fonction \code{query_I_SMOD_SERV_MD_CM_AG}.\cr
 
 Elle permet: \cr
 \enumerate{
-\item d'extraire les dates de visites avec les caractéristiques de bénéficiaire.\cr
-\item de calculer le nombre d'acte par bénéficiaire entre la date de début et de fin d'une étude avec les caractéristiques de bénéficiaire.\cr
-\item d'extraire les codes d'actes, avec les caractéristiques de bénéficiaire et de l'établissement de soins.\cr
+\item d'extraire les variables pertinantes de la base de données SMOD.\cr
+\item d'extraire les variables pertinantes de la base de données SMOD, jumlées avec d'autres bases de données pour rajouter les caractéristiques de dispensateur, du bénéficiaire et de l'établissement de soins.\cr
+\item d'extraire les dates de visites (services).\cr
+\item de calculer le nombre d'acte par bénéficiaire entre la date de début et de fin d'une étude.\cr
 }
 
 La fonction \code{user_I_SMOD_SERV_MD_CM_AG} utilise plusieurs autres fonctions génériques telles que:\cr
 
 \code{SQL_reperage_cond_med} pour la création de la cohorte. Voir \code{\link{SQL_reperage_cond_med}}\cr
 \code{query_V_FICH_ID_BEN_CM} pour l'extraction des caractéristiques de bénéficiaire. Voir \code{\link{query_V_FICH_ID_BEN_CM}}
-}
-\examples{
-\dontrun{
-
-**Extraction des dates de visites:**
-DT_final<-user_I_SMOD_SERV_MD_CM_AG(task="date_visite",
-                      conn=SQL_connexion("ms069a"),
-                      cohort = NULL,
-                      debut = "2020-01-01",
-                      fin = "2020-12-31",
-                      CodeActe = c('06452','06148','06154','06265','06251','06216','06208'),
-                      omni_spec="all",
-                      catg_etab="all",
-                      Dx_table = list(Prolapsus = list(CIM9 = c('5995','6180','6181','6183'),
-                                                       CIM10 = c('N810','N811','N812','N813'))),
-
-                      CIM =  c("CIM9", "CIM10"),
-                      by_Dx = FALSE,
-                      date_dx_var = "admis",
-                      n1 = 30, n2 = 730,
-                      nDx=0 ,
-                      date_age="2022-03-31",
-                      verbose = TRUE,
-                      keep_all=FALSE)
-
-**Calcul du nombre d'acte par bénéficiaire:**
-DT_final<-user_I_SMOD_SERV_MD_CM_AG(task="calcul_Nb_acte",
-                      conn=SQL_connexion("ms069a"),
-                      cohort = NULL,
-                      debut = "2020-01-01",
-                      fin = "2020-12-31",
-                      CodeActe = c('06452','06148','06154','06265','06251','06216','06208'),
-                      omni_spec="all",
-                      catg_etab="all",
-                      Dx_table = list(Prolapsus = list(CIM9 = c('5995','6180','6181','6183'),
-                                                       CIM10 = c('N810','N811','N812','N813'))),
-
-                      CIM =  c("CIM9", "CIM10"),
-                      by_Dx = FALSE,
-                      date_dx_var = "admis",
-                      n1 = 30, n2 = 730,
-                      nDx=0 ,
-                      date_age="2022-03-31",
-                      verbose = TRUE,
-                      keep_all=FALSE)
-
-**Extraction des codes d'actes:**
-DT_final<-user_I_SMOD_SERV_MD_CM_AG(task="extraction_acte",
-                      conn=SQL_connexion("ms069a"),
-                      cohort = NULL,
-                      debut = "2020-01-01",
-                      fin = "2020-12-31",
-                      CodeActe = c('06452','06148','06154','06265','06251','06216','06208'),
-                      omni_spec="all",
-                      catg_etab="all",
-                      Dx_table = list(Prolapsus = list(CIM9 = c('5995','6180','6181','6183'),
-                                                       CIM10 = c('N810','N811','N812','N813'))),
-
-                      CIM =  c("CIM9", "CIM10"),
-                      by_Dx = FALSE,
-                      date_dx_var = "admis",
-                      n1 = 30, n2 = 730,
-                      nDx=0 ,
-                      date_age="2022-03-31",
-                      verbose = TRUE,
-                      keep_all=FALSE)
-}
 }

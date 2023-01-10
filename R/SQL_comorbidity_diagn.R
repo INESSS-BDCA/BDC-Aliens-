@@ -53,7 +53,8 @@ SQL_comorbidity_diagn <- function(
     dt_desc = list(V_DIAGN_SEJ_HOSP_CM = 'MEDECHO', V_SEJ_SERV_HOSP_CM = 'MEDECHO',
                    V_EPISO_SOIN_DURG_CM = 'BDCU', I_SMOD_SERV_MD_CM = 'SMOD'),
     date_dx_var = "depar", typ_diagn = c('A', 'P', 'S'),
-    exclu_diagn = NULL, verbose = TRUE
+    exclu_diagn = NULL, verbose = TRUE,
+    code_stat_decis=c('PAY','PPY','PAY-PPY')
 ) {
 
   ### Extraction des diagn
@@ -122,7 +123,35 @@ SQL_comorbidity_diagn <- function(
 
           }
         }
-      } else {
+      }
+
+      else if (sour == "I_SMOD_SERV_MD_CM"){
+        for (dia in names(Dx_table)) {
+          t1 <- Sys.time()
+          DT[[i]] <- SQL_comorbidity_diagn.I_SMOD_SERV_MD_CM(  # tableau provenant de la requête
+            conn = conn,
+            ids = cohort,
+            diagn = Dx_table[[dia]],
+            debut = debut, fin = fin,
+            diag_desc = dia,
+            sourc_desc = dt_desc[[sour]],
+            date_dx_var = date_dx_var,
+            code_stat_decis=code_stat_decis
+          )
+          t2 <- Sys.time()
+          i <- i + 1L
+          # Afficher le temps d'exécution
+          if (verbose) {
+            cat(" - ",dia,
+                " (",round(as.numeric(difftime(t2, t1)), 2),
+                " ",attr(difftime(t2, t1), "units"), ")\n",
+                sep = "")
+
+          }
+
+        }
+      }
+        else {
         fct <- get(paste0("SQL_comorbidity_diagn.",sour))  # fonction d'extraction selon la source
         for (dia in names(Dx_table)) {
           t1 <- Sys.time()
@@ -295,7 +324,7 @@ SQL_comorbidity_diagn.V_SEJ_SERV_HOSP_CM <- function(
 #' @import data.table
 SQL_comorbidity_diagn.I_SMOD_SERV_MD_CM <- function(
     conn, ids, diagn, debut, fin,
-    diag_desc, sourc_desc, date_dx_var
+    diag_desc, sourc_desc, date_dx_var,code_stat_decis
 ) {
 
   yr_deb <- year(lubridate::as_date(debut))  # 1ere année à extraire
@@ -322,7 +351,9 @@ SQL_comorbidity_diagn.I_SMOD_SERV_MD_CM <- function(
         fin = fi,
         diagn = diagn,
         omni_spec,
-        CodeActe
+        CodeActe,
+        catg_etab,
+        code_stat_decis=code_stat_decis #"PAY"
 
       )
     ))

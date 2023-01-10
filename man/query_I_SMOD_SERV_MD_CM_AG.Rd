@@ -10,8 +10,8 @@ query_I_SMOD_SERV_MD_CM_AG(
   debut,
   fin,
   diagn,
-  omni_spec,
   CodeActe,
+  omni_spec,
   catg_etab,
   code_stat_decis
 )
@@ -26,10 +26,10 @@ query_I_SMOD_SERV_MD_CM_AG(
 
 \item{diagn}{\code{vecteur} indiquant les codes de diagnostics \emph{CIM9} et/ou \emph{CIM10} à extraire.}
 
+\item{CodeActe}{\code{vecteur} indiquant les codes d'acte d'interêt.}
+
 \item{omni_spec}{peut prendre la valeur \code{omni}(extraction des actes facturés par les omni: SMOD_COD_SPEC IS NULL),
 \code{spec} (extraction des actes facturés par les spec: SMOD_COD_SPEC IS NOT NULL) ou \code{all} (pas de spécification).}
-
-\item{CodeActe}{\code{vecteur} indiquant les codes d'acte d'interêt.}
 
 \item{catg_etab}{peut prendre la valeur \code{ambulatoire} (pour les actes facturés en ambulatoire) ou \code{all} (pas de spécification).}
 
@@ -44,8 +44,8 @@ chaîne de caractères, code SQL.
 \item d'extraire les variables pertinantes de la base de données SMOD.\cr
 \item d'extraire les variables pertinantes de la base de données SMOD, jumlées avec d'autres bases de données pour rajouter les caractéristiques de dispensateur, du bénéficiaire et de l'établissement de soins.\cr
 \item d'extraire les diagnostics pour créer par exemple une cohorte.\cr
-\item d'extraire les dates de visites (services).
-\item de calculer le nombre d'acte par bénéficiaire entre la date de début et de fin d'une étude.
+\item d'extraire les dates de visites (services).\cr
+\item de calculer le nombre d'acte par bénéficiaire entre la date de début et de fin d'une étude.\cr
 }
 }
 \keyword{internal}

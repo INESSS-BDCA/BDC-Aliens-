@@ -2,7 +2,7 @@
 title: "user_I_SMOD_SERV_MD_CM_AG"
 #subtitle: ""
 author: "Auteurs: Ahmed Ghachem"
-date: "Date de création: 01 janvier 2023"
+date: "Date de création: 10 janvier 2023"
 output:
   rmarkdown::html_vignette:
     number_sections: true
@@ -60,30 +60,48 @@ library(RequeteGeneriqueBDCA)
 
 La fonction `user_I_SMOD_SERV_MD_CM_AG` est destinée aux utilisateurs. Elle permet: <br/>
 
-1) d'extraire les dates de visites avec les caractéristiques de bénéficiaire.<br/>
-2) de calculer le nombre d'acte par bénéficiaire entre la date de début et de fin d'une étude avec les caractéristiques de bénéficiaire.<br/>
-3) d'extraire les codes d'actes, avec les caractéristiques de bénéficiaire et de l'établissement de soins.<br/>
+1) d'extraire les variables pertinantes de la base de données SMOD. <br/>
+2) d'extraire les variables pertinantes de la base de données SMOD, jumlées avec d'autres bases de données pour rajouter les caractéristiques de dispensateur, du bénéficiaire et de l'établissement de soins. <br/>
+3) d'extraire les dates de visites (services). <br/>
+4) de calculer le nombre d'acte par bénéficiaire entre la date de début et de fin d'une étude. <br/>
 
 La fonction `user_I_SMOD_SERV_MD_CM_AG` est une `child_function` qui permet d'exécuter les requêtes SQL générées par les `parent_function` suivantes:<br/>
-[SQL_reperage_cond_med](SQL_reperage_cond_med.html): pour la création de une cohorte de en utilisant les Dx cim-9 et/ou cim-10<br/> 
-[query_I_SMOD_SERV_MD_CM_AG](query_I_SMOD_SERV_MD_CM_AG.html): 
-  - si `task="date_visite"` extraction des dates de visites avec les caractéristiques de bénéficiaire<br/>
+[SQL_reperage_cond_med](SQL_reperage_cond_med.html)<br/>
+[query_I_SMOD_SERV_MD_CM_AG](query_I_SMOD_SERV_MD_CM_AG.html)<br/>
 [query_V_FICH_ID_BEN_CM](query_V_FICH_ID_BEN_CM.html)<br/>
 
-Trois principales étapes sont effectuées: <br/>
+Si la cohorte n'est pas fournie par l'analyste, la fonction `user_I_SMOD_SERV_MD_CM_AG` exécute trois principales étapes: <br/>
 1) la création de la cohorte de l'étude en utilisant les Dx cim-9 et/ou cim-10 via la fonction `SQL_reperage_cond_med`<br/> 
 2) l'extraction des actes pour cette cohorte via la fonction `query_I_SMOD_SERV_MD_CM_AG`<br/>
-3) l'ajout des caractéristiques des benéficiaires ainsi que l'établissement de soins. Les caractéristiques des bénéficiaires et de l'établissement de soins pour les personnes ayant eu un code d'acte à l'intérieur de la période de l'étude sont extraits via la fonction `query_I_SMOD_SERV_MD_CM_AG`, alors que pour ceux qui n'ont pas eu d'acte, leurs caractéristiques sont extraits via la fonction `query_V_FICH_ID_BEN_CM`.    
+3) l'ajout des caractéristiques des dispensateurs, des benéficiaires ainsi que de l'établissement de soins.<br/> 
+
+Si non les étapes 2 et 3 sont exécutées directement.<br/> 
 
 ## Usage de la fonction
 
 ```{r, eval=FALSE}
+# Si la cohorte est fournie par l'analyste
 user_I_SMOD_SERV_MD_CM_AG(task,
                           conn=SQL_connexion(),
                           cohort=NULL,
                           debut,
                           fin,
                           CodeActe,
+                          code_stat_decis,
+                          omni_spec, # à spécifier pour les task ("extraction_SMOD_combin","date_visite","calcul_Nb_acte")
+                          catg_etab, # à spécifier pour les task ("extraction_SMOD_combin","date_visite","calcul_Nb_acte")
+                          date_age, # à spécifier pour les task ("extraction_SMOD_combin","date_visite","calcul_Nb_acte")
+                          verbose=TRUE,
+                          keep_all=FALSE)
+
+# Si on veut créer une nouvelle cohorte
+user_I_SMOD_SERV_MD_CM_AG(task,
+                          conn=SQL_connexion(),
+                          cohort=NULL,
+                          debut,
+                          fin,
+                          CodeActe,
+                          code_stat_decis,
                           omni_spec,
                           catg_etab,
                           Dx_table,
@@ -123,12 +141,28 @@ Vecteur comprenant les codes d'acte d'interêt.
 CodeActe = c('06452','06148','06154','06265','06251','06216','06208','06164','06270','06276')
 ```
 
+### code_stat_decis
+Permet d'extraire les actes selon leurs statuts de paiement.
+```{r}
+code_stat_decis="PAY"
+code_stat_decis="PPY"
+code_stat_decis="PAY-PPY"
+```
+
 ### omni_spec
 Permet d'extraire les actes facturés par les omnipraticiens et/ou les spécialistes.
 ```{r}
 omni_spec="all"
 omni_spec="omni"
 omni_spec="spec"
+```
+
+### catg_etab
+      
+Permet d'extraire les dates de visites selon la catégorie de l'établissement.
+```{r, eval=FALSE}
+catg_etab="all" # les visites effectuées dans toutes les catégories d'établissement confondues
+catg_etab="ambulatoire" # les visites effectuées en ambilatoire
 ```
 
 ### Dx_table
@@ -223,10 +257,26 @@ Préparation de la base de données finale:<br/>
 ---
 # Table Résultante
 ## Variables
-
+### Extraction des variables pertinantes de SMOD:
 - **ID** : Numéro d'identification du bénéficiaire. <br/>
-- **DI_Finale** : Date d'incidence retenue. <br/>
-- **D_Recent** : Date la plus récente observée. </br> 
+- **AnFinan** : Année financière de l'acte. <br/>
+- **AnCivil** : Année civile de l'acte. <br/>
+- **DateActe** : Date  de l'acte au format *AAAA-MM-JJ*. <br/>
+- **CodeActe** : Actes demandés dans l'argument CodeActe. <br/>
+- **CoutActe** : Cout de l'acte. <br/>
+- **DxActe** : Diagnostique associé à l'acte. <br/>
+- **NumDispSp** : Numéro de dispensateur. <br/>
+- **SMOD_COD_ROLE** : Code des rôles selon l'entent. <br/>
+- **SMOD_COD_SPEC** : Spécialité de dispensateur indiqué dans `SMOD`. <br/>
+- **NumDispRef** : Numéro de dispensateur référent. <br/>
+- **SMOD_COD_ENTEN** : Code d'entente sert à associer les dispensateurs à un groupe spécifique.<br/>
+- **Num_ETAB_USUEL** : Numéro de l'établissement. <br/>
+- **ETAB_COD_SECT_ACTIV_ETAB** : Identifie de façon unique chacun des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.<br/>
+
+### Extraction des variables pertinantes de SMOD combinées avec d'autres bases de données:
+- **ID** : Numéro d'identification du bénéficiaire. <br/>
+- **DI_Finale** : Date d'incidence retenue. # Sil y a création d'une nouvelle cohorte <br/>
+- **D_Recent** : Date la plus récente observée. # Sil y a création d'une nouvelle cohorte <br/>
 - **AnFinan** : Année financière de l'acte. <br/>
 - **AnCivil** : Année civile de l'acte. <br/>
 - **DateActe** : Date  de l'acte au format *AAAA-MM-JJ*. <br/>
@@ -257,7 +307,39 @@ Préparation de la base de données finale:<br/>
 - **NomRSS_Benef** : Nom régions sociosanitaires (RSS) du bénéficiaire. <br/>
 - **NomRLS_Benef** : Nom réseaux locaux de services (RLS) du bénéficiaire. <br/>
 
+### Extraction des dates de visites:
+
+- **ID** : Numéro d'identification du bénéficiaire. <br/>
+- **DI_Finale** : Date d'incidence retenue. # Sil y a création d'une nouvelle cohorte <br/>
+- **D_Recent** : Date la plus récente observée. # Sil y a création d'une nouvelle cohorte <br/>
+- **Date_visite** : Dates de visite. Un bénéficiaire pourrait avoir plus qu'une date de visite (select distinct par ID, date et numéro du dispensateur). <br/>
+- **Sexe** : Sexe du bénéficiaire. <br/>
+- **DatNais** : Date de naissance du bénéficiaire au format *AAAA-MM-JJ*. <br/>
+- **datdeces** : Date de décès du bénéficiaire au format *AAAA-MM-JJ*. <br/>
+- **Age** : Age du bénéficiaire calculé jusqu'à la date de l'acte. <br/>
+- **RSS_Benf** : Régions sociosanitaires (RSS) du bénéficiaire. <br/>
+- **RLS_Benef** : Réseaux locaux de services (RLS) du bénéficiaire. <br/>
+- **NomRSS_Benef** : Nom régions sociosanitaires (RSS) du bénéficiaire. <br/>
+- **NomRLS_Benef** : Nom réseaux locaux de services (RLS) du bénéficiaire. <br/>
+
+### Calcul du nombre d'acte par bénéficiaire:
+
+- **ID** : Numéro d'identification du bénéficiaire. <br/>
+- **DI_Finale** : Date d'incidence retenue. # Sil y a création d'une nouvelle cohorte <br/>
+- **D_Recent** : Date la plus récente observée. # Sil y a création d'une nouvelle cohorte <br/>
+- **nb_actes** : Nombre d'acte par bénéficiaire (select distinct par ID, date et numéro du dispensateur). <br/>
+- **Sexe** : Sexe du bénéficiaire. <br/>
+- **DatNais** : Date de naissance du bénéficiaire au format *AAAA-MM-JJ*. <br/>
+- **datdeces** : Date de décès du bénéficiaire au format *AAAA-MM-JJ*. <br/>
+- **Age** : Age du bénéficiaire calculé jusqu'à la date de l'acte. <br/>
+- **RSS_Benf** : Régions sociosanitaires (RSS) du bénéficiaire. <br/>
+- **RLS_Benef** : Réseaux locaux de services (RLS) du bénéficiaire. <br/>
+- **NomRSS_Benef** : Nom régions sociosanitaires (RSS) du bénéficiaire. <br/>
+- **NomRLS_Benef** : Nom réseaux locaux de services (RLS) du bénéficiaire. <br/>
+
 ***
+
+
 # Discription de la syntaxe SQL
     
 Veuillez-svp consulter les vignettes des `parent_function` suivantes:

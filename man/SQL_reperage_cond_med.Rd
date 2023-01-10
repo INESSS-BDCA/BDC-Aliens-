@@ -16,6 +16,7 @@ SQL_reperage_cond_med(
   date_dx_var = "admis",
   n1 = 30,
   n2 = 730,
+  code_stat_decis = code_stat_decis,
   ...
 )
 }

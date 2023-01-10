@@ -19,7 +19,8 @@ SQL_diagn(
   date_dx_var = "admis",
   typ_diagn = c("A", "P", "S", "D"),
   exclu_diagn = NULL,
-  verbose = TRUE
+  verbose = TRUE,
+  code_stat_decis = code_stat_decis
 )
 }
 \arguments{
