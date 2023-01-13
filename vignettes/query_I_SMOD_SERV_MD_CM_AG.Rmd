@@ -140,9 +140,7 @@ catg_etab="ambulatoire" # les visites effectuées en ambilatoire
       
 Permet d'extraire les actes selon leurs statuts de paiement.
 ```{r, eval=FALSE}
-code_stat_decis="PAY" # Payé
-code_stat_decis="PPY" # Pré-payé (Pour la rémunération à l'acte, à vacation, Mixte et SLE)
-code_stat_decis="PAY-PPY"
+code_stat_decis=c("PAY","PPY")
 ```
 
 

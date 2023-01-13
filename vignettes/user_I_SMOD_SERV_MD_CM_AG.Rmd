@@ -80,37 +80,23 @@ Si non les étapes 2 et 3 sont exécutées directement.<br/>
 ## Usage de la fonction
 
 ```{r, eval=FALSE}
-# Si la cohorte est fournie par l'analyste
+
 user_I_SMOD_SERV_MD_CM_AG(task,
                           conn=SQL_connexion(),
-                          cohort=NULL,
+                          cohort=NULL, # si la cohorte est fournie par l'analyste (cohort=cohort), si on veut créer une nouvelle cohorte (cohort=NULL)
                           debut,
                           fin,
                           CodeActe,
                           code_stat_decis,
                           omni_spec, # à spécifier pour les task ("extraction_SMOD_combin","date_visite","calcul_Nb_acte")
                           catg_etab, # à spécifier pour les task ("extraction_SMOD_combin","date_visite","calcul_Nb_acte")
-                          date_age, # à spécifier pour les task ("extraction_SMOD_combin","date_visite","calcul_Nb_acte")
-                          verbose=TRUE,
-                          keep_all=FALSE)
-
-# Si on veut créer une nouvelle cohorte
-user_I_SMOD_SERV_MD_CM_AG(task,
-                          conn=SQL_connexion(),
-                          cohort=NULL,
-                          debut,
-                          fin,
-                          CodeActe,
-                          code_stat_decis,
-                          omni_spec,
-                          catg_etab,
-                          Dx_table,
+                          Dx_table, # si la cohorte n'est pas fournie par l'analyse et nous ne voulons pas créer une nouvelle cohorte (Dx_table=NULL)
                           CIM,
                           by_Dx,
                           nDx,
                           date_dx_var,
                           n1,n2,
-                          date_age,
+                          date_age, # à spécifier pour les task ("extraction_SMOD_combin","date_visite","calcul_Nb_acte")
                           verbose=TRUE,
                           keep_all=FALSE)
 ```
@@ -144,9 +130,7 @@ CodeActe = c('06452','06148','06154','06265','06251','06216','06208','06164','06
 ### code_stat_decis
 Permet d'extraire les actes selon leurs statuts de paiement.
 ```{r}
-code_stat_decis="PAY"
-code_stat_decis="PPY"
-code_stat_decis="PAY-PPY"
+code_stat_decis=c("PAY","PPY")
 ```
 
 ### omni_spec
@@ -272,6 +256,11 @@ Préparation de la base de données finale:<br/>
 - **SMOD_COD_ENTEN** : Code d'entente sert à associer les dispensateurs à un groupe spécifique.<br/>
 - **Num_ETAB_USUEL** : Numéro de l'établissement. <br/>
 - **ETAB_COD_SECT_ACTIV_ETAB** : Identifie de façon unique chacun des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.<br/>
+- **Desc_SMOD_COD_ROLE** : Description Code des rôles selon l'entent. <br/>           
+- **Desc_SMOD_COD_SPEC** : Description Spécialité de dispensateur indiqué dans `SMOD`. <br/>
+- **Desc_ETAB_COD_SECT_ACTIV_ETAB** : Description des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.<br/>
+- **Desc_SMOD_COD_ENTEN** : Description de Code d'entente sert à associer les dispensateurs à un groupe spécifique.<br/>
+- **Desc_DxActe** : Descrition de diagnostique associé à l'acte. <br/> 
 
 ### Extraction des variables pertinantes de SMOD combinées avec d'autres bases de données:
 - **ID** : Numéro d'identification du bénéficiaire. <br/>
@@ -306,13 +295,19 @@ Préparation de la base de données finale:<br/>
 - **RLS_Benef** : Réseaux locaux de services (RLS) du bénéficiaire. <br/>
 - **NomRSS_Benef** : Nom régions sociosanitaires (RSS) du bénéficiaire. <br/>
 - **NomRLS_Benef** : Nom réseaux locaux de services (RLS) du bénéficiaire. <br/>
+- **Desc_SMOD_COD_ROLE** : Description Code des rôles selon l'entent. <br/>           
+- **Desc_SMOD_COD_SPEC** : Description Spécialité de dispensateur indiqué dans `SMOD`. <br/>
+- **Desc_ETAB_COD_SECT_ACTIV_ETAB** : Description des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.<br/>
+- **Desc_SMOD_COD_ENTEN** : Description de Code d'entente sert à associer les dispensateurs à un groupe spécifique.<br/>
+- **Desc_DxActe** : Descrition de diagnostique associé à l'acte. <br/> 
+
 
 ### Extraction des dates de visites:
 
 - **ID** : Numéro d'identification du bénéficiaire. <br/>
 - **DI_Finale** : Date d'incidence retenue. # Sil y a création d'une nouvelle cohorte <br/>
 - **D_Recent** : Date la plus récente observée. # Sil y a création d'une nouvelle cohorte <br/>
-- **Date_visite** : Dates de visite. Un bénéficiaire pourrait avoir plus qu'une date de visite (select distinct par ID, date et numéro du dispensateur). <br/>
+- **Date_visite** : Dates de visite. Un bénéficiaire pourrait avoir plus qu'une date de visite (select distinct par ID, date et numéro du dispensateur).<br/>
 - **Sexe** : Sexe du bénéficiaire. <br/>
 - **DatNais** : Date de naissance du bénéficiaire au format *AAAA-MM-JJ*. <br/>
 - **datdeces** : Date de décès du bénéficiaire au format *AAAA-MM-JJ*. <br/>

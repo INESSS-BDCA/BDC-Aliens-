@@ -296,7 +296,9 @@ query_I_SMOD_SERV_MD_CM_AG <- function(query,debut, fin, diagn,CodeActe,omni_spe
             return(paste0(
               "SELECT
                 ID,
-                Date_visite
+                Date_visite,
+                DISP_NO_SEQ_DISP_BANLS,
+                NO_ETAB_USUEL
                 FROM(
                   SELECT DISTINCT
                     BD_SMOD.SMOD_NO_INDIV_BEN_BANLS AS ID,
@@ -351,6 +353,9 @@ query_I_SMOD_SERV_MD_CM_AG <- function(query,debut, fin, diagn,CodeActe,omni_spe
             return(paste0(
               "SELECT
             ID,
+            Date_visite,
+            DISP_NO_SEQ_DISP_BANLS,
+            NO_ETAB_USUEL,
             Sum(acte) AS nb_actes
             FROM (
             SELECT DISTINCT
@@ -401,8 +406,7 @@ query_I_SMOD_SERV_MD_CM_AG <- function(query,debut, fin, diagn,CodeActe,omni_spe
             ) AS A
             GROUP BY ID
             ORDER BY ID"
-            ))}
-          )
+            ))})
 }
 
 #' @title query_SQL_CodeActe.where_SMOD_COD_SPEC
@@ -456,25 +460,10 @@ query_SQL_CodeActe.where_SMOD_COD_ACTE <- function(CodeActe) {
 #' @encoding UTF-8
 #' @keywords internal
 query_SQL_CodeActe.where_SMOD_COD_STA_DECIS <- function(code_stat_decis) {
-  switch(code_stat_decis,
-         "PAY" = {
-           return(paste0(
-             indent(),
-             "AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY')\n"
-           ))
-         },
-         "PPY" = {
-           return(paste0(
-             indent(),
-             "AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PPY')\n"
-           ))
-         },
-         "PAY-PPY" = {
-           return(paste0(
-             indent(),
-             "AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY','PPY')\n"
-           ))
-         })
+  return(paste0(
+    indent(),
+    "AND BD_SMOD.SMOD_COD_STA_DECIS IN (", qu(code_stat_decis), ")\n"
+  ))
 }
 
 #' @title query_SQL_CodeActe.where_ETAB_COD_CATG_ETAB_EI
