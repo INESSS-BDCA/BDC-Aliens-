@@ -2,7 +2,7 @@
 title: "query_I_SMOD_SERV_MD_CM_AG"
 #subtitle: ""
 author: "Auteurs: Ahmed Ghachem"
-date: "Date de création: 29 décembre 2022"
+date: "Date de création: 23 janvier 2023"
 output:
   rmarkdown::html_vignette:
     number_sections: true
@@ -58,17 +58,15 @@ library(RequeteGeneriqueBDCA)
 
 # query_I_SMOD_SERV_MD_CM_AG
 
-La fonction `query_I_SMOD_SERV_MD_CM_AG` est une `parent_function` qui retourne une syntaxe sql pour:
+La fonction `query_I_SMOD_SERV_MD_CM_AG` est une `parent_function` qui retourne une syntaxe sql pour: <br/>
 1) extraire les variables pertinantes de SMOD <br/>
 2) extraire les variables pertinentes de SMOD combinées avec d'autres bases de données <br/>
 3) extraire les diagnostics pour la création d'une cohorte <br/>
-4) extraire les dates de visites / services entre la date de début et la date de fin d'une étude <br/> 
-5) calculer le nombre d'acte par bénéficiaire entre la date de début et la date de fin d'une étude <br/>
 
 
-Elle est utilisée par:
-- la fonction [user_I_SMOD_SERV_MD_CM_AG](user_I_SMOD_SERV_MD_CM_AG.html)
-- la fonction [SQL_reperage_cond_med](SQL_reperage_cond_med.html)
+Elle est utilisée par: <br/>
+- la fonction [user_I_SMOD_SERV_MD_CM_AG](user_I_SMOD_SERV_MD_CM_AG.html) <br/>
+- la fonction [SQL_reperage_cond_med](SQL_reperage_cond_med.html) <br/>
 - ...
 
 ## La fonction
@@ -81,7 +79,9 @@ query_I_SMOD_SERV_MD_CM_AG(query,
                            CodeActe,
                            omni_spec,
                            catg_etab,
-                           code_stat_decis)
+                           code_stat_decis,
+                           benef_adr,
+                           date_adr)
 ```
 
 
@@ -102,7 +102,7 @@ query="calcul_Nb_acte" # calculer le nombre d'acte par bénéficiaire entre la d
 
 Indiquant le début et la fin de la période d'étude au format `AAAA-MM-JJ`.
 ```{r, eval=FALSE}
-debut = "2020-01-01", fin = "2020-12-31"
+debut = "2021-04-01", fin = "2022-03-31"
 ```
 
 ### diagn
@@ -143,6 +143,22 @@ Permet d'extraire les actes selon leurs statuts de paiement.
 code_stat_decis=c("PAY","PPY")
 ```
 
+### benef_adr
+Permet de définir la méthode d'identification de l'adresse du bénéficiaire.
+```{r}
+benef_adr=c("date_fixe","dernière_adresse","première_adresse","long_adresse")
+
+```
+
+### date_adr
+Si `benef_adr`="date_fixe", `date_adr` permet de choisir une date fixe pour identifier l'adresse de bénéficiaire. 
+```{r}
+date_adr="2020-07-01"
+```
+
+
+
+
 
 ## Usage de la fonction
 
@@ -155,10 +171,13 @@ statement=query_I_SMOD_SERV_MD_CM_AG (
 query="extraction_SMOD",
 debut="2021-04-01",
 fin="2022-03-31",
+diagn = NULL, #  à préciser si on veut extraire des actes pour des bénéficiaires ayant un ou plusieurs Dx spécifiques 
 CodeActe=c('07122', '07237', '07800', '07089', '0780'),
-omni_spec="all",
-catg_etab="all",
-code_stat_decis="PAY")
+omni_spec=NULL,
+catg_etab=NULL,
+code_stat_decis="PAY",
+benef_adr=NULL,
+date_adr=NULL)
  ))
 ```
 
@@ -169,10 +188,13 @@ statement=query_I_SMOD_SERV_MD_CM_AG (
 query="extraction_SMOD_combin",
 debut="2021-04-01",
 fin="2022-03-31",
+diagn = NULL, #  à préciser si on veut extraire des actes pour des bénéficiaires ayant un ou plusieurs Dx spécifiques 
 CodeActe=c('07122', '07237', '07800', '07089', '0780'),
 omni_spec="all",
 catg_etab="all",
-code_stat_decis="PAY")
+code_stat_decis="PAY",
+benef_adr="dernière_adresse",
+date_adr=NULL)
  ))
 ```
 
@@ -184,35 +206,12 @@ query="extraction_Dx",
 debut="2021-04-01",
 fin="2022-03-31",
 diagn=c('5995%','6180%','6181%','6183%','6184%','N810%','N811%','N812%'),
-code_stat_decis="PAY")
- ))
-```
-
-- **Extraction des dates de visites:**
-```{r}
-DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
-statement=query_I_SMOD_SERV_MD_CM_AG (
-query="date_visite",
-debut="2021-04-01",
-fin="2022-03-31",
-CodeActe=c('07122', '07237', '07800', '07089', '0780'), #Si CodeActe=NULL, l'extrcation inclut tout les actes facturés à l'intérieur de la période d'étude.
-omni_spec="all",
-catg_etab="all",
-code_stat_decis="PAY")
- ))
-```
-
-- **Calcul du nombre d'acte par bénéficiaire:**
-```{r}
-DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
-statement=query_I_SMOD_SERV_MD_CM_AG (
-query="calcul_Nb_acte",
-debut="2021-04-01",
-fin="2022-03-31",
-CodeActe=c('07122', '07237', '07800', '07089', '0780'), #Si CodeActe=NULL, le calcul se fait sur tout les actes facturés à l'intérieur de la période d'étude.
-omni_spec="all",
-catg_etab="all",
-code_stat_decis="PAY")
+CodeActe=NULL,
+omni_spec=NULL,
+catg_etab=NULL,
+code_stat_decis="PAY",
+benef_adr=NULL,
+date_adr=NULL)
  ))
 ```
 
@@ -276,16 +275,6 @@ code_stat_decis="PAY")
 - **ID** : Numéro d'identification du bénéficiaire. <br/>
 - **DATE_DX** : Dates de diagnostics. Un bénéficiaire pourrait avoir plus qu'une date de diagnostic (select distinct par ID, date et Dx). <br/>
 
-### Extraction des dates de visites:
-
-- **ID** : Numéro d'identification du bénéficiaire. <br/>
-- **Date_visite** : Dates de visite. Un bénéficiaire pourrait avoir plus qu'une date de visite (select distinct par ID, date et numéro du dispensateur). <br/>
-
-### Calcul du nombre d'acte par bénéficiaire:
-
-- **ID** : Numéro d'identification du bénéficiaire. <br/>
-- **nb_actes** : Nombre d'acte par bénéficiaire (select distinct par ID, date et numéro du dispensateur). <br/>
-
 ***
 
 
@@ -301,7 +290,7 @@ code_stat_decis="PAY")
 - PROD.V_FICH_ID_BEN_CM (FIPA)
 - PROD.D_DISP_SPEC_CM (FIP)
 - Prod.V_ETAB_USUEL
-- Prod.IBENEF_ADR_CM
+- Prod.I_BENEF_ADR_CM
 - DONNE_INESSS.tGI_RLS_RTS
 - Prod.V_ETAB_USUEL_DERN
 - RES_SSS.V_NOM_ETAB_DERN_TYP_NOM
@@ -312,23 +301,6 @@ code_stat_decis="PAY")
 ### Extraction des diagnostics:
 - PROD.I_SMOD_SERV_MD_CM (SMOD)
 
-### Extraction des dates de visites:
-- PROD.I_SMOD_SERV_MD_CM (SMOD)
-- Prod.V_ETAB_USUEL_DERN
-- Prod.V_DECOU_GEO_POSTL_DERN_CP
-- V_ETAB_USUEL
-- Prod.V_COD_CATG_ETAB_EI
-
-### Calcul du nombre d'acte:
-- PROD.I_SMOD_SERV_MD_CM (SMOD)
-- Prod.V_RPERT_COD_ACTE
-- Prod.V_ETAB_USUEL_DERN
-- Prod.V_DECOU_GEO_POSTL_DERN_CP
-- V_ETAB_USUEL
-- Prod.V_COD_CATG_ETAB_EI
-
-
- 
 
 ## Syntaxe SQL
 
@@ -355,12 +327,13 @@ BD_SMOD.SMOD_NO_ETAB_USUEL AS Num_ETAB_USUEL,  --Ancien numéro de létablisseme
 BD_SMOD.ETAB_COD_SECT_ACTIV_ETAB AS ETAB_COD_SECT_ACTIV_ETAB  --secteur dactivité
 
 FROM Prod.I_SMOD_SERV_MD_CM AS BD_SMOD
-WHERE BD_SMOD.SMOD_DAT_SERV BETWEEN '",debut,"' AND '",fin,"',
-query_SQL_CodeActe.where_SMOD_COD_STA_DECIS (code_stat_decis),
-query_SQL_CodeActe.where_SMOD_COD_ACTE (CodeActe),
+WHERE BD_SMOD.SMOD_DAT_SERV BETWEEN '",debut,"' AND '",fin,"'
+query_SQL_CodeActe.where_SMOD_COD_STA_DECIS (code_stat_decis)
+query_SQL_CodeActe.where_SMOD_COD_ACTE (CodeActe)
+query_I_SMOD_SERV_MD_CM.diagn(diagn)
 
-/*Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à des consultations,
-mais, plutôt à des suppléments monétaires associés à une demande de facturation */
+/* "Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à des consultations,
+mais, plutôt à des suppléments monétaires associés à une demande de facturation" */
 
 AND BD_SMOD.SMOD_COD_ACTE NOT IN (
 SELECT DISTINCT NMOD_COD_ACTE
@@ -409,8 +382,6 @@ BD_DispR.DISP_COD_SPEC AS SPDispRefs,  --Spécialité du médecin référent
 
 BD_Etab.ETAB_NO_ETAB AS NO_ETAB,
 BD_Etab.ETAB_COD_CATG_ETAB_EI AS Cat_Etab, --(Urgence, Clinique externe, ...)
-/* Cette variable pourrait être optionnelle, car le format caractère prend beaucoup de place dans le fichier sortant */
-BD_Etab.ETAB_NOM_CATG_ETAB_EI AS Nom_Cat_Etab,
 
 -- Nom de vue : RES_SSS.V_NOM_ETAB_DERN_TYP_NOM
 
@@ -437,42 +408,64 @@ FROM Prod.I_SMOD_SERV_MD_CM AS BD_SMOD
 LEFT JOIN Prod.V_FICH_ID_BEN_CM AS BD_Caract
 ON BD_SMOD.SMOD_NO_INDIV_BEN_BANLS = BD_Caract.BENF_NO_INDIV_BEN_BANLS
 
-/* Une approche alternative (rapide) serait de sélectionner la spécialité déclarée au moment de la demande de facturation */
+/* "cette requête cible la spécialité principale du disp dans fip au moment du service" */
 LEFT JOIN Prod.D_DISP_SPEC_CM AS BD_Disp
 ON BD_SMOD.DISP_NO_SEQ_DISP_BANLS = BD_Disp.DISP_NO_SEQ_DISP_BANLS
-AND BD_Disp.DISP_COD_NIV_SPEC = 1 AND BD_SMOD.SMOD_DAT_SERV BETWEEN BD_Disp.DISP_DD_SPEC_DISP AND BD_Disp.DISP_DF_SPEC_DISP
+AND BD_Disp.DISP_COD_NIV_SPEC = 1 
+AND BD_SMOD.SMOD_DAT_SERV BETWEEN BD_Disp.DISP_DD_SPEC_DISP AND BD_Disp.DISP_DF_SPEC_DISP
 
-/* Cette requête pourrait être optionnelle, car la spécialité du médecin référent est rarement demandée */
+/* "Cette requête est incluse dans la version actuelle, mais elle pourrait être optionnelle, car la spécialité du médecin référent est rarement demandée" */
 LEFT JOIN Prod.D_DISP_SPEC_CM AS BD_DispR
 ON BD_SMOD.DISP_NO_SEQ_DISP_REFNT_BANLS = BD_DispR.DISP_NO_SEQ_DISP_BANLS
 AND BD_DispR.DISP_COD_NIV_SPEC = 1
 AND BD_SMOD.SMOD_DAT_SERV BETWEEN BD_DispR.DISP_DD_SPEC_DISP AND BD_DispR.DISP_DF_SPEC_DISP
 
-/**********************************************************
-Découpage géographique du bénéficiaire : codes RSS et RLS
-***********************************************************/
-/*
-On sélectionne la dernière adresse du bénéficiaire durant la période sélectionnée.
-Autres méthodes :
+/* "Découpage géographique du bénéficiaire : codes RSS et RLS:
+Plusieurs méthode pour sélectionner l'adresse du bénéficiaire durant la période sélectionnée:
 1) cibler la première adresse de la période
-2) cibler ladresse dans laquelle le BEN a résidé le plus longtemps durant la période
-3) cibler ladresse à une date fixe (p. ex. 31 mars, 1 juillet, mi-année)
-*/
-  
-LEFT JOIN (
-			SELECT
-			BENF_NO_INDIV_BEN_BANLS,
-			BENF_DD_ADR_BEN,
-			BENF_DF_ADR_BEN,
-			LGEO_COD_RSS, LGEO_COD_TERRI_RLS
-			FROM Prod.I_BENF_ADR_CM
-			WHERE BENF_IND_ADR_HQ IN ('N') AND BENF_COD_TYP_ADR IN ('R')
-			AND (BENF_DD_ADR_BEN<='",fin,"' AND BENF_DF_ADR_BEN>='",debut,"')
-			QUALIFY Row_Number()Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN DESC)=1
-			) AS BD_Adr
-			ON BD_SMOD.SMOD_NO_INDIV_BEN_BANLS=BD_Adr.BENF_NO_INDIV_BEN_BANLS
+2) cibler la dernière adresse de la période
+2) cibler l'adresse dans laquelle le BEN a résidé le plus longtemps durant la période
+3) cibler l'adresse à une date fixe (p. ex. 31 mars, 1 juillet, mi-année)" */
 
-/* On ajoute ici les noms des codes RSS et RLS du bénéficiaire : ceci serait optionnel si la requête est trop lourde */
+LEFT JOIN (
+SELECT
+BENF_NO_INDIV_BEN_BANLS,
+BENF_DD_ADR_BEN,
+BENF_DF_ADR_BEN,
+LGEO_COD_RSS,
+LGEO_COD_TERRI_RLS
+
+FROM(
+SELECT
+BENF_NO_INDIV_BEN_BANLS,
+BENF_DD_ADR_BEN,
+BENF_DF_ADR_BEN,
+LGEO_COD_RSS,
+LGEO_COD_TERRI_RLS,
+
+CASE
+WHEN (BENF_DD_ADR_BEN <= '",debut,"' AND BENF_DF_ADR_BEN >= '",fin,"') THEN DATE '",fin,"' - DATE '",debut,"' + 1
+WHEN (BENF_DD_ADR_BEN >= '",debut,"' AND BENF_DF_ADR_BEN >= '",fin,"') THEN DATE '",fin,"' - BENF_DD_ADR_BEN
+WHEN (BENF_DD_ADR_BEN <= '",debut,"' AND BENF_DF_ADR_BEN <= '",fin,"') THEN BENF_DF_ADR_BEN - DATE '",debut,"'
+WHEN (BENF_DD_ADR_BEN >= '",debut,"' AND BENF_DF_ADR_BEN <= '",fin,"') THEN BENF_DF_ADR_BEN - BENF_DD_ADR_BEN
+ELSE 0
+END AS days_count,
+ROW_NUMBER() OVER (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY days_count DESC) AS row_num /* "cibler l'adresse la plus longue" */
+
+FROM Prod.I_BENF_ADR_CM
+WHERE BENF_IND_ADR_HQ IN ('N') AND BENF_COD_TYP_ADR IN ('R')
+AND (BENF_DD_ADR_BEN<='",fin,"' AND BENF_DF_ADR_BEN>='",debut,"')
+
+AND '",date_adr,"' between BENF_DD_ADR_BEN AND BENF_DF_ADR_BEN  /* "cibler une date fixe" */
+QUALIFY Row_Number()Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN DESC)=1 /* "cibler la dernière adresse" */
+QUALIFY Row_Number()Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN ASC)=1 /* " cibler la première adresse" */
+)AS A
+WHERE A.row_num=1
+
+) AS BD_Adr
+ON BD_SMOD.SMOD_NO_INDIV_BEN_BANLS=BD_Adr.BENF_NO_INDIV_BEN_BANLS
+
+/* "On ajoute ici les noms des codes RSS et RLS du bénéficiaire" */
 			  
 LEFT JOIN (
 SELECT
@@ -482,11 +475,9 @@ NomRSS AS NomRSS_Benef
 FROM DONNE_INESSS.tGI_RLS_RTS) AS BD_NomReg_Ben
 ON BD_Adr.LGEO_COD_TERRI_RLS=BD_NomReg_Ben.CodRLS
 
-/*********************************************************************************************************************
-Découpage géographique de létablissement : numéro unique, catégorie, nom de létab, code et nom RSS, code et nom RLS
-**********************************************************************************************************************/
+/* "Découpage géographique de létablissement : numéro unique, catégorie, nom de létab, code et nom RSS, code et nom RLS" */
 
-/* On ajoute ici le numéro détablissement (unique : ETAB_NO_ETAB), le code postal de létablissement et la catégorie de létablissement */
+/* "On ajoute ici le numéro détablissement (unique : ETAB_NO_ETAB), le code postal de létablissement et la catégorie de létablissement" */
   
 LEFT JOIN (
 			SELECT BD_Etab.ETAB_NO_ETAB_USUEL, BD_Etab.ETAB_NO_ETAB, BD_Etab.ETAB_COD_POSTL,
@@ -500,34 +491,36 @@ LEFT JOIN (
 			) AS BD_Etab
 ON BD_SMOD.SMOD_NO_ETAB_USUEL=BD_Etab.ETAB_NO_ETAB_USUEL
 
-/* On ajoute le NOM de létablissement */
+/* "On ajoute le NOM de létablissement" */
   
 LEFT JOIN (SELECT ETAB_NO_ETAB, ETAB_NOM_ETAB FROM RES_SSS.V_NOM_ETAB_DERN_TYP_NOM) AS BD_NomEtab
 ON BD_Etab.ETAB_NO_ETAB = BD_NomEtab.ETAB_NO_ETAB
 
-/* On ajoute ici les noms des codes RSS et RLS de létablissement : ceci serait optionnel si la requête est trop lourde */
+/* "On ajoute ici les noms des codes RSS et RLS de létablissement : ceci serait optionnel si la requête est trop lourde" */
   
 LEFT JOIN (SELECT CodRLS, NomRLS AS NomRLS_Etab, NomRSS AS NomRSS_Etab FROM DONNE_INESSS.tGI_RLS_RTS) AS BD_NomReg_Etab
 ON BD_Etab.LGEO_COD_TERRI_RLS=BD_NomReg_Etab.CodRLS
 
 WHERE BD_SMOD.SMOD_DAT_SERV BETWEEN '",debut,"' AND '",fin,"'
 
-/*query_SQL_CodeActe.where_SMOD_COD_STA_DECIS (code_stat_decis)
+/* "query_SQL_CodeActe.where_SMOD_COD_STA_DECIS (code_stat_decis)
   si code_stat_decis="PAY": AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY') 
   si code_stat_decis="PPY": AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PPY') 
-  si code_stat_decis="PAY-PPY": AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY','PPY')*/
-/*query_SQL_CodeActe.where_SMOD_COD_ACTE (CodeActe)
-  si CodeActe=NULL: extraction de tous les actes dans la période détude, sinon extraction des actes indiqués dans le vecteur CodeActe*/
-/* query_SQL_CodeActe.where_SMOD_COD_SPEC(omni_spec):
+  si les deux: AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY','PPY')" */
+  
+/* "query_SQL_CodeActe.where_SMOD_COD_ACTE (CodeActe)
+  si CodeActe=NULL: extraction de tous les actes dans la période détude, sinon extraction des actes indiqués dans le vecteur CodeActe" */
+
+/* "query_SQL_CodeActe.where_SMOD_COD_SPEC(omni_spec):
   si omni_spec="all": extraction des actes facturés par les omni et les spécialistes
   si omni_spec="omni": AND SMOD_COD_SPEC IS NULL
-  si omni_spec="spec": AND SMOD_COD_SPEC IS NOT NULL*/
-/* query_SQL_CodeActe.where_ETAB_COD_CATG_ETAB_EI(catg_etab),
+  si omni_spec="spec": AND SMOD_COD_SPEC IS NOT NULL" */
+
+/* "query_SQL_CodeActe.where_ETAB_COD_CATG_ETAB_EI(catg_etab),
   si catg_etab="all": extraction des visites effectuées dans toutes les catégories détablissement confondues
-  si catg_etab="ambulatoire": AND (ETAB_COD_CATG_ETAB_EI IN ('54X', '55X', '57X', '9X2', '8X5', '4X1','0X1') OR BD_SMOD.SMOD_NO_ETAB_USUEL IS NULL) 
-*/    
+  si catg_etab="ambulatoire": AND (ETAB_COD_CATG_ETAB_EI IN ('54X', '55X', '57X', '9X2', '8X5', '4X1','0X1') OR BD_SMOD.SMOD_NO_ETAB_USUEL IS NULL)" */    
   
-/* Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à des consultations, mais, plutôt à des suppléments monétaires associés à une demande de facturation */
+/* "Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à des consultations, mais, plutôt à des suppléments monétaires associés à une demande de facturation" */
   
 AND BD_SMOD.SMOD_COD_ACTE NOT IN (
 									SELECT DISTINCT NMOD_COD_ACTE
@@ -552,154 +545,11 @@ BD_SMOD.SMOD_DAT_SERV as DATE_DX,
 BD_SMOD.SMOD_COD_DIAGN_PRIMR AS DX
 FROM PROD.I_SMOD_SERV_MD_CM AS BD_SMOD
 where BD_SMOD.SMOD_DAT_SERV between '",debut,"' and '",fin,"'
-/*query_SQL_CodeActe.where_SMOD_COD_STA_DECIS (code_stat_decis)
+/* "query_SQL_CodeActe.where_SMOD_COD_STA_DECIS (code_stat_decis)
   si code_stat_decis="PAY": AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY') 
   si code_stat_decis="PPY": AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PPY') 
-  si code_stat_decis="PAY-PPY": AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY','PPY')*/
+  si les deux: AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY','PPY')" */
 AND BD_SMOD.SMOD_COD_DIAGN_PRIMR like any (",qu(diagn),")
 ) AS A order by 1,2
 ```
 
-### Extraction des dates de visites:
-```{r}
-SELECT
-ID,
-Date_visit
-
-FROM(
-SELECT DISTINCT
-BD_SMOD.SMOD_NO_INDIV_BEN_BANLS AS ID,
-BD_SMOD.SMOD_DAT_SERV AS Date_visit,
-BD_SMOD.DISP_NO_SEQ_DISP_BANLS,
-CASE WHEN BD_SMOD.SMOD_NO_ETAB_USUEL IS NULL THEN 99999 ELSE BD_SMOD.SMOD_NO_ETAB_USUEL END AS NO_ETAB_USUEL
-
-FROM Prod.I_SMOD_SERV_MD_CM AS BD_SMOD
-
-LEFT JOIN (
-SELECT
-BD_Etab.ETAB_NO_ETAB_USUEL,
-BD_Etab.ETAB_NO_ETAB,
-BD_Etab.ETAB_COD_POSTL,
-BD_Decoup_Etab.LGEO_COD_RSS,
-BD_Decoup_Etab.LGEO_COD_TERRI_RLS,
-BD_Catg_etab.ETAB_COD_CATG_ETAB_EI,
-BD_NomCatg_etab.ETAB_NOM_CATG_ETAB_EI
-
-FROM Prod.V_ETAB_USUEL_DERN AS BD_Etab
-LEFT JOIN Prod.V_DECOU_GEO_POSTL_DERN_CP AS BD_Decoup_Etab
-ON BD_Etab.ETAB_COD_POSTL=BD_Decoup_Etab.LGEO_COD_POSTL
-
-LEFT JOIN (
-SELECT DISTINCT
-ETAB_NO_ETAB,
-ETAB_COD_CATG_ETAB_EI
-
-FROM V_ETAB_USUEL
-QUALIFY Row_Number()Over (PARTITION BY ETAB_NO_ETAB ORDER BY ETAB_DD_ETAB_USUEL DESC)=1) AS BD_Catg_etab
-ON BD_Etab.ETAB_NO_ETAB=BD_Catg_etab.ETAB_NO_ETAB
-
-LEFT JOIN 
-Prod.V_COD_CATG_ETAB_EI AS BD_NomCatg_etab
-ON BD_Catg_etab.ETAB_COD_CATG_ETAB_EI=BD_NomCatg_etab.ETAB_COD_CATG_ETAB_EI
-) AS BD_Etab
-
-ON BD_SMOD.SMOD_NO_ETAB_USUEL=BD_Etab.ETAB_NO_ETAB_USUEL
-WHERE BD_SMOD.SMOD_DAT_SERV BETWEEN '",debut,"' AND '",fin,"'
-
-/*query_SQL_CodeActe.where_SMOD_COD_STA_DECIS (code_stat_decis)
-  si code_stat_decis="PAY": AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY') 
-  si code_stat_decis="PPY": AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PPY') 
-  si code_stat_decis="PAY-PPY": AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY','PPY')*/
-/*query_SQL_CodeActe.where_SMOD_COD_ACTE (CodeActe)
-  si CodeActe=NULL: extraction de tous les actes dans la période détude, sinon extraction des actes indiqués dans le vecteur CodeActe*/
-/* query_SQL_CodeActe.where_SMOD_COD_SPEC(omni_spec):
-  si omni_spec="all": extraction des actes facturés par les omni et les spécialistes
-  si omni_spec="omni": AND SMOD_COD_SPEC IS NULL
-  si omni_spec="spec": AND SMOD_COD_SPEC IS NOT NULL*/
-/* query_SQL_CodeActe.where_ETAB_COD_CATG_ETAB_EI(catg_etab),
-  si catg_etab="all": extraction des visites effectuées dans toutes les catégories détablissement confondues
-  si catg_etab="ambulatoire": AND (ETAB_COD_CATG_ETAB_EI IN ('54X', '55X', '57X', '9X2', '8X5', '4X1','0X1') OR BD_SMOD.SMOD_NO_ETAB_USUEL IS NULL) 
-*/  
-    
-/* Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à des consultations, mais, plutôt à des suppléments monétaires associés à une demande de facturation */
-AND BD_SMOD.SMOD_COD_ACTE NOT IN (
-                      SELECT DISTINCT
-                      NMOD_COD_ACTE
-                      FROM Prod.V_RPERT_COD_ACTE
-                      WHERE NMOD_COD_GRP_ACTE IN (170, 180, 181, 182, 183, 187, 195, 196, 197, 198, 199, 854))
-
-) AS A
-
-ORDER BY 1,2
-```
-### Calcul du nombre d'acte par bénéficiaire:
-```{r}
-SELECT
-ID,
-Sum(acte) AS nb_actes
-
-FROM (
-SELECT DISTINCT
-BD_SMOD.SMOD_NO_INDIV_BEN_BANLS AS ID,
-BD_SMOD.SMOD_DAT_SERV AS Date_visite,
-BD_SMOD.DISP_NO_SEQ_DISP_BANLS,
-CASE WHEN BD_SMOD.SMOD_NO_ETAB_USUEL IS NULL THEN 99999 ELSE BD_SMOD.SMOD_NO_ETAB_USUEL END AS NO_ETAB_USUEL,
-1 AS acte
-FROM Prod.I_SMOD_SERV_MD_CM AS BD_SMOD
-            
-LEFT JOIN (
-           SELECT
-           BD_Etab.ETAB_NO_ETAB_USUEL,
-           BD_Etab.ETAB_NO_ETAB,
-           BD_Etab.ETAB_COD_POSTL,
-           BD_Decoup_Etab.LGEO_COD_RSS,
-           BD_Decoup_Etab.LGEO_COD_TERRI_RLS,
-           BD_Catg_etab.ETAB_COD_CATG_ETAB_EI,
-           BD_NomCatg_etab.ETAB_NOM_CATG_ETAB_EI
-
-           FROM Prod.V_ETAB_USUEL_DERN AS BD_Etab
-           
-           LEFT JOIN Prod.V_DECOU_GEO_POSTL_DERN_CP AS BD_Decoup_Etab
-           ON BD_Etab.ETAB_COD_POSTL=BD_Decoup_Etab.LGEO_COD_POSTL
-
-           LEFT JOIN (
-           SELECT DISTINCT
-           ETAB_NO_ETAB,
-           ETAB_COD_CATG_ETAB_EI
-
-           FROM V_ETAB_USUEL
-           QUALIFY Row_Number()Over (PARTITION BY ETAB_NO_ETAB ORDER BY ETAB_DD_ETAB_USUEL DESC)=1) AS BD_Catg_etab
-           ON BD_Etab.ETAB_NO_ETAB=BD_Catg_etab.ETAB_NO_ETAB
-           
-           LEFT JOIN Prod.V_COD_CATG_ETAB_EI AS BD_NomCatg_etab
-           ON BD_Catg_etab.ETAB_COD_CATG_ETAB_EI=BD_NomCatg_etab.ETAB_COD_CATG_ETAB_EI
-) AS BD_Etab
-ON BD_SMOD.SMOD_NO_ETAB_USUEL=BD_Etab.ETAB_NO_ETAB_USUEL
-            
-WHERE BD_SMOD.SMOD_DAT_SERV BETWEEN '",debut,"' AND '",fin,"'
-
-/*query_SQL_CodeActe.where_SMOD_COD_STA_DECIS (code_stat_decis)
-  si code_stat_decis="PAY": AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY') 
-  si code_stat_decis="PPY": AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PPY') 
-  si code_stat_decis="PAY-PPY": AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY','PPY')*/
-/*query_SQL_CodeActe.where_SMOD_COD_ACTE (CodeActe)
-  si CodeActe=NULL: extraction de tous les actes dans la période détude, sinon extraction des actes indiqués dans le vecteur CodeActe*/
-/* query_SQL_CodeActe.where_SMOD_COD_SPEC(omni_spec):
-  si omni_spec="all": extraction des actes facturés par les omni et les spécialistes
-  si omni_spec="omni": AND SMOD_COD_SPEC IS NULL
-  si omni_spec="spec": AND SMOD_COD_SPEC IS NOT NULL*/
-/* query_SQL_CodeActe.where_ETAB_COD_CATG_ETAB_EI(catg_etab),
-  si catg_etab="all": extraction des visites effectuées dans toutes les catégories détablissement confondues
-  si catg_etab="ambulatoire": AND (ETAB_COD_CATG_ETAB_EI IN ('54X', '55X', '57X', '9X2', '8X5', '4X1','0X1') OR BD_SMOD.SMOD_NO_ETAB_USUEL IS NULL) 
-*/  
-    
-/* Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à des consultations, mais, plutôt à des suppléments monétaires associés à une demande de facturation */
-AND SMOD_COD_ACTE NOT IN (
-            SELECT DISTINCT
-            NMOD_COD_ACTE
-            FROM Prod.V_RPERT_COD_ACTE
-            WHERE NMOD_COD_GRP_ACTE IN (170, 180, 181, 182, 183, 187, 195, 196, 197, 198, 199, 854))
-) AS A 
-GROUP BY ID
-ORDER BY ID
-```

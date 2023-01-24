@@ -404,9 +404,12 @@ SQL_comorbidity_diagn.V_EPISO_SOIN_DURG_CM <- function(
     }
     # Extraction des diagn selon l'année
     DT[[i]] <- as.data.table(odbc::dbGetQuery(
-      conn = conn, statement = query_V_EPISO_SOIN_DURG_CM(
-        debut = deb, fin = fi,
-        diagn = diagn, date_dx_var = date_dx_var
+      conn = conn, statement = query_V_EPISO_SOIN_DURG_CM_AG(
+        query="extraction_Dx",
+        debut = deb,
+        fin = fi,
+        diagn = diagn,
+        date_dx_var = date_dx_var
       )
     ))
     if (!is.null(ids)) {

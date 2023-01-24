@@ -15,16 +15,19 @@ user_I_SMOD_SERV_MD_CM_AG(
   omni_spec,
   catg_etab,
   code_stat_decis,
+  benef_adr,
+  date_adr,
+  date_age,
   Dx_table,
   CIM,
   by_Dx,
-  nDx,
   date_dx_var,
   n1,
   n2,
-  date_age,
-  verbose = TRUE,
-  keep_all = FALSE
+  nDx,
+  setwd,
+  keep_all = FALSE,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -45,24 +48,24 @@ user_I_SMOD_SERV_MD_CM_AG(
 
 \item{code_stat_decis}{peut prendre la valeur \code{PAY-PPY}, \code{PAY}, ou \code{PPY}}
 
+\item{date_age}{\code{"AAAA-MM-JJ"} indique la date à laquelle l'âge des bénéficaires est calculé.}
+
 \item{Dx_table}{\code{list} contenant les codes à analyser ou le nom d'une table qui est inclue dans la librairie.}
 
 \item{CIM}{\code{'CIM9'}, \code{'CIM10'} ou les deux. Permet de filtrer les codes de diagnostics selon le numéro de révision de la \emph{Classification statistique internationale des maladies et des problèmes de santé connexes} (CIM).}
 
 \item{by_Dx}{\code{TRUE} ou \code{FALSE}. Distinction entre les diagnostics (\code{TRUE}) ou pas (\code{FALSE}). Si \code{TRUE}, on considère chaque élément de \code{Dx_table} où chaque élément peut contenir plusieurs codes. Le nombre d'éléments sera donc le nombre maximal d'observations (lignes résultats) par individu.\cr Si \code{FALSE}, on considère tous les éléments de \code{Dx_Table} comme un seul, on aura donc au maximum une ligne résultat par individu.\cr Voir Détails.}
 
-\item{nDx}{Nombre de diagnostics qui doivent confirmer la 1re date. Par défaut 1.}
-
 \item{date_dx_var}{\verb{'admis} ou \code{'depar'}. Indique si on utilise la date d'admission ou la date de départ comme date de diagnostic pour l'étude dans les vues V_DIAGN_SEJ_HOSP_CM, V_SEJ_SERV_HOSP_CM et V_EPISO_SOIN_DURG_CM.}
 
 \item{n1, n2}{Nombre de jours requis pour confirmer le diagnostic}
 
-\item{date_age}{\code{"AAAA-MM-JJ"} indique la date à laquelle l'âge des bénéficaires est calculé.}
-
-\item{verbose}{\code{TRUE} ou \code{FALSE}. Affiche le temps qui a été nécessaire pour extraire les diagnostics. Utile pour suivre le déroulement de l'extraction.}
+\item{nDx}{Nombre de diagnostics qui doivent confirmer la 1re date. Par défaut 1.}
 
 \item{keep_all}{\code{TRUE} ou \code{FALSE}. Par défaut \code{FALSE}, soit filter les observations ayant eu un DX et un code d'acte. Si \code{TRUE} garder toutes les observations, soit ceux qui ont eu un DX et qui ont eu ou pas un code d'acte.
 Si \code{cohort} est fournit, keep_all \code{TRUE} garde toutes les observations demandées par \code{cohort}. Si keep_all \code{FALSE} filtrer les observations demandées par \code{cohort}qui ont eu un code d'acte.}
+
+\item{verbose}{\code{TRUE} ou \code{FALSE}. Affiche le temps qui a été nécessaire pour extraire les diagnostics. Utile pour suivre le déroulement de l'extraction.}
 }
 \value{
 \strong{Extraction des variables pertinantes de SMOD:}
@@ -92,4 +95,32 @@ La fonction \code{user_I_SMOD_SERV_MD_CM_AG} utilise plusieurs autres fonctions 
 
 \code{SQL_reperage_cond_med} pour la création de la cohorte. Voir \code{\link{SQL_reperage_cond_med}}\cr
 \code{query_V_FICH_ID_BEN_CM} pour l'extraction des caractéristiques de bénéficiaire. Voir \code{\link{query_V_FICH_ID_BEN_CM}}
+}
+\examples{
+\dontrun{
+
+DT_final<-user_I_SMOD_SERV_MD_CM_AG(
+                      task=c("extraction_SMOD","extraction_SMOD_combin","Projet_Factuartion_Acte"),
+                      conn=SQL_connexion("ms069a"),
+                      cohort = c(NULL, cohort),
+                      debut = "2020-01-01",
+                      fin = "2020-12-31",
+                      CodeActe = c('06452','06148','06154','06265','06251','06216','06208'),
+                      omni_spec="all",
+                      catg_etab="all",
+                      code_stat_decis="PAY-PPY",
+                      date_adr="2020-07-01",
+                      benef_adr="dernière_adresse",
+                      date_age="2020-07-01",
+                      Dx_table = list(Prolapsus = list(CIM9 = c('5995','6180','6181','6183'),CIM10 = c('N810','N811','N812','N813'))),
+                      CIM =c("CIM9", "CIM10"),
+                      by_Dx = FALSE,
+                      date_dx_var = "admis",
+                      n1 = 30, n2 = 730,
+                      nDx=0 ,
+                      setwd="C:/Users/MS/..."
+                      verbose = TRUE,
+                      keep_all=FALSE)
+
+}
 }

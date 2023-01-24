@@ -13,7 +13,9 @@ query_I_SMOD_SERV_MD_CM_AG(
   CodeActe,
   omni_spec,
   catg_etab,
-  code_stat_decis
+  code_stat_decis,
+  benef_adr,
+  date_adr
 )
 }
 \arguments{
@@ -46,6 +48,19 @@ chaîne de caractères, code SQL.
 \item d'extraire les diagnostics pour créer par exemple une cohorte.\cr
 \item d'extraire les dates de visites (services).\cr
 \item de calculer le nombre d'acte par bénéficiaire entre la date de début et de fin d'une étude.\cr
+}
+}
+\examples{
+\dontrun{
+DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion("ms069a"),
+statement=query_I_SMOD_SERV_MD_CM_AG (
+query= c("extraction_SMOD","extraction_SMOD_combin","extraction_Dx"),
+debut="2021-04-01",
+fin="2022-03-31",
+CodeActe=c('07122', '07237', '07800', '07089', '0780'),
+code_stat_decis=c("PAY","PPY"),
+benef_adr=c("date_fixe","dernière_adresse","première_adresse","long_adresse"),
+date_adr="2021-07-01" # à préciser lorsque l'argument benef_adr="date_fixe")))
 }
 }
 \keyword{internal}

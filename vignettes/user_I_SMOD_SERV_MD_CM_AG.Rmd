@@ -2,7 +2,7 @@
 title: "user_I_SMOD_SERV_MD_CM_AG"
 #subtitle: ""
 author: "Auteurs: Ahmed Ghachem"
-date: "Date de création: 10 janvier 2023"
+date: "Date de création: 23 janvier 2023"
 output:
   rmarkdown::html_vignette:
     number_sections: true
@@ -62,22 +62,28 @@ La fonction `user_I_SMOD_SERV_MD_CM_AG` est destinée aux utilisateurs. Elle per
 
 1) d'extraire les variables pertinantes de la base de données SMOD. <br/>
 2) d'extraire les variables pertinantes de la base de données SMOD, jumlées avec d'autres bases de données pour rajouter les caractéristiques de dispensateur, du bénéficiaire et de l'établissement de soins. <br/>
-3) d'extraire les dates de visites (services). <br/>
-4) de calculer le nombre d'acte par bénéficiaire entre la date de début et de fin d'une étude. <br/>
+3) d'effectuer des analyses déscriptives des actes médicaux. <br/>
 
 La fonction `user_I_SMOD_SERV_MD_CM_AG` est une `child_function` qui permet d'exécuter les requêtes SQL générées par les `parent_function` suivantes:<br/>
 [SQL_reperage_cond_med](SQL_reperage_cond_med.html)<br/>
 [query_I_SMOD_SERV_MD_CM_AG](query_I_SMOD_SERV_MD_CM_AG.html)<br/>
 [query_V_FICH_ID_BEN_CM](query_V_FICH_ID_BEN_CM.html)<br/>
 
-Si la cohorte n'est pas fournie par l'analyste, la fonction `user_I_SMOD_SERV_MD_CM_AG` exécute trois principales étapes: <br/>
+Si la cohorte n'est pas fournie par le professionnel scientifique, mais on veut créer une cohorte en utilisant les Dx cim-9 et/ou cim-10:<br/>
+si `task="extraction_SMOD"` ou `task="extraction_SMOD_combin"`:
+
+la fonction `user_I_SMOD_SERV_MD_CM_AG` exécute trois principales étapes: <br/>
 1) la création de la cohorte de l'étude en utilisant les Dx cim-9 et/ou cim-10 via la fonction `SQL_reperage_cond_med`<br/> 
 2) l'extraction des actes pour cette cohorte via la fonction `query_I_SMOD_SERV_MD_CM_AG`<br/>
 3) l'ajout des caractéristiques des dispensateurs, des benéficiaires ainsi que de l'établissement de soins.<br/> 
 
-Si non les étapes 2 et 3 sont exécutées directement.<br/> 
+si `task="projet_factuartion_acte"`: <br/>
+4) la production des tableaux et figures pour les analyses déscriptives des actes médicaux.<br/>  
 
-## Usage de la fonction
+Si la cohorte n'est pas fournie par le professionnel scientifique, et on ne veut pas créer une cohorte en utilisant les Dx cim-9 et/ou cim-10: <br/>
+l'étape 1 est ignorée et les étapes 2, 3 et 4 sont exécutées en fonction de la nature de l'argument `task` <br/> 
+
+## La fonction
 
 ```{r, eval=FALSE}
 
@@ -87,18 +93,21 @@ user_I_SMOD_SERV_MD_CM_AG(task,
                           debut,
                           fin,
                           CodeActe,
-                          code_stat_decis,
                           omni_spec, # à spécifier pour les task ("extraction_SMOD_combin","date_visite","calcul_Nb_acte")
                           catg_etab, # à spécifier pour les task ("extraction_SMOD_combin","date_visite","calcul_Nb_acte")
-                          Dx_table, # si la cohorte n'est pas fournie par l'analyse et nous ne voulons pas créer une nouvelle cohorte (Dx_table=NULL)
+                          code_stat_decis,
+                          benef_adr,
+                          date_adr, # à spécifier lorsque benef_adr="date_fixe"
+                          date_age, # à spécifier lorsque keep_all=TRUE
+                          Dx_table, # si la cohorte n'est pas fournie par le professionnel scientifique et nous ne voulons pas créer une nouvelle cohorte (Dx_table=NULL)
                           CIM,
                           by_Dx,
-                          nDx,
                           date_dx_var,
                           n1,n2,
-                          date_age, # à spécifier pour les task ("extraction_SMOD_combin","date_visite","calcul_Nb_acte")
-                          verbose=TRUE,
-                          keep_all=FALSE)
+                          nDx,
+                          setwd,
+                          keep_all=FALSE,
+                          verbose=TRUE)
 ```
 
 ## Définition des arguments
@@ -127,26 +136,69 @@ Vecteur comprenant les codes d'acte d'interêt.
 CodeActe = c('06452','06148','06154','06265','06251','06216','06208','06164','06270','06276')
 ```
 
-### code_stat_decis
-Permet d'extraire les actes selon leurs statuts de paiement.
-```{r}
-code_stat_decis=c("PAY","PPY")
-```
-
 ### omni_spec
 Permet d'extraire les actes facturés par les omnipraticiens et/ou les spécialistes.
 ```{r}
 omni_spec="all"
 omni_spec="omni"
 omni_spec="spec"
+
+# code sql:
+# Si omni_spec="omni": AND BD_SMOD.SMOD_COD_SPEC IS NULL 
+# Si omni_spec="spec": AND BD_SMOD.SMOD_COD_SPEC IS NOT NULL 
 ```
 
 ### catg_etab
-      
 Permet d'extraire les dates de visites selon la catégorie de l'établissement.
 ```{r, eval=FALSE}
 catg_etab="all" # les visites effectuées dans toutes les catégories d'établissement confondues
 catg_etab="ambulatoire" # les visites effectuées en ambilatoire
+
+# Code sql:
+# Si catg_etab="ambulatoire"; AND (BD_Etab.ETAB_COD_CATG_ETAB_EI IN ('54X', '55X', '57X', '9X2', '8X5', '4X1','0X1') OR BD_SMOD.SMOD_NO_ETAB_USUEL IS NULL)
+```
+
+### code_stat_decis
+Permet d'extraire les actes selon leurs statuts de paiement.
+```{r}
+code_stat_decis=c("PAY","PPY")
+```
+
+
+
+
+### benef_adr
+Permet de définir la méthode d'identification de l'adresse de bénéficiaire.
+```{r}
+benef_adr=c("date_fixe","dernière_adresse","première_adresse","long_adresse")
+
+# code sql:
+# si benef_adr="date_fixe": AND '",date_adr,"' between BENF_DD_ADR_BEN AND BENF_DF_ADR_BEN
+# si benef_adr="dernière_adresse": QUALIFY Row_Number()Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN DESC)=1
+# si benef_adr="première_adresse": QUALIFY Row_Number()Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN ASC)=1 
+# si benef_adr="long_adresse":
+# CASE
+# WHEN (BENF_DD_ADR_BEN <= '",debut,"' AND BENF_DF_ADR_BEN >= '",fin,"') THEN DATE '",fin,"' - DATE '",debut,"' + 1
+# WHEN (BENF_DD_ADR_BEN >= '",debut,"' AND BENF_DF_ADR_BEN >= '",fin,"') THEN DATE '",fin,"' - BENF_DD_ADR_BEN
+# WHEN (BENF_DD_ADR_BEN <= '",debut,"' AND BENF_DF_ADR_BEN <= '",fin,"') THEN BENF_DF_ADR_BEN - DATE '",debut,"'
+# WHEN (BENF_DD_ADR_BEN >= '",debut,"' AND BENF_DF_ADR_BEN <= '",fin,"') THEN BENF_DF_ADR_BEN - BENF_DD_ADR_BEN
+# ELSE 0
+# END AS days_count,
+# ROW_NUMBER() OVER (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY days_count DESC) AS row_num
+# WHERE A.row_num=1
+
+```
+
+### date_adr
+Si `benef_adr`="date_fixe", `date_adr` permet de choisir une date fixe pour identifier l'adresse de bénéficiaire. 
+```{r}
+date_adr="2020-07-01"
+```
+
+### date_age 
+Permet d'indiquer une date `"AAAA-MM-JJ"` à laquelle l'âge des bénéficaires qui n'ont pas eu d'acte est calculé. L'âge de bénéficiaires qui ont eu un acte à l'intérieur de la période de l'étude est calculé à la date de l'acte.  
+```{r}
+date_age="2020-03-01"
 ```
 
 ### Dx_table
@@ -207,41 +259,119 @@ n1 = 30
 n2 = 730
 ```
 
-### date_age 
-Permet d'indiquer une date `"AAAA-MM-JJ"` à laquelle l'âge des bénéficaires qui n'ont pas eu d'acte est calculé.
+
+### setwd 
+Permet d'indiquer le chemin vers le dossier dans lequel les résultats de la fonction seront sauvegardés. Si `setwd`="NULL", les résultats seront seulement affichés dans l'environnement du Rstudio.  
 ```{r}
-date_age="2022-03-01"
+setwd="V:/GI/Projets/4.Projets_en_cours/Nom_dossier"
 ```
-### verbose
-`TRUE` ou `FALSE`. Message de progression affiché dans la console.
-
-Création de la cohorte:<br/>
-nDx=0 : Extraction des résultats (Pas de confirmation nécessaire).<br/>
-V_DIAGN_SEJ_HOSP_CM <br/>
- - Prolapsus (2.92 secs)<br/>
-V_SEJ_SERV_HOSP_CM <br/>
- - Prolapsus (1.47 secs)<br/>
-V_EPISO_SOIN_DURG_CM <br/>
- - Prolapsus (2.32 secs)<br/>
-I_SMOD_SERV_MD_CM <br/>
- - Prolapsus (7.82 secs)
-Arrangement de la table finale...<br/>
-FIN de création de la cohorte.<br/>
-Extraction des actes:<br/>
- - Temps d'exécution (15.18 secs)<br/>
-Ajout des caractéristiques des bénéficiaires qui n'ont pas eu d'acte dans la période d'étude:<br/>
- - Temps d'exécution (5.27 mins)<br/>
-Préparation de la base de données finale:<br/>
- - Temps d'exécution (9.36 secs)<br/>
-
 
 ### keep_all
 `TRUE` ou `FALSE`. Par défaut `FALSE`, soit filter les observations ayant eu un DX et un code d'acte. Si `TRUE` garder toutes les observations, soit ceux qui ont eu un DX et qui ont eu ou pas un code d'acte. Si `cohort` est fournit, keep_all `TRUE` garde toutes les observations demandées par `cohort`. Si keep_all `FALSE` filtrer les observations demandées par `cohort`qui ont eu un code d'acte.
 
 ---
+### verbose
+`TRUE` ou `FALSE`. Message de progression affiché dans la console.
+
+Étape 1: Extraction des actes pour les bénéficiaires ayant eu un acte à l'intérieure de la péride de l'étude:<br/>
+- Temps d'exécution (30.24 secs)<br/> 
+ 
+Étape 2: Préparation de la base de données finale:<br/>
+Garder les IDs qui ont eu un code d'acte à l'intérieure de la période de l'étude<br/> 
+
+Étape 3: Rajouter les étiquettes pour `SMOD_COD_ROLE`, `SMOD_COD_SPEC`, `ETAB_COD_SECT_ACTIV_ETAB`, `SMOD_COD_ENTEN` et `Dx`:<br/>
+- Temps d'exécution (0.84 secs)<br/> 
+ 
+Étape 4: Préparation des tableaux et des figures pour les analyses discriptives des actes:<br/>
+Tableau 1: Variation du nombre d'acte par année civille <br/>
+- Temps d'exécution (0.67 secs)<br/> 
+ 
+Tableau 2: Variation du nombre d'acte par spécialité de dispensateur <br/>
+- Temps d'exécution (0.04 secs)<br/> 
+ 
+Tableau 3: Variation du nombre d'acte par lieu de service <br/>
+- Temps d'exécution (0.05 secs)<br/> 
+ 
+Tableau 4: Fréquence des combinaisons d'actes facturés par le même disp, à la même date pour le même benef<br/>
+- Temps d'exécution (2.18 secs)<br/> 
+ 
+Tableau 5: Nombre de répétion d'acte  par (ID, DateActe, NumDispSp) et (ID, DateActe)<br/>
+- Temps d'exécution (1.02 secs)<br/> 
+ 
+Figure 1: variation des coûts de facturation par acte <br/>  
+ 
+Étape 5: Sauvegarde des BD et figures dans: C:/Users/MS069/Desktop/Ahmed/Pojet_Factur_Acte<br/> 
+
+
+
+
+
+
+## Usage de la fonction
+```{r}
+DT_final<-user_I_SMOD_SERV_MD_CM_AG(
+  task=c("extraction_SMOD","extraction_SMOD_combin","Projet_Factuartion_Acte"), 
+# choisissez une des trois options
+  conn=SQL_connexion("ms069a"), 
+# indiquez votre ms.. ramq. À l'exécusion de la fonction une fenêtre s'affichera pour vous demander votre mot de passe teradata
+  cohort = NULL, 
+# 1) cohort=cohort, permet d'extraire des actes pour une cohorte prédéfinie. cohort est un vecteur avec les Ids. ** Le vecteur doit absolument être nomé cohort **. 
+# 2) cohort=NULL et Dx_table=NULL, permet d'extraire tous les bénéf ayant eu des actes à l'intérieur de la période d'étude 
+  debut = "2021-04-01",
+  fin = "2022-03-31",
+  CodeActe=c('06452','06148','06154','06265','06251','06216'),
+  omni_spec="all",
+# à définir pour les task extraction_SMOD_combin et Projet_Factuartion_Acte
+# 1) omni_spec="all", permet d'extraire les actes peut importe la spécialité de dispensateur
+# 2) omni_spec="spec", permet d'extraire les actes facturés par les spécialistes
+# 3) omni_spec="omni", permet d'extraire les actes facturés par les omnipraticiens
+  catg_etab="all",
+# à définir pour les task extraction_SMOD_combin et Projet_Factuartion_Acte
+# 1) catg_etab="all", permet d'extraire les actes peut importe l'établissement de soins
+# 2) catg_etab="ambulatoire", permet d'extraire les actes peut importe l'établissement de soins
+  code_stat_decis=c("PAY","PPY"),
+# permet d'extraire les actes payés et/ou prépayés
+  benef_adr="dernière_adresse",
+# à définir pour les task extraction_SMOD_combin et Projet_Factuartion_Acte
+# 1) benef_adr="date_fixe", permet de cibler l'adresse de bénéf à une date fixe
+# 2) benef_adr="première_adresse", permet de cibler la première adresse de bénéf pour la periode d'étude
+# 3) benef_adr="dernière_adresse", permet de cibler la dernière adresse de bénéf pour la periode d'étude
+# 4) benef_adr="long_adresse", permet de cibler l'adresse oû le bénéf à demeurer le plus longtemps
+  date_adr="2021-07-01",
+# à définir lorsque benef_adr="date_fixe"
+  date_age="2020-07-01",
+# à définir lorsque keep_all="TRUE"
+# ceci permet de calculer l'âge des bénéf qui sont inclus dans la cohorte prédéfinie, mais qu'ils n'ont pas eu d'acte pendant la periode de l'étude
+  verbose = TRUE,
+# permet d'afficher un message de progression dans la console 
+  keep_all=FALSE,
+# keep_all=FALSE, permet de selectionner seulement les ids de la cohorte ayant eu un acte pendant la période de l'étude
+# keep_all=TRUE, permet de selectionner tous les ids de la cohorte ayant eu ou pas un acte pendant la période de l'étude
+  setwd="C:/Users/MS069/Desktop/Ahmed/Pojet_Factur_Acte",
+# permet d'indiquer le chemin du dossier dans lequel les résultats vont être sauvegardés 
+
+# Les arguments ci-dessous sont de la fonction SQL_reperage_cond_med. À préciser si on veut créer une cohorte en utilisant les Dx cim-9 et/ou cim-10.   
+  Dx_table=NULL,
+# list contenant les codes diagnostics CIM9 et CIM10.
+# exemple: Dx_table = list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), "%"), CIM10 = paste0("J", 41:44, "%"))),
+  CIM =  c("CIM9", "CIM10"),
+# Permet de choisir le type de code diagnostic : CIM9, CIM10 ou les deux.
+  by_Dx = FALSE,
+# à partir de DX_table créé précédemment, si TRUE, on aurait au maximum deux lignes par individu où la colonne DIAGN indiquerait diabete ou diabete_complication.
+# Si FALSE, on a au maximum une ligne par individu et la colonne DIAGN est absente, car les codes de diabete et diabete_complication sont considérés comme un seul élément d’analyse dans l’algorithme.
+  date_dx_var = "admis",
+# Permet de choisir entre la date d’admission ou la date de départ comme date d’incidence dans les vues suivantes : V_DIAGN_SEJ_HOSP_CM, V_SEJ_SERV_HOSP_CM, V_EPISO_SOIN_DURG_CM
+  n1 = 30, n2 = 730,
+# Permet de créer l’intervalle [n1, n2]. Le nombre de jours entre deux diagnostics doit se situer dans cet intervalle pour que le deuxième diagnostic confirme le premier.
+  nDx = 0
+# Permet de choisir le nombre de diagnostic qui permet de confirmer le premier.
+)
+```
+
 # Table Résultante
-## Variables
-### Extraction des variables pertinantes de SMOD:
+## `task="extraction_SMOD"`
+Extraction des variables pertinantes de SMOD. Une base de données avec 19 variables.
+
 - **ID** : Numéro d'identification du bénéficiaire. <br/>
 - **AnFinan** : Année financière de l'acte. <br/>
 - **AnCivil** : Année civile de l'acte. <br/>
@@ -256,13 +386,15 @@ Préparation de la base de données finale:<br/>
 - **SMOD_COD_ENTEN** : Code d'entente sert à associer les dispensateurs à un groupe spécifique.<br/>
 - **Num_ETAB_USUEL** : Numéro de l'établissement. <br/>
 - **ETAB_COD_SECT_ACTIV_ETAB** : Identifie de façon unique chacun des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.<br/>
-- **Desc_SMOD_COD_ROLE** : Description Code des rôles selon l'entent. <br/>           
+- **Desc_SMOD_COD_ROLE** : Description Code des rôles selon l'entent. <br/>
 - **Desc_SMOD_COD_SPEC** : Description Spécialité de dispensateur indiqué dans `SMOD`. <br/>
 - **Desc_ETAB_COD_SECT_ACTIV_ETAB** : Description des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.<br/>
 - **Desc_SMOD_COD_ENTEN** : Description de Code d'entente sert à associer les dispensateurs à un groupe spécifique.<br/>
 - **Desc_DxActe** : Descrition de diagnostique associé à l'acte. <br/> 
 
-### Extraction des variables pertinantes de SMOD combinées avec d'autres bases de données:
+## `task="extraction_SMOD_combin"`
+ Extraction des variables pertinantes de SMOD combinées avec les caractéristiques du bénéf et de l'établissement. Une base de données avec 39 variables.
+
 - **ID** : Numéro d'identification du bénéficiaire. <br/>
 - **DI_Finale** : Date d'incidence retenue. # Sil y a création d'une nouvelle cohorte <br/>
 - **D_Recent** : Date la plus récente observée. # Sil y a création d'une nouvelle cohorte <br/>
@@ -295,49 +427,27 @@ Préparation de la base de données finale:<br/>
 - **RLS_Benef** : Réseaux locaux de services (RLS) du bénéficiaire. <br/>
 - **NomRSS_Benef** : Nom régions sociosanitaires (RSS) du bénéficiaire. <br/>
 - **NomRLS_Benef** : Nom réseaux locaux de services (RLS) du bénéficiaire. <br/>
-- **Desc_SMOD_COD_ROLE** : Description Code des rôles selon l'entent. <br/>           
+- **Desc_SMOD_COD_ROLE** : Description Code des rôles selon l'entent. <br/>
 - **Desc_SMOD_COD_SPEC** : Description Spécialité de dispensateur indiqué dans `SMOD`. <br/>
 - **Desc_ETAB_COD_SECT_ACTIV_ETAB** : Description des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.<br/>
 - **Desc_SMOD_COD_ENTEN** : Description de Code d'entente sert à associer les dispensateurs à un groupe spécifique.<br/>
 - **Desc_DxActe** : Descrition de diagnostique associé à l'acte. <br/> 
 
+## `task="projet_factuartion_acte"`
+Même résultat que `task`="extraction_SMOD_combin" + Analyses descriptives des actes médicaux. Une base de données de 39 variables avec 5 tableaux et une figure. <br/>
+Les résultats de la `task`="projet_factuartion_acte" seront sous forme d'une liste `DT_final` avec 6 éléments, soient: <br/> 
 
-### Extraction des dates de visites:
-
-- **ID** : Numéro d'identification du bénéficiaire. <br/>
-- **DI_Finale** : Date d'incidence retenue. # Sil y a création d'une nouvelle cohorte <br/>
-- **D_Recent** : Date la plus récente observée. # Sil y a création d'une nouvelle cohorte <br/>
-- **Date_visite** : Dates de visite. Un bénéficiaire pourrait avoir plus qu'une date de visite (select distinct par ID, date et numéro du dispensateur).<br/>
-- **Sexe** : Sexe du bénéficiaire. <br/>
-- **DatNais** : Date de naissance du bénéficiaire au format *AAAA-MM-JJ*. <br/>
-- **datdeces** : Date de décès du bénéficiaire au format *AAAA-MM-JJ*. <br/>
-- **Age** : Age du bénéficiaire calculé jusqu'à la date de l'acte. <br/>
-- **RSS_Benf** : Régions sociosanitaires (RSS) du bénéficiaire. <br/>
-- **RLS_Benef** : Réseaux locaux de services (RLS) du bénéficiaire. <br/>
-- **NomRSS_Benef** : Nom régions sociosanitaires (RSS) du bénéficiaire. <br/>
-- **NomRLS_Benef** : Nom réseaux locaux de services (RLS) du bénéficiaire. <br/>
-
-### Calcul du nombre d'acte par bénéficiaire:
-
-- **ID** : Numéro d'identification du bénéficiaire. <br/>
-- **DI_Finale** : Date d'incidence retenue. # Sil y a création d'une nouvelle cohorte <br/>
-- **D_Recent** : Date la plus récente observée. # Sil y a création d'une nouvelle cohorte <br/>
-- **nb_actes** : Nombre d'acte par bénéficiaire (select distinct par ID, date et numéro du dispensateur). <br/>
-- **Sexe** : Sexe du bénéficiaire. <br/>
-- **DatNais** : Date de naissance du bénéficiaire au format *AAAA-MM-JJ*. <br/>
-- **datdeces** : Date de décès du bénéficiaire au format *AAAA-MM-JJ*. <br/>
-- **Age** : Age du bénéficiaire calculé jusqu'à la date de l'acte. <br/>
-- **RSS_Benf** : Régions sociosanitaires (RSS) du bénéficiaire. <br/>
-- **RLS_Benef** : Réseaux locaux de services (RLS) du bénéficiaire. <br/>
-- **NomRSS_Benef** : Nom régions sociosanitaires (RSS) du bénéficiaire. <br/>
-- **NomRLS_Benef** : Nom réseaux locaux de services (RLS) du bénéficiaire. <br/>
-
-***
+**DT_final**: Base de données incluant les variables extraites via la `task`="extraction_SMOD_combin" <br/> 
+**Tableau 1**: Variation du nombre d'acte par année civille <br/> 
+**Tableau 2**: Variation du nombre d'acte par spécialité de dispensateur <br/> 
+**Tableau 3**: Variation du nombre d'acte par lieu de service <br/>
+**Tableau 4**: Fréquence des combinaisons d'actes facturés par le même disp, à la même date pour le même benef<br/>
+**Tableau 5**: Nombre de répétion d'acte  par (ID, DateActe, NumDispSp) et (ID, DateActe) <br/>
+**Figure 1**: Variation des coûts de facturation par acte <br/> 
 
 
 # Discription de la syntaxe SQL
-    
-Veuillez-svp consulter les vignettes des `parent_function` suivantes:
+Veuillez-svp consulter les vignettes `parent_function` suivantes:<br/>
 
 [SQL_reperage_cond_med](SQL_reperage_cond_med.html)<br/> 
 [query_I_SMOD_SERV_MD_CM_AG](query_I_SMOD_SERV_MD_CM_AG.html)<br/>
