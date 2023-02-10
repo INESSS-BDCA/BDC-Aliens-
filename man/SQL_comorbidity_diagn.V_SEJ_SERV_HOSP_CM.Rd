@@ -8,8 +8,8 @@ SQL_comorbidity_diagn.V_SEJ_SERV_HOSP_CM(
   conn,
   ids,
   diagn,
-  debut,
-  fin,
+  debut_cohort,
+  fin_cohort,
   diag_desc,
   sourc_desc,
   date_dx_var

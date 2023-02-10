@@ -23,7 +23,7 @@
 #' @export
 #' @examples
 #' EX1_default <- SQL_reperage_cond_med(
-#'   conn = conn, debut = "2020-01-01", fin = "2020-12-31",
+#'   conn = conn, debut_cohort = "2020-01-01", fin_cohort = "2020-12-31",
 #'   Dx_table = list(
 #'     diabete = list(
 #'       CIM9 = c("2500%", "2501%", "2502%"),
@@ -40,7 +40,7 @@
 #'   nDx = 1
 #' )
 #' EX2_nDx0 <- SQL_reperage_cond_med(
-#'   conn = conn, debut = "2020-01-01", fin = "2020-12-31",
+#'   conn = conn, debut_cohort = "2020-01-01", fin_cohort = "2020-12-31",
 #'   Dx_table = list(
 #'     diabete = list(
 #'       CIM9 = c("2500%", "2501%", "2502%"),
@@ -55,7 +55,7 @@
 #'   nDx = 0
 #' )
 #' EX3_nDx2 <- SQL_reperage_cond_med(
-#'   conn = conn, debut = "2020-01-01", fin = "2020-12-31",
+#'   conn = conn, debut_cohort = "2020-01-01", fin_cohort = "2020-12-31",
 #'   Dx_table = list(
 #'     diabete = list(
 #'       CIM9 = c("2500%", "2501%", "2502%"),
@@ -70,7 +70,7 @@
 #'   nDx = 2
 #' )
 #' EX4_byDxFALSE_nDx0 <- SQL_reperage_cond_med(
-#'   conn = conn, debut = "2020-01-01", fin = "2020-12-31",
+#'   conn = conn, debut_cohort = "2020-01-01", fin_cohort = "2020-12-31",
 #'   Dx_table = list(
 #'     diabete = list(
 #'       CIM9 = c("2500%", "2501%", "2502%"),
@@ -85,7 +85,7 @@
 #'   by_Dx = FALSE, nDx = 0
 #' )
 #' EX5_byDxFALSE_nDx2 <- SQL_reperage_cond_med(
-#'   conn = conn, debut = "2020-01-01", fin = "2020-12-31",
+#'   conn = conn, debut_cohort = "2020-01-01", fin_cohort = "2020-12-31",
 #'   Dx_table = list(
 #'     diabete = list(
 #'       CIM9 = c("2500%", "2501%", "2502%"),
@@ -101,7 +101,7 @@
 #' )
 SQL_reperage_cond_med <- function(
     conn = SQL_connexion(),
-    debut,fin,
+    debut_cohort,fin_cohort,
     Dx_table,
     CIM = c("CIM9", "CIM10"),
     nDx = 1,
@@ -137,7 +137,7 @@ SQL_reperage_cond_med <- function(
     }
     Dx_etape1 <- SQL_diagn(
       conn = conn, cohort = NULL,
-      debut = debut, fin = fin,
+      debut_cohort = debut_cohort, fin_cohort = fin_cohort,
       Dx_table = Dx_table, CIM = CIM,
       dt_source = c("V_DIAGN_SEJ_HOSP_CM", "V_SEJ_SERV_HOSP_CM"),
       dt_desc = list(V_DIAGN_SEJ_HOSP_CM = "MEDECHO", V_SEJ_SERV_HOSP_CM = "MEDECHO"),
@@ -183,7 +183,7 @@ SQL_reperage_cond_med <- function(
   }
   Dx_etape2 <- SQL_diagn(
     conn = conn, cohort = NULL,
-    debut = debut, fin = fin,
+    debut_cohort = debut_cohort, fin_cohort = fin_cohort,
     Dx_table = Dx_table, CIM = CIM,
     dt_source = c("V_DIAGN_SEJ_HOSP_CM", "V_SEJ_SERV_HOSP_CM",
                   "V_EPISO_SOIN_DURG_CM", "I_SMOD_SERV_MD_CM"),
@@ -254,7 +254,7 @@ SQL_reperage_cond_med <- function(
   }
 
   if (verbose) {
-    cat("Arrangement de la table finale...\n")
+    cat("Arrangement de la table fin_cohortale...\n")
   }
   ### Dernière date Dx de chaque ID
   if (!is.null(Dx_etape1) && !is.null(Dx_etape2)) {
@@ -282,64 +282,64 @@ SQL_reperage_cond_med <- function(
     }
   }
 
-  ### Combiner les datasets pour table finale
+  ### Combiner les datasets pour table fin_cohortale
   if (is.null(Dx_recent)) {
     return(NULL)
   } else {
-    dt_final <- copy(Dx_recent)
+    dt_fin_cohortal <- copy(Dx_recent)
     if (by_Dx) {
       if (!is.null(Dx_etape1)) {
-        dt_final <- Dx_etape1[dt_final, on = .(ID, DIAGN)]
+        dt_fin_cohortal <- Dx_etape1[dt_fin_cohortal, on = .(ID, DIAGN)]
       }
       if (!is.null(Dx_etape2)) {
-        dt_final <- Dx_etape2[dt_final, on = .(ID, DIAGN)]
+        dt_fin_cohortal <- Dx_etape2[dt_fin_cohortal, on = .(ID, DIAGN)]
       }
     } else {
       if (!is.null(Dx_etape1)) {
-        dt_final <- Dx_etape1[dt_final, on = .(ID)]
+        dt_fin_cohortal <- Dx_etape1[dt_fin_cohortal, on = .(ID)]
       }
       if (!is.null(Dx_etape2)) {
-        dt_final <- Dx_etape2[dt_final, on = .(ID)]
+        dt_fin_cohortal <- Dx_etape2[dt_fin_cohortal, on = .(ID)]
       }
     }
     # Ajouter les colonnes manquantes (si Dx_etape 1 ou 2 n'existe pas)
     if (nDx > 0) {
-      for (col in c("ID", "DIAGN", "DI_Finale", "DI_Hospit", "DI_Acte", paste0("DC_Acte", 1:nDx), "D_Recent")) {
-        if (!any(names(dt_final) == col)) {
-          dt_final[, (col) := NA]
+      for (col in c("ID", "DIAGN", "DI_fin_cohortale", "DI_Hospit", "DI_Acte", paste0("DC_Acte", 1:nDx), "D_Recent")) {
+        if (!any(names(dt_fin_cohortal) == col)) {
+          dt_fin_cohortal[, (col) := NA]
         }
       }
     }
-    dt_final[, DI_Finale := DI_Acte]
+    dt_fin_cohortal[, DI_fin_cohortale := DI_Acte]
     if (nDx > 0) {
-      dt_final[is.na(DI_Acte), DI_Finale := DI_Hospit]
-      dt_final[DI_Hospit < DI_Acte, DI_Finale := DI_Hospit]
+      dt_fin_cohortal[is.na(DI_Acte), DI_fin_cohortale := DI_Hospit]
+      dt_fin_cohortal[DI_Hospit < DI_Acte, DI_fin_cohortale := DI_Hospit]
     } else {
-      dt_final[, DI_Acte := NULL]
+      dt_fin_cohortal[, DI_Acte := NULL]
     }
 
     if (nDx > 0) {
       if (by_Dx) {
-        setcolorder(dt_final, c("ID", "DIAGN", "DI_Finale", "DI_Hospit", "DI_Acte", paste0("DC_Acte", nDx), "D_Recent"))
+        setcolorder(dt_fin_cohortal, c("ID", "DIAGN", "DI_fin_cohortale", "DI_Hospit", "DI_Acte", paste0("DC_Acte", nDx), "D_Recent"))
       } else {
-        setcolorder(dt_final, c("ID", "DI_Finale", "DI_Hospit", "DI_Acte", paste0("DC_Acte", 1:nDx), "D_Recent"))
+        setcolorder(dt_fin_cohortal, c("ID", "DI_fin_cohortale", "DI_Hospit", "DI_Acte", paste0("DC_Acte", 1:nDx), "D_Recent"))
       }
     } else {
       if (by_Dx) {
-        setcolorder(dt_final, c("ID", "DIAGN", "DI_Finale", "D_Recent"))
+        setcolorder(dt_fin_cohortal, c("ID", "DIAGN", "DI_fin_cohortale", "D_Recent"))
       } else {
-        setcolorder(dt_final, c("ID", "DI_Finale", "D_Recent"))
+        setcolorder(dt_fin_cohortal, c("ID", "DI_fin_cohortale", "D_Recent"))
       }
     }
 
     if (verbose) {
-      cat("FIN de création de la cohorte.\n")
+      cat("fin_cohort de création de la cohorte.\n")
     }
 
     if (keep_all) {
-      return(dt_final)
+      return(dt_fin_cohortal)
     } else {
-      return(dt_final[!is.na(DI_Finale)])
+      return(dt_fin_cohortal[!is.na(DI_fin_cohortale)])
     }
 
   }

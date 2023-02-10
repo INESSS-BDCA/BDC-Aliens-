@@ -15,7 +15,7 @@
 #'
 #' @inherit SQL_comorbidity_diagn examples
 SQL_diagn <- function(
-    conn = SQL_connexion(), cohort = NULL, debut, fin,
+    conn = SQL_connexion(), cohort = NULL, debut_cohort, fin_cohort,
     Dx_table, CIM = c('CIM9', 'CIM10'),
     dt_source = c('V_DIAGN_SEJ_HOSP_CM', 'V_SEJ_SERV_HOSP_CM',
                   'V_EPISO_SOIN_DURG_CM', 'I_SMOD_SERV_MD_CM'),
@@ -26,7 +26,7 @@ SQL_diagn <- function(
 ) {
   ### Même fonction que SQL_comorbidity_diagn
   return(SQL_comorbidity_diagn(
-    conn, cohort, debut, fin, Dx_table, CIM,
+    conn, cohort, debut_cohort, fin_cohort, Dx_table, CIM,
     dt_source, dt_desc,
     date_dx_var, typ_diagn,
     exclu_diagn, verbose,code_stat_decis

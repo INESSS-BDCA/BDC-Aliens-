@@ -8,8 +8,8 @@
 SQL_comorbidity_diagn(
   conn = SQL_connexion(),
   cohort,
-  debut,
-  fin,
+  debut_cohort,
+  fin_cohort,
   Dx_table = "Combine_Dx_CCI_INSPQ18",
   CIM = c("CIM9", "CIM10"),
   dt_source = c("V_DIAGN_SEJ_HOSP_CM", "V_SEJ_SERV_HOSP_CM", "V_EPISO_SOIN_DURG_CM",
@@ -28,9 +28,9 @@ SQL_comorbidity_diagn(
 
 \item{cohort}{Cohorte d'étude. Vecteur comprenant les numéros d'identification des individus à conserver.}
 
-\item{debut}{Date de début de la période d'étude au format \code{AAAA-MM-JJ}.}
+\item{debut_cohort}{Date de début de la période pour la création d'une cohorte au format \code{"AAAA-MM-JJ"}.}
 
-\item{fin}{Date de fin de la période d'étude au format \code{AAAA-MM-JJ}.}
+\item{fin_cohort}{Date de fin de la période pour la création d'une cohorte au format \code{"AAAA-MM-JJ"}.}
 
 \item{Dx_table}{\code{list} contenant les codes à analyser ou le nom d'une table qui est inclue dans la librairie.}
 

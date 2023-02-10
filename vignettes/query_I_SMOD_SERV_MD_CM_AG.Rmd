@@ -511,6 +511,9 @@ WHERE BD_SMOD.SMOD_DAT_SERV BETWEEN '",debut,"' AND '",fin,"'
 /* "query_SQL_CodeActe.where_SMOD_COD_ACTE (CodeActe)
   si CodeActe=NULL: extraction de tous les actes dans la période détude, sinon extraction des actes indiqués dans le vecteur CodeActe" */
 
+/* "query_I_SMOD_SERV_MD_CM.diagn(diagn) 
+  à préciser si on veut extraire des actes pour des bénéficiaires ayant un ou plusieurs Dx spécifiques" */
+
 /* "query_SQL_CodeActe.where_SMOD_COD_SPEC(omni_spec):
   si omni_spec="all": extraction des actes facturés par les omni et les spécialistes
   si omni_spec="omni": AND SMOD_COD_SPEC IS NULL

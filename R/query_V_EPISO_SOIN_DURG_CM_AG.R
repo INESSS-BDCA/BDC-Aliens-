@@ -2,8 +2,8 @@
 #'
 #' @description Générateur de code SQL pour l'extraction de diagnostics de la vue `V_EPISO_SOIN_DURG_CM`.
 #'
-#' @param debut Date de début de la période d'étude.
-#' @param fin Date de fin de la période d'étude.
+#' @param debut_cohort Date de début de la période d'étude.
+#' @param fin_cohort Date de fin de la période d'étude.
 #' @param diagn `vector` indiquant les codes de diagnostics *CIM9* et/ou *CIM10* à extraire.
 #' @param date_dx_var `'admis'` ou `'depar'`. Indique si on utilise la date d'admission ou la date de départ comme date de diagnostic pour l'étude.
 #'
@@ -12,7 +12,7 @@
 #' @encoding UTF-8
 #' @export
 #'
-query_V_EPISO_SOIN_DURG_CM_AG <- function(query,debut,fin, diagn, date_dx_var) {
+query_V_EPISO_SOIN_DURG_CM_AG <- function(query,debut_cohort,fin_cohort, diagn, date_dx_var) {
   switch (query,
           "extraction_BDCU"={
             return(paste0(
@@ -39,7 +39,7 @@ query_V_EPISO_SOIN_DURG_CM_AG <- function(query,debut,fin, diagn, date_dx_var) {
               BD_BDCU.SURG_TYP_ORITN_USAG_DEPAR_DURG,--Type d'orientation de l'usager à son départ
               BD_BDCU.SURG_NO_ETAB_MSSS--Numero de l'etablissement attribue par MSSS \n",
               "FROM RES_SSS.V_EPISO_SOIN_DURG_CM AS BD_BDCU\n",
-              "WHERE ",query_V_EPISO_SOIN_DURG_CM.date_dx_var(date_dx_var)," between to_date('",debut,"') and to_date('",fin,"')\n",
+              "WHERE ",query_V_EPISO_SOIN_DURG_CM.date_dx_var(date_dx_var)," between to_date('",debut_cohort,"') and to_date('",fin_cohort,"')\n",
               query_V_EPISO_SOIN_DURG_CM.diagn(diagn),
               "AND SURG_COD_PRIOR_TRIAG_DURG IN ('1','2','3','4','5');"))},
           "extraction_BDCU_combin"={
@@ -73,7 +73,7 @@ query_V_EPISO_SOIN_DURG_CM_AG <- function(query,debut,fin, diagn, date_dx_var) {
               BD_OCCUCIVIE.SURG_NO_SEQ_OCCU_CIVIE_DURG,--	Numéro de séquence de l'occupation de civière
               BD_OCCUCIVIE.SURG_NO_INDIV_BEN_BANLS,--	Numéro d'individu de la personne assurée
               BD_OCCUCIVIE.SURG_DHD_OCCU_CIVIE_DURG,--	Date et heure de début d'occupation de civière
-              BD_OCCUCIVIE.SURG_DHF_OCCU_CIVIE_DURG,--	Date et heure de fin d'occupation de civière
+              BD_OCCUCIVIE.SURG_DHF_OCCU_CIVIE_DURG,--	Date et heure de fin_cohort d'occupation de civière
               BD_OCCUCIVIE.SURG_CATG_CIVIE_DURG,--	Catégorie de civière en département d'urgence
 
               -- vue: RES_SSS.V_CNSUL_DURG_CM
@@ -164,7 +164,7 @@ query_V_EPISO_SOIN_DURG_CM_AG <- function(query,debut,fin, diagn, date_dx_var) {
                   LGEO_COD_TERRI_RLS
                   FROM Prod.I_BENF_ADR_CM
                   WHERE BENF_IND_ADR_HQ IN ('N') AND BENF_COD_TYP_ADR IN ('R')
-                  AND (BENF_DD_ADR_BEN<='",fin,"' AND BENF_DF_ADR_BEN>='",debut,"')
+                  AND (BENF_DD_ADR_BEN<='",fin_cohort,"' AND BENF_DF_ADR_BEN>='",debut_cohort,"')
                   QUALIFY Row_Number()Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN DESC)=1
                 ) AS BD_Adr
               ON B.BENF_NO_INDIV_BEN_BANLS=BD_Adr.BENF_NO_INDIV_BEN_BANLS
@@ -230,7 +230,7 @@ query_V_EPISO_SOIN_DURG_CM_AG <- function(query,debut,fin, diagn, date_dx_var) {
               ) AS W
               ON BD_BDCU.SURG_NO_ETAB_MSSS=W.ETAB_NO_ETAB_MSSS\n",
 
-              "WHERE ",query_V_EPISO_SOIN_DURG_CM.date_dx_var(date_dx_var)," between to_date('",debut,"') and to_date('",fin,"')\n",
+              "WHERE ",query_V_EPISO_SOIN_DURG_CM.date_dx_var(date_dx_var)," between to_date('",debut_cohort,"') and to_date('",fin_cohort,"')\n",
               query_V_EPISO_SOIN_DURG_CM.diagn(diagn),
               "AND SURG_COD_PRIOR_TRIAG_DURG IN ('1','2','3','4','5')
               ORDER BY 1;"))},
@@ -246,7 +246,7 @@ query_V_EPISO_SOIN_DURG_CM_AG <- function(query,debut,fin, diagn, date_dx_var) {
             indent("select"),query_V_EPISO_SOIN_DURG_CM.date_dx_var(date_dx_var)," as DATE_DX,\n",
             "SURG_COD_DIAGN_MDCAL_CLINQ AS DX\n",
             "FROM RES_SSS.V_EPISO_SOIN_DURG_CM\n",
-            "WHERE ",query_V_EPISO_SOIN_DURG_CM.date_dx_var(date_dx_var)," between to_date('",debut,"') and to_date('",fin,"')\n",
+            "WHERE ",query_V_EPISO_SOIN_DURG_CM.date_dx_var(date_dx_var)," between to_date('",debut_cohort,"') and to_date('",fin_cohort,"')\n",
             indent(),"and SURG_COD_DIAGN_MDCAL_CLINQ like any (",qu(diagn),")",
             ") AS A;"
           ))}

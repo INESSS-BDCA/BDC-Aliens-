@@ -5,12 +5,12 @@
 \alias{query_V_SEJ_SERV_HOSP_CM}
 \title{Code SQL: Extraction de diagnostics dans MEDECHO-sej}
 \usage{
-query_V_SEJ_SERV_HOSP_CM(debut, fin, diagn, date_dx_var)
+query_V_SEJ_SERV_HOSP_CM(debut_cohort, fin_cohort, diagn, date_dx_var)
 }
 \arguments{
-\item{debut}{Date de début de la période d'étude.}
+\item{debut_cohort}{Date de début de la période d'étude.}
 
-\item{fin}{Date de fin de la période d'étude.}
+\item{fin_cohort}{Date de fin de la période d'étude.}
 
 \item{diagn}{\code{vector} indiquant les codes de diagnostics \emph{CIM9} et/ou \emph{CIM10} à extraire.}
 

@@ -3,8 +3,8 @@
 #' @description Générateur de code SQL pour l'extraction des variables suivante: BENF_NO_INDIV_BEN_BANLS, BENF_COD_SEXE, BENF_DAT_NAISS, BENF_DAT_DECES de la vue `V_FICH_ID_BEN_CM`.
 #' L'âge est calculé à une date fixe spécifiée par l'argement `date_age`.
 #'
-#' @param debut Date de début de la période d'étude.
-#' @param fin Date de fin de la période d'étude.
+#' @param debut_periode Date de début de la période d'étude.
+#' @param fin_periode Date de fin de la période d'étude.
 #' @param date_age `"AAAA-MM-JJ"` indique la date à laquelle l'âge des bénéficaires est calculé.
 #'
 #' @return chaîne de caractères, code SQL.
@@ -15,11 +15,11 @@
 #'@examples
 #'\dontrun{
 #'DT1<-as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
-#'statement=query_V_FICH_ID_BEN_CM(debut="2022-02-01", fin="2022-03-31", date_age="2022-03-31")
+#'statement=query_V_FICH_ID_BEN_CM(debut_periode="2022-02-01", fin_periode="2022-03-31", date_age="2022-03-31")
 #'}
 #'
 #'
-query_V_FICH_ID_BEN_CM<-function(debut, fin, date_age){
+query_V_FICH_ID_BEN_CM<-function(debut_periode, fin_periode, date_age){
 
 return(paste0("
 SELECT
@@ -64,7 +64,7 @@ Autres méthodes :
     LGEO_COD_TERRI_RLS
     FROM Prod.I_BENF_ADR_CM
     WHERE BENF_IND_ADR_HQ IN ('N') AND BENF_COD_TYP_ADR IN ('R')
-    AND (BENF_DD_ADR_BEN<='",fin,"' AND BENF_DF_ADR_BEN>='",debut,"')
+    AND (BENF_DD_ADR_BEN<='",fin_periode,"' AND BENF_DF_ADR_BEN>='",debut_periode,"')
     QUALIFY Row_Number()Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN DESC)=1
   ) AS BD_Adr
 ON B.BENF_NO_INDIV_BEN_BANLS=BD_Adr.BENF_NO_INDIV_BEN_BANLS

@@ -5,12 +5,18 @@
 \alias{query_V_EPISO_SOIN_DURG_CM_AG}
 \title{Code SQL: Extraction de diagnostics dans BDCU}
 \usage{
-query_V_EPISO_SOIN_DURG_CM_AG(query, debut, fin, diagn, date_dx_var)
+query_V_EPISO_SOIN_DURG_CM_AG(
+  query,
+  debut_cohort,
+  fin_cohort,
+  diagn,
+  date_dx_var
+)
 }
 \arguments{
-\item{debut}{Date de début de la période d'étude.}
+\item{debut_cohort}{Date de début de la période d'étude.}
 
-\item{fin}{Date de fin de la période d'étude.}
+\item{fin_cohort}{Date de fin de la période d'étude.}
 
 \item{diagn}{\code{vector} indiquant les codes de diagnostics \emph{CIM9} et/ou \emph{CIM10} à extraire.}
 

@@ -9,8 +9,8 @@ user_I_SMOD_SERV_MD_CM_AG(
   task,
   conn = SQL_connexion(),
   cohort = NULL,
-  debut,
-  fin,
+  debut_periode,
+  fin_periode,
   CodeActe,
   omni_spec,
   catg_etab,
@@ -19,6 +19,8 @@ user_I_SMOD_SERV_MD_CM_AG(
   date_adr,
   date_age,
   Dx_table,
+  debut_cohort,
+  fin_cohort,
   CIM,
   by_Dx,
   date_dx_var,
@@ -35,22 +37,30 @@ user_I_SMOD_SERV_MD_CM_AG(
 
 \item{cohort}{\code{vecteur} indiquant les numéros d'identification des bénéficiaires définisant la cohorte de l'étude.}
 
-\item{debut}{Date de début de la période d'étude au format \code{AAAA-MM-JJ}.}
+\item{debut_periode}{Date de début de la période d'étude au format \code{"AAAA-MM-JJ"}.}
 
-\item{fin}{Date de fin de la période d'étude au format \code{AAAA-MM-JJ}.}
+\item{fin_periode}{Date de fin de la période d'étude au format \code{"AAAA-MM-JJ"}.}
 
-\item{CodeActe}{\code{vecteur} indiquant les codes d'acte d'interêt.}
+\item{CodeActe}{\code{vecteur} indique les codes d'acte d'interêt.}
 
 \item{omni_spec}{peut prendre la valeur \code{omni}(extraction des actes facturés par les omni: SMOD_COD_SPEC IS NULL),
 \code{spec} (extraction des actes facturés par les spec: SMOD_COD_SPEC IS NOT NULL) ou \code{all} (pas de spécification).}
 
 \item{catg_etab}{peut prendre la valeur \code{ambulatoire} (pour les actes facturés en ambulatoire) ou \code{all} (pas de spécification).}
 
-\item{code_stat_decis}{peut prendre la valeur \code{PAY-PPY}, \code{PAY}, ou \code{PPY}}
+\item{code_stat_decis}{peut prendre la valeur \code{c('PAY','PPY')}, \code{PAY}, ou \code{PPY}}
+
+\item{benef_adr}{permet de définir la méthode d’identification de l’adresse de bénéficiaire. Peut prendre la valeur \code{c("date_fixe","dernière_adresse","première_adresse","long_adresse")}}
+
+\item{date_adr}{si \verb{benef_adr=“date_fixe”}, date_adr permet de choisir une date fixe pour identifier l’adresse de bénéficiaire.}
 
 \item{date_age}{\code{"AAAA-MM-JJ"} indique la date à laquelle l'âge des bénéficaires est calculé.}
 
 \item{Dx_table}{\code{list} contenant les codes à analyser ou le nom d'une table qui est inclue dans la librairie.}
+
+\item{debut_cohort}{Date de début de la période pour la création d'une cohorte au format \code{"AAAA-MM-JJ"}.}
+
+\item{fin_cohort}{Date de fin de la période pour la création d'une cohorte au format \code{"AAAA-MM-JJ"}.}
 
 \item{CIM}{\code{'CIM9'}, \code{'CIM10'} ou les deux. Permet de filtrer les codes de diagnostics selon le numéro de révision de la \emph{Classification statistique internationale des maladies et des problèmes de santé connexes} (CIM).}
 
@@ -68,27 +78,21 @@ Si \code{cohort} est fournit, keep_all \code{TRUE} garde toutes les observations
 \item{verbose}{\code{TRUE} ou \code{FALSE}. Affiche le temps qui a été nécessaire pour extraire les diagnostics. Utile pour suivre le déroulement de l'extraction.}
 }
 \value{
-\strong{Extraction des variables pertinantes de SMOD:}
-\code{data.table} de 19 variables si la cohorte est fournie par l'analyste, sinon 21 variables s'il y a une création de cohorte.
-
 \strong{Extraction des variables pertinantes de SMOD combinées avec d'autres bases de données:}
-\code{data.table} de 36 variables si la cohorte est fournie par l'analyste, sinon 38 variables s'il y a une création de cohorte.
+\code{data.table} de 37 variables si la cohorte est fournie par l'analyste, sinon 39 variables s'il y a une création de cohorte.
 
-\strong{Extraction des dates de visites:}
-\code{data.table} de 10 variables si la cohorte est fournie par l'analyste, sinon 12 variables s'il y a une création de cohorte.
-
-\strong{Calcul du nombre d'acte par bénéficiaire:}
-\code{data.table} de 10 variables si la cohorte est fournie par l'analyste, sinon 12 variables s'il y a une création de cohorte.
+\strong{Extraction des variables et analyses discriptives:}
+\code{data.table} de 37 variables si la cohorte est fournie par l'analyste, sinon 39 variables s'il y a une création de cohorte.
+\code{Tableaux} 5 tableaux: Tab1_Nb_Acte_annee, Tab2_Nb_Acte_spec, Tab3_Nb_Acte_lieu, Tab4_Combin_Acte_Freq, Tab5_Nb_Acte_rep
+\code{Figures} 2 figures: variation des coût d'acte en fonction des spécialités principales (Plot_Cout_acte_spec) et d'anesthésistes (Plot_Cout_acte_Anesth)
 }
 \description{
 La fonction \code{user_I_SMOD_SERV_MD_CM_AG} est destinée aux utilisateurs. Elle permet d'exécuter la rêquette SQL retournée par la fonction \code{query_I_SMOD_SERV_MD_CM_AG}.\cr
 
 Elle permet: \cr
 \enumerate{
-\item d'extraire les variables pertinantes de la base de données SMOD.\cr
 \item d'extraire les variables pertinantes de la base de données SMOD, jumlées avec d'autres bases de données pour rajouter les caractéristiques de dispensateur, du bénéficiaire et de l'établissement de soins.\cr
-\item d'extraire les dates de visites (services).\cr
-\item de calculer le nombre d'acte par bénéficiaire entre la date de début et de fin d'une étude.\cr
+\item d'extraire les variables pertinantes de la base de données SMOD et d'effectuer des analyses discriptives afin d'orienter la prise de décision.\cr
 }
 
 La fonction \code{user_I_SMOD_SERV_MD_CM_AG} utilise plusieurs autres fonctions génériques telles que:\cr
@@ -100,11 +104,11 @@ La fonction \code{user_I_SMOD_SERV_MD_CM_AG} utilise plusieurs autres fonctions 
 \dontrun{
 
 DT_final<-user_I_SMOD_SERV_MD_CM_AG(
-                      task=c("extraction_SMOD","extraction_SMOD_combin","Projet_Factuartion_Acte"),
+                      task=c("extraction_SMOD","projet_facturation_acte"),
                       conn=SQL_connexion("ms069a"),
                       cohort = c(NULL, cohort),
-                      debut = "2020-01-01",
-                      fin = "2020-12-31",
+                      debut_periode = "2020-01-01",
+                      fin_periode = "2020-12-31",
                       CodeActe = c('06452','06148','06154','06265','06251','06216','06208'),
                       omni_spec="all",
                       catg_etab="all",
@@ -113,12 +117,14 @@ DT_final<-user_I_SMOD_SERV_MD_CM_AG(
                       benef_adr="dernière_adresse",
                       date_age="2020-07-01",
                       Dx_table = list(Prolapsus = list(CIM9 = c('5995','6180','6181','6183'),CIM10 = c('N810','N811','N812','N813'))),
+                      debut_cohort="1998-12-31",
+                      fin_cohort="2020-12-31",
                       CIM =c("CIM9", "CIM10"),
                       by_Dx = FALSE,
                       date_dx_var = "admis",
                       n1 = 30, n2 = 730,
                       nDx=0 ,
-                      setwd="C:/Users/MS/..."
+                      setwd="V:/GI/Projets/4.Projets_en_cours/..."
                       verbose = TRUE,
                       keep_all=FALSE)
 

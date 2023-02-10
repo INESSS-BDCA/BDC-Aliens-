@@ -2,8 +2,8 @@
 #'
 #' Générateur de code SQL pour l'extraction de diagnostics de la vue `V_DIAGN_SEJ_HOSP_CM`.
 #'
-#' @param debut Date de début de la période d'étude.
-#' @param fin Date de fin de la période d'étude.
+#' @param debut_cohort Date de début de la période d'étude.
+#' @param fin_cohort Date de fin de la période d'étude.
 #' @param diagn `list` indiquant les codes de diagnostics *CIM9* et *CIM10* à extraire.\cr `list(CIM9=c(...),CIM10=c(...))`.
 #' @param date_dx_var `'admis'` ou `'depar'`. Indique si on utilise la date d'admission ou la date de départ comme date de diagnostic pour l'étude.
 #' @param typ_diagn Type de disgnostic permettant de préciser le genre de diagnostic posé pendant le séjour hospitalier. `A = Admission`, `D = Décès`, `P = Principal` et `S = Secondaire`. Voir la variable `SHOP_TYP_DIAGN_SEJ_HOSP` de la vue `V_DIAGN_SEJ_HOSP_CM`.
@@ -14,8 +14,8 @@
 #' @export
 #'
 query_V_DIAGN_SEJ_HOSP_CM <- function(
-    debut,
-    fin,
+    debut_cohort,
+    fin_cohort,
     diagn,
     date_dx_var = 'admis',
     typ_diagn = c('A', 'P', 'S', 'D')
@@ -32,7 +32,7 @@ query_V_DIAGN_SEJ_HOSP_CM <- function(
     indent("select"),query_V_DIAGN_SEJ_HOSP_CM.date_dx_var(date_dx_var)," as DATE_DX,\n",
     "SHOP_COD_DIAGN_MDCAL_CLINQ AS DX\n",
     "from RES_SSS.V_DIAGN_SEJ_HOSP_CM\n",
-    "where ",query_V_DIAGN_SEJ_HOSP_CM.date_dx_var(date_dx_var)," between '",debut,"' and '",fin,"'\n",
+    "where ",query_V_DIAGN_SEJ_HOSP_CM.date_dx_var(date_dx_var)," between '",debut_cohort,"' and '",fin_cohort,"'\n",
     query_V_DIAGN_SEJ_HOSP_CM.where_diagn(diagn),
     query_V_DIAGN_SEJ_HOSP_CM.where_typ_diagn(typ_diagn),
     ") AS A ;"

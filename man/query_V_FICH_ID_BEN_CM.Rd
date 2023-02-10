@@ -5,12 +5,12 @@
 \alias{query_V_FICH_ID_BEN_CM}
 \title{Code SQL: Extraction des caractéristiques du bénéficiaire}
 \usage{
-query_V_FICH_ID_BEN_CM(debut, fin, date_age)
+query_V_FICH_ID_BEN_CM(debut_periode, fin_periode, date_age)
 }
 \arguments{
-\item{debut}{Date de début de la période d'étude.}
+\item{debut_periode}{Date de début de la période d'étude.}
 
-\item{fin}{Date de fin de la période d'étude.}
+\item{fin_periode}{Date de fin de la période d'étude.}
 
 \item{date_age}{\code{"AAAA-MM-JJ"} indique la date à laquelle l'âge des bénéficaires est calculé.}
 }
@@ -24,7 +24,7 @@ L'âge est calculé à une date fixe spécifiée par l'argement \code{date_age}.
 \examples{
 \dontrun{
 DT1<-as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
-statement=query_V_FICH_ID_BEN_CM(debut="2022-02-01", fin="2022-03-31", date_age="2022-03-31")
+statement=query_V_FICH_ID_BEN_CM(debut_periode="2022-02-01", fin_periode="2022-03-31", date_age="2022-03-31")
 }
 
 

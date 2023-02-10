@@ -5,7 +5,12 @@
 \alias{query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM}
 \title{query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM}
 \usage{
-query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM(benef_adr, fin, debut, date_adr)
+query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM(
+  benef_adr,
+  debut_periode,
+  fin_periode,
+  date_adr
+)
 }
 \description{
 Section \code{where} du code SQL où on demande les adresses de Benef.

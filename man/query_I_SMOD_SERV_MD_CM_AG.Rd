@@ -7,8 +7,10 @@
 \usage{
 query_I_SMOD_SERV_MD_CM_AG(
   query,
-  debut,
-  fin,
+  debut_periode,
+  fin_periode,
+  debut_cohort,
+  fin_cohort,
   diagn,
   CodeActe,
   omni_spec,
@@ -19,23 +21,31 @@ query_I_SMOD_SERV_MD_CM_AG(
 )
 }
 \arguments{
-\item{query}{indiquant si on veut effectuer 1) une extraction brute des vaiables pertinantes dans SMOD "extraction_SMOD", 2) une extraction brute des vaiables pertinantes dans SMOD jumlées avec d'autres bases de données "extraction_SMOD_combin",
-3) une extraction des diagnostics "extraction_Dx", 4) une extraction des dates de visites, ou 5) calculer le nombre d'acte "calcul_Nb_acte".}
+\item{query}{indique si on veut effectuer 1) une extraction brute des vaiables pertinantes dans SMOD jumlées avec d'autres bases de données "extraction_SMOD",
+2) une extraction des diagnostics "extraction_Dx".}
 
-\item{debut}{Date de début de la période d'étude au format \code{"AAAA-MM-JJ"}.}
+\item{debut_periode}{Date de début de la période d'étude au format \code{"AAAA-MM-JJ"}.}
 
-\item{fin}{Date de fin de la période d'étude au format \code{"AAAA-MM-JJ"}.}
+\item{fin_periode}{Date de fin de la période d'étude au format \code{"AAAA-MM-JJ"}.}
 
-\item{diagn}{\code{vecteur} indiquant les codes de diagnostics \emph{CIM9} et/ou \emph{CIM10} à extraire.}
+\item{debut_cohort}{Date de début de la période pour la création d'une cohorte au format \code{"AAAA-MM-JJ"}.}
 
-\item{CodeActe}{\code{vecteur} indiquant les codes d'acte d'interêt.}
+\item{fin_cohort}{Date de fin de la période pour la création d'une cohorte au format \code{"AAAA-MM-JJ"}.}
+
+\item{diagn}{\code{vecteur} indique les codes de diagnostics \emph{CIM9} et/ou \emph{CIM10} à extraire.}
+
+\item{CodeActe}{\code{vecteur} indique les codes d'acte d'interêt.}
 
 \item{omni_spec}{peut prendre la valeur \code{omni}(extraction des actes facturés par les omni: SMOD_COD_SPEC IS NULL),
 \code{spec} (extraction des actes facturés par les spec: SMOD_COD_SPEC IS NOT NULL) ou \code{all} (pas de spécification).}
 
 \item{catg_etab}{peut prendre la valeur \code{ambulatoire} (pour les actes facturés en ambulatoire) ou \code{all} (pas de spécification).}
 
-\item{code_stat_decis}{peut prendre la valeur \code{PAY-PPY}, \code{PAY}, ou \code{PPY}}
+\item{code_stat_decis}{peut prendre la valeur \code{c('PAY','PPY')}, \code{PAY}, ou \code{PPY}}
+
+\item{benef_adr}{permet de définir la méthode d’identification de l’adresse de bénéficiaire. Peut prendre la valeur \code{c("date_fixe","dernière_adresse","première_adresse","long_adresse")}}
+
+\item{date_adr}{si \verb{benef_adr=“date_fixe”}, date_adr permet de choisir une date fixe pour identifier l’adresse de bénéficiaire.}
 }
 \value{
 chaîne de caractères, code SQL.
@@ -43,11 +53,8 @@ chaîne de caractères, code SQL.
 \description{
 \code{query_I_SMOD_SERV_MD_CM_AG} est une fonction multi-tâches. Elle utilise principalement la vue \code{I_SMOD_SERV_MD_CM} jumlée avec d'autres vues pour générer un code SQL qui permet :\cr
 \enumerate{
-\item d'extraire les variables pertinantes de la base de données SMOD.\cr
-\item d'extraire les variables pertinantes de la base de données SMOD, jumlées avec d'autres bases de données pour rajouter les caractéristiques de dispensateur, du bénéficiaire et de l'établissement de soins.\cr
+\item d'extraire les variables pertinantes de la base de données SMOD, jumlées avec les caractéristiques de dispensateur, du bénéficiaire et de l'établissement de soins ainsi que le découpage géographique.\cr
 \item d'extraire les diagnostics pour créer par exemple une cohorte.\cr
-\item d'extraire les dates de visites (services).\cr
-\item de calculer le nombre d'acte par bénéficiaire entre la date de début et de fin d'une étude.\cr
 }
 }
 \examples{
@@ -55,8 +62,10 @@ chaîne de caractères, code SQL.
 DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion("ms069a"),
 statement=query_I_SMOD_SERV_MD_CM_AG (
 query= c("extraction_SMOD","extraction_SMOD_combin","extraction_Dx"),
-debut="2021-04-01",
-fin="2022-03-31",
+debut_periode="2021-04-01",
+fin_periode="2022-03-31",
+debut_cohort=NULL,
+fin_cohort=NULL,
 CodeActe=c('07122', '07237', '07800', '07089', '0780'),
 code_stat_decis=c("PAY","PPY"),
 benef_adr=c("date_fixe","dernière_adresse","première_adresse","long_adresse"),

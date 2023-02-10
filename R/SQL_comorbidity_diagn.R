@@ -13,8 +13,8 @@
 #' @inheritParams comorbidity
 #' @param conn Variable contenant la connexion entre R et Teradata. Voir \code{\link{SQL_connexion}}.
 #' @param cohort Cohorte d'étude. Vecteur comprenant les numéros d'identification des individus à conserver.
-#' @param debut Date de début de la période d'étude au format `AAAA-MM-JJ`.
-#' @param fin Date de fin de la période d'étude au format `AAAA-MM-JJ`.
+#' @param debut_cohort Date de début de la période pour la création d'une cohorte au format `"AAAA-MM-JJ"`.
+#' @param fin_cohort Date de fin de la période pour la création d'une cohorte au format `"AAAA-MM-JJ"`.
 #' @param Dx_table `list` contenant les codes à analyser ou le nom d'une table qui est inclue dans la librairie.
 #' @param CIM `'CIM9'`, `'CIM10'` ou les deux. Permet de filtrer les codes de diagnostics selon le numéro de révision de la *Classification statistique internationale des maladies et des problèmes de santé connexes* (CIM).
 #' @param dt_source Vecteur comprenant la ou les bases de données où aller chercher l'information. Voir *Details*.
@@ -46,7 +46,7 @@
 #'               CIM10 = c(paste0("I", c(18:21, 23:25)),
 #'                         paste0("K0", c(5:9)), paste0("K", 10:15)))
 SQL_comorbidity_diagn <- function(
-    conn = SQL_connexion(), cohort, debut, fin,
+    conn = SQL_connexion(), cohort, debut_cohort, fin_cohort,
     Dx_table = 'Combine_Dx_CCI_INSPQ18', CIM = c('CIM9', 'CIM10'),
     dt_source = c('V_DIAGN_SEJ_HOSP_CM', 'V_SEJ_SERV_HOSP_CM',
                   'V_EPISO_SOIN_DURG_CM', 'I_SMOD_SERV_MD_CM'),
@@ -108,7 +108,7 @@ SQL_comorbidity_diagn <- function(
           t1 <- Sys.time()
           DT[[i]] <- SQL_comorbidity_diagn.V_DIAGN_SEJ_HOSP_CM(
             conn = conn, ids = cohort, diagn = Dx_table_V_DIAGN_SEJ[[dia]],
-            debut = debut, fin = fin,
+            debut_cohort = debut_cohort, fin_cohort = fin_cohort,
             diag_desc = dia, sourc_desc = dt_desc[[sour]],
             date_dx_var = date_dx_var, typ_diagn = typ_diagn
           )
@@ -132,7 +132,7 @@ SQL_comorbidity_diagn <- function(
             conn = conn,
             ids = cohort,
             diagn = Dx_table[[dia]],
-            debut = debut, fin = fin,
+            debut_cohort = debut_cohort, fin_cohort = fin_cohort,
             diag_desc = dia,
             sourc_desc = dt_desc[[sour]],
             date_dx_var = date_dx_var,
@@ -157,7 +157,7 @@ SQL_comorbidity_diagn <- function(
           t1 <- Sys.time()
           DT[[i]] <- fct(  # tableau provenant de la requête
             conn = conn, ids = cohort, diagn = Dx_table[[dia]],
-            debut = debut, fin = fin,
+            debut_cohort = debut_cohort, fin_cohort = fin_cohort,
             diag_desc = dia, sourc_desc = dt_desc[[sour]],
             date_dx_var = date_dx_var
           )
@@ -215,23 +215,23 @@ SQL_comorbidity_diagn.select_Dx_table <- function(Dx_table) {
 #' @keywords internal
 #' @import data.table
 SQL_comorbidity_diagn.V_DIAGN_SEJ_HOSP_CM <- function(
-    conn, ids, diagn, debut, fin,
+    conn, ids, diagn, debut_cohort, fin_cohort,
     diag_desc, sourc_desc, date_dx_var, typ_diagn
 ) {
 
-  yr_deb <- year(lubridate::as_date(debut))  # 1ere année à extraire
-  yr_fin <- year(lubridate::as_date(fin))  # dernière année à extraire
+  yr_deb <- year(lubridate::as_date(debut_cohort))  # 1ere année à extraire
+  yr_fin <- year(lubridate::as_date(fin_cohort))  # dernière année à extraire
   DT <- vector("list", yr_fin - yr_deb + 1L)  # contiendra toutes les années
   i <- 1L
   for (yr in yr_deb:yr_fin) {
     # Ajuster les dates
     if (yr == yr_deb) {
-      deb <- debut
+      deb <- debut_cohort
     } else {
       deb <- paste0(yr,"-01-01")
     }
     if (yr == yr_fin) {
-      fi <- fin
+      fi <- fin_cohort
     } else {
       fi <- paste0(yr,"-12-31")
     }
@@ -239,7 +239,7 @@ SQL_comorbidity_diagn.V_DIAGN_SEJ_HOSP_CM <- function(
     # Extraction des diagn selon l'année
     DT[[i]] <- as.data.table(odbc::dbGetQuery(
       conn = conn, statement = query_V_DIAGN_SEJ_HOSP_CM(
-        debut = deb, fin = fi,
+        debut_cohort = deb, fin_cohort = fi,
         diagn = diagn,
         date_dx_var = date_dx_var,
         typ_diagn = typ_diagn
@@ -270,30 +270,30 @@ SQL_comorbidity_diagn.V_DIAGN_SEJ_HOSP_CM <- function(
 #' @keywords internal
 #' @import data.table
 SQL_comorbidity_diagn.V_SEJ_SERV_HOSP_CM <- function(
-    conn, ids, diagn, debut, fin,
+    conn, ids, diagn, debut_cohort, fin_cohort,
     diag_desc, sourc_desc, date_dx_var
 ) {
 
-  yr_deb <- year(lubridate::as_date(debut))  # 1ere année à extraire
-  yr_fin <- year(lubridate::as_date(fin))  # dernière année à extraire
+  yr_deb <- year(lubridate::as_date(debut_cohort))  # 1ere année à extraire
+  yr_fin <- year(lubridate::as_date(fin_cohort))  # dernière année à extraire
   DT <- vector("list", yr_fin - yr_deb + 1L)  # contiendra toutes les années
   i <- 1L
   for (yr in yr_deb:yr_fin) {
     # Ajuster les dates
     if (yr == yr_deb) {
-      deb <- debut
+      deb <- debut_cohort
     } else {
       deb <- paste0(yr,"-01-01")
     }
     if (yr == yr_fin) {
-      fi <- fin
+      fi <- fin_cohort
     } else {
       fi <- paste0(yr,"-12-31")
     }
     # Extraction des diagn selon l'année
     DT[[i]] <- as.data.table(odbc::dbGetQuery(
       conn = conn, statement = query_V_SEJ_SERV_HOSP_CM(
-        debut = deb, fin = fi,
+        debut_cohort = deb, fin_cohort = fi,
         diagn = diagn, date_dx_var = date_dx_var
       )
     ))
@@ -323,23 +323,23 @@ SQL_comorbidity_diagn.V_SEJ_SERV_HOSP_CM <- function(
 #' @keywords internal
 #' @import data.table
 SQL_comorbidity_diagn.I_SMOD_SERV_MD_CM <- function(
-    conn, ids, diagn, debut, fin,
+    conn, ids, diagn, debut_cohort, fin_cohort,
     diag_desc, sourc_desc, date_dx_var,code_stat_decis
 ) {
 
-  yr_deb <- year(lubridate::as_date(debut))  # 1ere année à extraire
-  yr_fin <- year(lubridate::as_date(fin))  # dernière année à extraire
+  yr_deb <- year(lubridate::as_date(debut_cohort))  # 1ere année à extraire
+  yr_fin <- year(lubridate::as_date(fin_cohort))  # dernière année à extraire
   DT <- vector("list", yr_fin - yr_deb + 1L)  # contiendra toutes les années
   i <- 1L
   for (yr in yr_deb:yr_fin) {
     # Ajuster les dates
     if (yr == yr_deb) {
-      deb <- debut
+      deb <- debut_cohort
     } else {
       deb <- paste0(yr,"-01-01")
     }
     if (yr == yr_fin) {
-      fi <- fin
+      fi <- fin_cohort
     } else {
       fi <- paste0(yr,"-12-31")
     }
@@ -347,8 +347,8 @@ SQL_comorbidity_diagn.I_SMOD_SERV_MD_CM <- function(
     DT[[i]] <- as.data.table(odbc::dbGetQuery(
       conn = conn, statement = query_I_SMOD_SERV_MD_CM_AG(
         query="extraction_Dx",
-        debut = deb,
-        fin = fi,
+        debut_cohort = deb,
+        fin_cohort = fi,
         diagn = diagn,
         omni_spec,
         CodeActe,
@@ -382,23 +382,23 @@ SQL_comorbidity_diagn.I_SMOD_SERV_MD_CM <- function(
 #' @keywords internal
 #' @import data.table
 SQL_comorbidity_diagn.V_EPISO_SOIN_DURG_CM <- function(
-    conn, ids, diagn, debut, fin,
+    conn, ids, diagn, debut_cohort, fin_cohort,
     diag_desc, sourc_desc, date_dx_var
 ) {
 
-  yr_deb <- year(lubridate::as_date(debut))  # 1ere année à extraire
-  yr_fin <- year(lubridate::as_date(fin))  # dernière année à extraire
+  yr_deb <- year(lubridate::as_date(debut_cohort))  # 1ere année à extraire
+  yr_fin <- year(lubridate::as_date(fin_cohort))  # dernière année à extraire
   DT <- vector("list", yr_fin - yr_deb + 1L)  # contiendra toutes les années
   i <- 1L
   for (yr in yr_deb:yr_fin) {
     # Ajuster les dates
     if (yr == yr_deb) {
-      deb <- debut
+      deb <- debut_cohort
     } else {
       deb <- paste0(yr,"-01-01")
     }
     if (yr == yr_fin) {
-      fi <- fin
+      fi <- fin_cohort
     } else {
       fi <- paste0(yr,"-12-31")
     }
@@ -406,8 +406,8 @@ SQL_comorbidity_diagn.V_EPISO_SOIN_DURG_CM <- function(
     DT[[i]] <- as.data.table(odbc::dbGetQuery(
       conn = conn, statement = query_V_EPISO_SOIN_DURG_CM_AG(
         query="extraction_Dx",
-        debut = deb,
-        fin = fi,
+        debut_cohort = deb,
+        fin_cohort = fi,
         diagn = diagn,
         date_dx_var = date_dx_var
       )

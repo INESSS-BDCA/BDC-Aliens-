@@ -1,23 +1,23 @@
 #' @title Code SQL: query_I_SMOD_SERV_MD_CM_AG `(SMOD)`
 #'
 #' @description  `query_I_SMOD_SERV_MD_CM_AG` est une fonction multi-tâches. Elle utilise principalement la vue `I_SMOD_SERV_MD_CM` jumlée avec d'autres vues pour générer un code SQL qui permet :\cr
-#' 1) d'extraire les variables pertinantes de la base de données SMOD.\cr
-#' 2) d'extraire les variables pertinantes de la base de données SMOD, jumlées avec d'autres bases de données pour rajouter les caractéristiques de dispensateur, du bénéficiaire et de l'établissement de soins.\cr
-#' 3) d'extraire les diagnostics pour créer par exemple une cohorte.\cr
-#' 4) d'extraire les dates de visites (services).\cr
-#' 5) de calculer le nombre d'acte par bénéficiaire entre la date de début et de fin d'une étude.\cr
+#' 1) d'extraire les variables pertinantes de la base de données SMOD, jumlées avec les caractéristiques de dispensateur, du bénéficiaire et de l'établissement de soins ainsi que le découpage géographique.\cr
+#' 2) d'extraire les diagnostics pour créer par exemple une cohorte.\cr
 #'
-#' @param query indiquant si on veut effectuer 1) une extraction brute des vaiables pertinantes dans SMOD "extraction_SMOD", 2) une extraction brute des vaiables pertinantes dans SMOD jumlées avec d'autres bases de données "extraction_SMOD_combin",
-#' 3) une extraction des diagnostics "extraction_Dx", 4) une extraction des dates de visites, ou 5) calculer le nombre d'acte "calcul_Nb_acte".
-#' @param debut Date de début de la période d'étude au format `"AAAA-MM-JJ"`.
-#' @param fin Date de fin de la période d'étude au format `"AAAA-MM-JJ"`.
-#' @param diagn `vecteur` indiquant les codes de diagnostics *CIM9* et/ou *CIM10* à extraire.
-#' @param CodeActe `vecteur` indiquant les codes d'acte d'interêt.
+#' @param query indique si on veut effectuer 1) une extraction brute des vaiables pertinantes dans SMOD jumlées avec d'autres bases de données "extraction_SMOD",
+#' 2) une extraction des diagnostics "extraction_Dx".
+#' @param debut_periode Date de début de la période d'étude au format `"AAAA-MM-JJ"`.
+#' @param fin_periode Date de fin de la période d'étude au format `"AAAA-MM-JJ"`.
+#' @param debut_cohort Date de début de la période pour la création d'une cohorte au format `"AAAA-MM-JJ"`.
+#' @param fin_cohort Date de fin de la période pour la création d'une cohorte au format `"AAAA-MM-JJ"`.
+#' @param diagn `vecteur` indique les codes de diagnostics *CIM9* et/ou *CIM10* à extraire.
+#' @param CodeActe `vecteur` indique les codes d'acte d'interêt.
 #' @param omni_spec peut prendre la valeur `omni`(extraction des actes facturés par les omni: SMOD_COD_SPEC IS NULL),
 #' `spec` (extraction des actes facturés par les spec: SMOD_COD_SPEC IS NOT NULL) ou `all` (pas de spécification).
 #' @param catg_etab peut prendre la valeur `ambulatoire` (pour les actes facturés en ambulatoire) ou `all` (pas de spécification).
-#' @param code_stat_decis peut prendre la valeur `PAY-PPY`, `PAY`, ou `PPY`
-#'
+#' @param code_stat_decis peut prendre la valeur `c('PAY','PPY')`, `PAY`, ou `PPY`
+#' @param benef_adr permet de définir la méthode d’identification de l’adresse de bénéficiaire. Peut prendre la valeur `c("date_fixe","dernière_adresse","première_adresse","long_adresse")`
+#' @param date_adr si `benef_adr=“date_fixe”`, date_adr permet de choisir une date fixe pour identifier l’adresse de bénéficiaire.
 #' @return chaîne de caractères, code SQL.
 #' @keywords internal
 #' @encoding UTF-8
@@ -28,58 +28,58 @@
 #' DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion("ms069a"),
 #' statement=query_I_SMOD_SERV_MD_CM_AG (
 #' query= c("extraction_SMOD","extraction_SMOD_combin","extraction_Dx"),
-#' debut="2021-04-01",
-#' fin="2022-03-31",
+#' debut_periode="2021-04-01",
+#' fin_periode="2022-03-31",
+#' debut_cohort=NULL,
+#' fin_cohort=NULL,
 #' CodeActe=c('07122', '07237', '07800', '07089', '0780'),
 #' code_stat_decis=c("PAY","PPY"),
 #' benef_adr=c("date_fixe","dernière_adresse","première_adresse","long_adresse"),
 #' date_adr="2021-07-01" # à préciser lorsque l'argument benef_adr="date_fixe")))
 #'}
 
-query_I_SMOD_SERV_MD_CM_AG <- function(query,debut, fin, diagn,CodeActe,omni_spec,catg_etab,code_stat_decis,benef_adr,date_adr) {
+query_I_SMOD_SERV_MD_CM_AG <- function(query,debut_periode, fin_periode, debut_cohort,fin_cohort,diagn,CodeActe,omni_spec,catg_etab,code_stat_decis,benef_adr,date_adr) {
   switch (query,
+#           "extraction_SMOD"={
+#             return(paste0(
+#               "SELECT
+#
+#             -- Sources des variables :
+#             -- Nom de vue : Prod.I_SMOD_SERV_MD_CM (SMOD)
+#
+#             BD_SMOD.SMOD_NO_INDIV_BEN_BANLS AS ID, --Identifiant du bénéficiaire banalisé \n
+#             case when EXTRACT(MONTH FROM SMOD_DAT_SERV) between 4 and 12 THEN EXTRACT(YEAR FROM SMOD_DAT_SERV) \n
+#             ELSE EXTRACT(YEAR FROM SMOD_DAT_SERV)-1 end AS AnFinan, --Année financière \n
+#             Extract (YEAR From BD_SMOD.SMOD_DAT_SERV) AS AnCivil,  --Année civile \n
+#             BD_SMOD.SMOD_DAT_SERV AS DateActe,  --Date Acte \n
+#             BD_SMOD.SMOD_COD_ACTE AS CodeActe,  --Code Acte \n
+#             BD_SMOD.SMOD_MNT_PAIMT AS CoutActe,  --Coût Acte
+#             BD_SMOD.SMOD_COD_DIAGN_PRIMR AS DxActe,  --Premier diagnostic porté par le professionnel \n \n
+#
+#             BD_SMOD.DISP_NO_SEQ_DISP_BANLS AS NumDispSp,  --Numéro du dispensateur \n
+#             BD_SMOD.SMOD_COD_ROLE, --Code des rôles selon l'entente \n
+#             BD_SMOD.SMOD_COD_SPEC AS SMOD_COD_SPEC, --Spécialité du dispensateur (SMOD) \n
+#             BD_SMOD.DISP_NO_SEQ_DISP_REFNT_BANLS AS NumDispRef,  --Numéro du médecin référent \n
+#
+#             BD_SMOD.SMOD_COD_ENTEN AS SMOD_COD_ENTEN,  --Code de l'entente \n
+#             BD_SMOD.SMOD_NO_ETAB_USUEL AS Num_ETAB_USUEL,  --Ancien numéro de l'établissement \n
+#             BD_SMOD.ETAB_COD_SECT_ACTIV_ETAB AS ETAB_COD_SECT_ACTIV_ETAB  --secteur d'activité \n
+#
+#             FROM Prod.I_SMOD_SERV_MD_CM AS BD_SMOD \n
+#             WHERE BD_SMOD.SMOD_DAT_SERV BETWEEN '",debut_periode,"' AND '",fin_periode,"'\n",
+#               query_I_SMOD_SERV_MD_CM.where_SMOD_COD_STA_DECIS (code_stat_decis), "\n",
+#               query_I_SMOD_SERV_MD_CM.where_SMOD_COD_ACTE (CodeActe),"\n",
+#               query_I_SMOD_SERV_MD_CM.diagn(diagn),"\n",
+#               "/*Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à des consultations, \n
+#             mais, plutôt à des suppléments monétaires associés à une demande de facturation */ \n
+#             AND BD_SMOD.SMOD_COD_ACTE NOT IN (
+# 									SELECT DISTINCT NMOD_COD_ACTE
+# 									FROM Prod.V_RPERT_COD_ACTE
+# 									WHERE NMOD_COD_GRP_ACTE IN (170, 180, 181, 182, 183, 187, 195, 196, 197, 198, 199, 854))
+#
+#             ORDER BY 1,2,3,4;"))
+#           },
           "extraction_SMOD"={
-            return(paste0(
-              "SELECT
-
-            -- Sources des variables :
-            -- Nom de vue : Prod.I_SMOD_SERV_MD_CM (SMOD)
-
-            BD_SMOD.SMOD_NO_INDIV_BEN_BANLS AS ID, --Identifiant du bénéficiaire banalisé
-            case when EXTRACT(MONTH FROM SMOD_DAT_SERV) between 4 and 12 THEN EXTRACT(YEAR FROM SMOD_DAT_SERV)
-            ELSE EXTRACT(YEAR FROM SMOD_DAT_SERV)-1 end AS AnFinan, --Année financière
-            Extract (YEAR From BD_SMOD.SMOD_DAT_SERV) AS AnCivil,  --Année civile
-            BD_SMOD.SMOD_DAT_SERV AS DateActe,  --Date Acte
-            BD_SMOD.SMOD_COD_ACTE AS CodeActe,  --Code Acte
-            BD_SMOD.SMOD_MNT_PAIMT AS CoutActe,  --Coût Acte
-            BD_SMOD.SMOD_COD_DIAGN_PRIMR AS DxActe,  --Premier diagnostic porté par le professionnel
-
-            BD_SMOD.DISP_NO_SEQ_DISP_BANLS AS NumDispSp,  --Numéro du dispensateur
-            BD_SMOD.SMOD_COD_ROLE, --Code des rôles selon l'entente
-            BD_SMOD.SMOD_COD_SPEC AS SMOD_COD_SPEC, --Spécialité du dispensateur (SMOD)
-            BD_SMOD.DISP_NO_SEQ_DISP_REFNT_BANLS AS NumDispRef,  --Numéro du médecin référent
-
-
-
-            BD_SMOD.SMOD_COD_ENTEN AS SMOD_COD_ENTEN,  --Code de l'entente
-            BD_SMOD.SMOD_NO_ETAB_USUEL AS Num_ETAB_USUEL,  --Ancien numéro de l'établissement
-            BD_SMOD.ETAB_COD_SECT_ACTIV_ETAB AS ETAB_COD_SECT_ACTIV_ETAB  --secteur d'activité
-
-            FROM Prod.I_SMOD_SERV_MD_CM AS BD_SMOD
-            WHERE BD_SMOD.SMOD_DAT_SERV BETWEEN '",debut,"' AND '",fin,"'\n",
-              query_I_SMOD_SERV_MD_CM.where_SMOD_COD_STA_DECIS (code_stat_decis),
-              query_I_SMOD_SERV_MD_CM.where_SMOD_COD_ACTE (CodeActe),
-              query_I_SMOD_SERV_MD_CM.diagn(diagn),
-              "/*Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à des consultations,
-            mais, plutôt à des suppléments monétaires associés à une demande de facturation */
-            AND BD_SMOD.SMOD_COD_ACTE NOT IN (
-									SELECT DISTINCT NMOD_COD_ACTE
-									FROM Prod.V_RPERT_COD_ACTE
-									WHERE NMOD_COD_GRP_ACTE IN (170, 180, 181, 182, 183, 187, 195, 196, 197, 198, 199, 854))
-
-            ORDER BY 1,2,3,4;"))
-          },
-          "extraction_SMOD_combin"={
             return(paste0(
               "SELECT
 
@@ -165,7 +165,7 @@ query_I_SMOD_SERV_MD_CM_AG <- function(query,debut, fin, diagn,CodeActe,omni_spe
             3) cibler l'adresse à une date fixe (p. ex. 31 mars, 1 juillet, mi-année)*/
 
             LEFT JOIN (\n",
-            			query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM(benef_adr,fin,debut,date_adr),
+            			query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM(benef_adr,debut_periode,fin_periode,date_adr),
             			") AS BD_Adr
             			ON BD_SMOD.SMOD_NO_INDIV_BEN_BANLS=BD_Adr.BENF_NO_INDIV_BEN_BANLS
 
@@ -213,7 +213,7 @@ query_I_SMOD_SERV_MD_CM_AG <- function(query,debut, fin, diagn,CodeActe,omni_spe
             LEFT JOIN (SELECT CodRLS, NomRLS AS NomRLS_Etab, NomRSS AS NomRSS_Etab FROM DONNE_INESSS.tGI_RLS_RTS) AS BD_NomReg_Etab
             ON BD_Etab.LGEO_COD_TERRI_RLS=BD_NomReg_Etab.CodRLS
 
-            WHERE BD_SMOD.SMOD_DAT_SERV BETWEEN '",debut,"' AND '",fin,"'\n",
+            WHERE BD_SMOD.SMOD_DAT_SERV BETWEEN '",debut_periode,"' AND '",fin_periode,"'\n",
               query_I_SMOD_SERV_MD_CM.where_SMOD_COD_STA_DECIS (code_stat_decis),
               query_I_SMOD_SERV_MD_CM.where_SMOD_COD_ACTE (CodeActe),
               query_I_SMOD_SERV_MD_CM.diagn(diagn),
@@ -240,7 +240,7 @@ query_I_SMOD_SERV_MD_CM_AG <- function(query,debut, fin, diagn,CodeActe,omni_spe
               "BD_SMOD.SMOD_DAT_SERV as DATE_DX,\n",
               "BD_SMOD.SMOD_COD_DIAGN_PRIMR AS DX\n",
               "FROM PROD.I_SMOD_SERV_MD_CM AS BD_SMOD\n",
-              "where BD_SMOD.SMOD_DAT_SERV between '",debut,"' and '",fin,"'\n",
+              "where BD_SMOD.SMOD_DAT_SERV between '",debut_cohort,"' and '",fin_cohort,"'\n",
               query_I_SMOD_SERV_MD_CM.where_SMOD_COD_STA_DECIS (code_stat_decis),
               query_I_SMOD_SERV_MD_CM.diagn(diagn),
               ") AS A order by 1,2;"
@@ -348,7 +348,7 @@ query_I_SMOD_SERV_MD_CM.diagn <- function(diagn) {
 #' @description Section `where` du code SQL où on demande les adresses de Benef.
 #' @encoding UTF-8
 #' @keywords internal
-query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM<- function(benef_adr,fin,debut,date_adr) {
+query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM<- function(benef_adr,debut_periode,fin_periode,date_adr) {
   switch(benef_adr,
          "date_fixe" = {
            return(paste0(
@@ -362,7 +362,7 @@ query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM<- function(benef_adr,fin,debut,date_
 
               FROM Prod.I_BENF_ADR_CM
               WHERE BENF_IND_ADR_HQ IN ('N') AND BENF_COD_TYP_ADR IN ('R')
-              AND (BENF_DD_ADR_BEN<='",fin,"' AND BENF_DF_ADR_BEN>='",debut,"')
+              AND (BENF_DD_ADR_BEN<='",fin_periode,"' AND BENF_DF_ADR_BEN>='",debut_periode,"')
               AND '",date_adr,"' between BENF_DD_ADR_BEN AND BENF_DF_ADR_BEN"
            ))
          },
@@ -378,7 +378,7 @@ query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM<- function(benef_adr,fin,debut,date_
 
               FROM Prod.I_BENF_ADR_CM
               WHERE BENF_IND_ADR_HQ IN ('N') AND BENF_COD_TYP_ADR IN ('R')
-              AND (BENF_DD_ADR_BEN<='",fin,"' AND BENF_DF_ADR_BEN>='",debut,"')
+              AND (BENF_DD_ADR_BEN<='",fin_periode,"' AND BENF_DF_ADR_BEN>='",debut_periode,"')
               QUALIFY Row_Number()Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN DESC)=1 --dernière adresse
                \n"
            ))
@@ -401,16 +401,16 @@ query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM<- function(benef_adr,fin,debut,date_
               LGEO_COD_RSS,
               LGEO_COD_TERRI_RLS,
               CASE
-              WHEN (BENF_DD_ADR_BEN <= '",debut,"' AND BENF_DF_ADR_BEN >= '",fin,"') THEN DATE '",fin,"' - DATE '",debut,"' + 1
-              WHEN (BENF_DD_ADR_BEN >= '",debut,"' AND BENF_DF_ADR_BEN >= '",fin,"') THEN DATE '",fin,"' - BENF_DD_ADR_BEN
-              WHEN (BENF_DD_ADR_BEN <= '",debut,"' AND BENF_DF_ADR_BEN <= '",fin,"') THEN BENF_DF_ADR_BEN - DATE '",debut,"'
-              WHEN (BENF_DD_ADR_BEN >= '",debut,"' AND BENF_DF_ADR_BEN <= '",fin,"') THEN BENF_DF_ADR_BEN - BENF_DD_ADR_BEN
+              WHEN (BENF_DD_ADR_BEN <= '",debut_periode,"' AND BENF_DF_ADR_BEN >= '",fin_periode,"') THEN DATE '",fin_periode,"' - DATE '",debut_periode,"' + 1
+              WHEN (BENF_DD_ADR_BEN >= '",debut_periode,"' AND BENF_DF_ADR_BEN >= '",fin_periode,"') THEN DATE '",fin_periode,"' - BENF_DD_ADR_BEN
+              WHEN (BENF_DD_ADR_BEN <= '",debut_periode,"' AND BENF_DF_ADR_BEN <= '",fin_periode,"') THEN BENF_DF_ADR_BEN - DATE '",debut_periode,"'
+              WHEN (BENF_DD_ADR_BEN >= '",debut_periode,"' AND BENF_DF_ADR_BEN <= '",fin_periode,"') THEN BENF_DF_ADR_BEN - BENF_DD_ADR_BEN
               ELSE 0
               END AS days_count,
               ROW_NUMBER() OVER (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY days_count DESC) AS row_num */
               FROM Prod.I_BENF_ADR_CM
               WHERE BENF_IND_ADR_HQ IN ('N') AND BENF_COD_TYP_ADR IN ('R')
-              AND (BENF_DD_ADR_BEN<='",fin,"' AND BENF_DF_ADR_BEN>='",debut,"')
+              AND (BENF_DD_ADR_BEN<='",fin_periode,"' AND BENF_DF_ADR_BEN>='",debut_periode,"')
               /*AND '",date_adr,"' between BENF_DD_ADR_BEN AND BENF_DF_ADR_BEN  --option 1 date fixe
               QUALIFY Row_Number()Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN DESC)=1*/ --option 2 dernière adresse
               QUALIFY Row_Number()Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN ASC)=1 --option 3 première adresse
@@ -436,16 +436,16 @@ query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM<- function(benef_adr,fin,debut,date_
               LGEO_COD_RSS,
               LGEO_COD_TERRI_RLS,
               CASE
-                WHEN (BENF_DD_ADR_BEN <= '",debut,"' AND BENF_DF_ADR_BEN >= '",fin,"') THEN DATE '",fin,"' - DATE '",debut,"' + 1
-                WHEN (BENF_DD_ADR_BEN >= '",debut,"' AND BENF_DF_ADR_BEN >= '",fin,"') THEN DATE '",fin,"' - BENF_DD_ADR_BEN
-                WHEN (BENF_DD_ADR_BEN <= '",debut,"' AND BENF_DF_ADR_BEN <= '",fin,"') THEN BENF_DF_ADR_BEN - DATE '",debut,"'
-                WHEN (BENF_DD_ADR_BEN >= '",debut,"' AND BENF_DF_ADR_BEN <= '",fin,"') THEN BENF_DF_ADR_BEN - BENF_DD_ADR_BEN
+                WHEN (BENF_DD_ADR_BEN <= '",debut_periode,"' AND BENF_DF_ADR_BEN >= '",fin_periode,"') THEN DATE '",fin_periode,"' - DATE '",debut_periode,"' + 1
+                WHEN (BENF_DD_ADR_BEN >= '",debut_periode,"' AND BENF_DF_ADR_BEN >= '",fin_periode,"') THEN DATE '",fin_periode,"' - BENF_DD_ADR_BEN
+                WHEN (BENF_DD_ADR_BEN <= '",debut_periode,"' AND BENF_DF_ADR_BEN <= '",fin_periode,"') THEN BENF_DF_ADR_BEN - DATE '",debut_periode,"'
+                WHEN (BENF_DD_ADR_BEN >= '",debut_periode,"' AND BENF_DF_ADR_BEN <= '",fin_periode,"') THEN BENF_DF_ADR_BEN - BENF_DD_ADR_BEN
                 ELSE 0
               END AS days_count,
               ROW_NUMBER() OVER (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY days_count DESC) AS row_num
               FROM Prod.I_BENF_ADR_CM
               WHERE BENF_IND_ADR_HQ IN ('N') AND BENF_COD_TYP_ADR IN ('R')
-              AND (BENF_DD_ADR_BEN<='",fin,"' AND BENF_DF_ADR_BEN>='",debut,"')
+              AND (BENF_DD_ADR_BEN<='",fin_periode,"' AND BENF_DF_ADR_BEN>='",debut_periode,"')
               )AS A
                WHERE A.row_num=1\n"
            ))

@@ -7,17 +7,17 @@
 \usage{
 query_V_DIAGN_SEJ_HOSP_CM_AG(
   query,
-  debut,
-  fin,
+  debut_cohort,
+  fin_cohort,
   diagn,
   date_dx_var = "admis",
   typ_diagn = c("A", "P", "S", "D")
 )
 }
 \arguments{
-\item{debut}{Date de début de la période d'étude.}
+\item{debut_cohort}{Date de début de la période d'étude.}
 
-\item{fin}{Date de fin de la période d'étude.}
+\item{fin_cohort}{Date de fin_cohort de la période d'étude.}
 
 \item{diagn}{\code{list} indiquant les codes de diagnostics \emph{CIM9} et \emph{CIM10} à extraire.\cr \code{list(CIM9=c(...),CIM10=c(...))}.}
 

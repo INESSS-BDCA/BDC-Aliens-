@@ -7,8 +7,8 @@
 \usage{
 SQL_reperage_cond_med(
   conn = SQL_connexion(),
-  debut,
-  fin,
+  debut_cohort,
+  fin_cohort,
   Dx_table,
   CIM = c("CIM9", "CIM10"),
   nDx = 1,
@@ -23,9 +23,9 @@ SQL_reperage_cond_med(
 \arguments{
 \item{conn}{Variable contenant la connexion entre R et Teradata. Voir \code{\link{SQL_connexion}}.}
 
-\item{debut}{Date de début de la période d'étude au format \code{AAAA-MM-JJ}.}
+\item{debut_cohort}{Date de début de la période pour la création d'une cohorte au format \code{"AAAA-MM-JJ"}.}
 
-\item{fin}{Date de fin de la période d'étude au format \code{AAAA-MM-JJ}.}
+\item{fin_cohort}{Date de fin de la période pour la création d'une cohorte au format \code{"AAAA-MM-JJ"}.}
 
 \item{Dx_table}{\code{list} contenant les codes à analyser ou le nom d'une table qui est inclue dans la librairie.}
 
@@ -60,7 +60,7 @@ Supposons \verb{Dx_table = list(Angoisse = [...], Trouble = [...], Deficience = 
 }
 \examples{
 EX1_default <- SQL_reperage_cond_med(
-  conn = conn, debut = "2020-01-01", fin = "2020-12-31",
+  conn = conn, debut_cohort = "2020-01-01", fin_cohort = "2020-12-31",
   Dx_table = list(
     diabete = list(
       CIM9 = c("2500\%", "2501\%", "2502\%"),
@@ -77,7 +77,7 @@ EX1_default <- SQL_reperage_cond_med(
   nDx = 1
 )
 EX2_nDx0 <- SQL_reperage_cond_med(
-  conn = conn, debut = "2020-01-01", fin = "2020-12-31",
+  conn = conn, debut_cohort = "2020-01-01", fin_cohort = "2020-12-31",
   Dx_table = list(
     diabete = list(
       CIM9 = c("2500\%", "2501\%", "2502\%"),
@@ -92,7 +92,7 @@ EX2_nDx0 <- SQL_reperage_cond_med(
   nDx = 0
 )
 EX3_nDx2 <- SQL_reperage_cond_med(
-  conn = conn, debut = "2020-01-01", fin = "2020-12-31",
+  conn = conn, debut_cohort = "2020-01-01", fin_cohort = "2020-12-31",
   Dx_table = list(
     diabete = list(
       CIM9 = c("2500\%", "2501\%", "2502\%"),
@@ -107,7 +107,7 @@ EX3_nDx2 <- SQL_reperage_cond_med(
   nDx = 2
 )
 EX4_byDxFALSE_nDx0 <- SQL_reperage_cond_med(
-  conn = conn, debut = "2020-01-01", fin = "2020-12-31",
+  conn = conn, debut_cohort = "2020-01-01", fin_cohort = "2020-12-31",
   Dx_table = list(
     diabete = list(
       CIM9 = c("2500\%", "2501\%", "2502\%"),
@@ -122,7 +122,7 @@ EX4_byDxFALSE_nDx0 <- SQL_reperage_cond_med(
   by_Dx = FALSE, nDx = 0
 )
 EX5_byDxFALSE_nDx2 <- SQL_reperage_cond_med(
-  conn = conn, debut = "2020-01-01", fin = "2020-12-31",
+  conn = conn, debut_cohort = "2020-01-01", fin_cohort = "2020-12-31",
   Dx_table = list(
     diabete = list(
       CIM9 = c("2500\%", "2501\%", "2502\%"),
