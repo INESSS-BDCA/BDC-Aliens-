@@ -7,10 +7,14 @@
 \usage{
 query_V_EPISO_SOIN_DURG_CM_AG(
   query,
+  debut_periode,
+  fin_periode,
   debut_cohort,
   fin_cohort,
   diagn,
-  date_dx_var
+  date_dx_var,
+  benef_adr,
+  date_adr
 )
 }
 \arguments{

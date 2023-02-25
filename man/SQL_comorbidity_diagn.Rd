@@ -20,7 +20,7 @@ SQL_comorbidity_diagn(
   typ_diagn = c("A", "P", "S"),
   exclu_diagn = NULL,
   verbose = TRUE,
-  code_stat_decis = c("PAY", "PPY", "PAY-PPY")
+  code_stat_decis = c("PAY", "PPY")
 )
 }
 \arguments{

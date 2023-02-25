@@ -304,42 +304,42 @@ SQL_reperage_cond_med <- function(
     }
     # Ajouter les colonnes manquantes (si Dx_etape 1 ou 2 n'existe pas)
     if (nDx > 0) {
-      for (col in c("ID", "DIAGN", "DI_fin_cohortale", "DI_Hospit", "DI_Acte", paste0("DC_Acte", 1:nDx), "D_Recent")) {
+      for (col in c("ID", "DIAGN", "DI_fin_cohorte", "DI_Hospit", "DI_Acte", paste0("DC_Acte", 1:nDx), "D_Recent")) {
         if (!any(names(dt_fin_cohortal) == col)) {
           dt_fin_cohortal[, (col) := NA]
         }
       }
     }
-    dt_fin_cohortal[, DI_fin_cohortale := DI_Acte]
+    dt_fin_cohortal[, DI_fin_cohorte := DI_Acte]
     if (nDx > 0) {
-      dt_fin_cohortal[is.na(DI_Acte), DI_fin_cohortale := DI_Hospit]
-      dt_fin_cohortal[DI_Hospit < DI_Acte, DI_fin_cohortale := DI_Hospit]
+      dt_fin_cohortal[is.na(DI_Acte), DI_fin_cohorte := DI_Hospit]
+      dt_fin_cohortal[DI_Hospit < DI_Acte, DI_fin_cohorte := DI_Hospit]
     } else {
       dt_fin_cohortal[, DI_Acte := NULL]
     }
 
     if (nDx > 0) {
       if (by_Dx) {
-        setcolorder(dt_fin_cohortal, c("ID", "DIAGN", "DI_fin_cohortale", "DI_Hospit", "DI_Acte", paste0("DC_Acte", nDx), "D_Recent"))
+        setcolorder(dt_fin_cohortal, c("ID", "DIAGN", "DI_fin_cohorte", "DI_Hospit", "DI_Acte", paste0("DC_Acte", nDx), "D_Recent"))
       } else {
-        setcolorder(dt_fin_cohortal, c("ID", "DI_fin_cohortale", "DI_Hospit", "DI_Acte", paste0("DC_Acte", 1:nDx), "D_Recent"))
+        setcolorder(dt_fin_cohortal, c("ID", "DI_fin_cohorte", "DI_Hospit", "DI_Acte", paste0("DC_Acte", 1:nDx), "D_Recent"))
       }
     } else {
       if (by_Dx) {
-        setcolorder(dt_fin_cohortal, c("ID", "DIAGN", "DI_fin_cohortale", "D_Recent"))
+        setcolorder(dt_fin_cohortal, c("ID", "DIAGN", "DI_fin_cohorte", "D_Recent"))
       } else {
-        setcolorder(dt_fin_cohortal, c("ID", "DI_fin_cohortale", "D_Recent"))
+        setcolorder(dt_fin_cohortal, c("ID", "DI_fin_cohorte", "D_Recent"))
       }
     }
 
     if (verbose) {
-      cat("fin_cohort de création de la cohorte.\n")
+      cat("fin de création de la cohorte.\n")
     }
 
     if (keep_all) {
       return(dt_fin_cohortal)
     } else {
-      return(dt_fin_cohortal[!is.na(DI_fin_cohortale)])
+      return(dt_fin_cohortal[!is.na(DI_fin_cohorte)])
     }
 
   }

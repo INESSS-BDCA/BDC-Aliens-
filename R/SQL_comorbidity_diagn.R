@@ -54,7 +54,7 @@ SQL_comorbidity_diagn <- function(
                    V_EPISO_SOIN_DURG_CM = 'BDCU', I_SMOD_SERV_MD_CM = 'SMOD'),
     date_dx_var = "depar", typ_diagn = c('A', 'P', 'S'),
     exclu_diagn = NULL, verbose = TRUE,
-    code_stat_decis=c('PAY','PPY','PAY-PPY')
+    code_stat_decis=c('PAY','PPY')
 ) {
 
   ### Extraction des diagn
@@ -135,7 +135,6 @@ SQL_comorbidity_diagn <- function(
             debut_cohort = debut_cohort, fin_cohort = fin_cohort,
             diag_desc = dia,
             sourc_desc = dt_desc[[sour]],
-            date_dx_var = date_dx_var,
             code_stat_decis=code_stat_decis
           )
           t2 <- Sys.time()
@@ -324,7 +323,7 @@ SQL_comorbidity_diagn.V_SEJ_SERV_HOSP_CM <- function(
 #' @import data.table
 SQL_comorbidity_diagn.I_SMOD_SERV_MD_CM <- function(
     conn, ids, diagn, debut_cohort, fin_cohort,
-    diag_desc, sourc_desc, date_dx_var,code_stat_decis
+    diag_desc, sourc_desc,code_stat_decis
 ) {
 
   yr_deb <- year(lubridate::as_date(debut_cohort))  # 1ere année à extraire

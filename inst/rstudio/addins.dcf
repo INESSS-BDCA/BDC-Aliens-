@@ -1,4 +1,4 @@
-Name: user_I_SMOD_SERV_MD_CM Shiny app
-Description: Démarrage du user_I_SMOD_SERV_MD_CM_shiny.
-Binding: user_I_SMOD_SERV_MD_CM_shiny
+Name: Requete Generique BDCA Shiny app
+Description: Démarrage du RequeteGeneriqueBDCA_shiny.
+Binding: RequeteGeneriqueBDCA_shiny
 Interactive: true

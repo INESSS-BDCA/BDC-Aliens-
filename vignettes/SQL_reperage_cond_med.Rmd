@@ -4,6 +4,8 @@ author: "Auteur: Guillaume Boucher (développeur); Ahmed Ghachem (réviseur)"
 date: "Date de création: 15 décembre 2022"
 output:
   rmarkdown::html_vignette:
+    css: styles.css
+    #self_contained: false
     number_sections: true
     toc: true
 params: 
@@ -31,13 +33,15 @@ knitr::opts_chunk$set(
 ```{r}
 SQL_reperage_cond_med(
   conn = SQL_connexion(),
-  debut, fin,
+  debut_cohort, 
+  fin_cohort,
   Dx_table,
   CIM = c("CIM9", "CIM10"),
   by_Dx = TRUE,
   date_dx_var = "admis",
   nDx= 1,
   n1 = 30, n2 = 730,
+  code_stat_decis=c('PAY','PPY'),
   keep_all = FALSE,
   verbose = TRUE
 )
@@ -54,7 +58,7 @@ conn = SQL_connexion("msXXX")
 ### debut & fin
 Date de début et de fin de la période d'étude au format AAAA-MM-JJ.
 ```{r}
-debut = "2020-01-01", fin = "2020-12-31"
+debut_cohort = "2020-01-01", fin_cohort = "2020-12-31"
 ```
 
 ### Dx_table
@@ -115,6 +119,12 @@ Permet de créer l'intervalle `[n1, n2]`. Le nombre de jours entre deux diagnost
 n1 = 30, n2 = 730
 ```
 
+### code_stat_decis
+Permet d'extraire les actes selon leurs statuts de paiement.
+```{r}
+code_stat_decis=c("PAY","PPY")
+```
+
 ### keep_all
 `FALSE` supprime tous les individus qui n'ont pas de date confirmée.  
 `TRUE` permet d'avoir la liste des individus qui ont eu au moins un code diagnostic durant la période d'étude ainsi que la date la plus récente de ces codes.
@@ -162,9 +172,6 @@ FIN.
 **`ID` :** Numéro d'identification de l'individu.  
 **`DIAGN` :** Seulement si `by_Dx = TRUE`. Nom de l'élément inscrit dans `Dx_table`.  
 **`DI_Finale` :** Date d'incidence retenue.  
-**`DI_Hospit` :** Date d'incidence d'hospitalisation.  
-**`DI_Acte` :** Date d'incidence des actes.  
-**`DC_Acte` :** Date de confirmation de `DI_Acte`.  
 **`D_Recent` :** Date du diagnostic la plus récente **sans tenir compte de l'algorithme**.
 
 ---
