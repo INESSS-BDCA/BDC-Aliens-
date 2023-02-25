@@ -1,8 +1,8 @@
-#' Démarrer user_I_SMOD_SERV_MD_CM_shiny
+#' Démarrer RequeteGeneriqueBDCA_shiny
 #'
-#' @return \link{user_I_SMOD_SERV_MD_CM_shiny}
+#' @return \link{RequeteGeneriqueBDCA_shiny}
 #' @keywords internal
 #' @encoding UTF-8
-user_I_SMOD_SERV_MD_CM_shiny_addin <- function() {
-  return(RequeteGeneriqueBDCA::user_I_SMOD_SERV_MD_CM_shiny())
+RequeteGeneriqueBDCA_shiny_addin <- function() {
+  return(RequeteGeneriqueBDCA::RequeteGeneriqueBDCA_shiny())
 }

@@ -1,13 +1,12 @@
-#' @title user_I_SMOD_SERV_MD_CM_shiny
+#' @title RequeteGeneriqueBDCA_shiny
 #'
-#' @description L'application `user_I_SMOD_SERV_MD_CM_shiny` est destinée aux utilisateurs. Elle permet d'exécuter la rêquete SQL retournée par la fonction `query_I_SMOD_SERV_MD_CM_AG`.\cr
-#' Pour plus d'information, veuillez consulter la vignette de la fonction `user_I_SMOD_SERV_MD_CM_AG`.\cr
+#' @description L'application `RequeteGeneriqueBDCA_shiny` est destinée aux utilisateurs.
 #'
 #' #' Elle permet: \cr
-#' 1) d'extraire les variables pertinantes de la base de données SMOD, jumlées avec d'autres bases de données pour rajouter les caractéristiques de dispensateur, du bénéficiaire et de l'établissement de soins.\cr
-#' 2) d'extraire les variables pertinantes de la base de données SMOD et d'effectuer des analyses discriptives afin d'orienter la prise de décision.\cr
+#' 1) d'extraire les variables pertinantes de différentes vues de données.\cr
+#' 2) de creéer une cohorte en utilisant les Dx cim9 et cim10.\cr
+#' 3) d'appliquer une standardisation directe ou indirect. \cr
 #'
-#' @inheritParams user_I_SMOD_SERV_MD_CM_AG
 #'
 #' @encoding UTF-8
 #' @import shiny shinyAce bslib shinycssloaders shinyjs plotly ggplot2 dplyr stringr
