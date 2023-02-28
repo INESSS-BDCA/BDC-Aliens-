@@ -143,6 +143,7 @@ RequeteGeneriqueBDCA_shiny<-function(){
           tabPanel("Standardisation",style='width: 1500px; height: 1000px',
                    sidebarLayout(
                      sidebarPanel(
+                       textInput("fct_tab3", label = h3("Fonction générique exécutée"),value = "standardisation"),
                        textInput("donnees","donnees",value = "donnees"),
                        fileInput("DT_tab3", "Veuillez choisir votre cohorte d'intérêt"),
                        textInput("regroupement","regroupement"),
@@ -176,11 +177,54 @@ RequeteGeneriqueBDCA_shiny<-function(){
                        )
                      )
                    )
+          ),
+          # combine périodes / épisodes de soins ####
+          tabPanel("combine périodes / épisodes de soins",style='width: 1500px; height: 1000px',
+                   sidebarLayout(
+                     sidebarPanel(
+                       textInput("fct_tab4", label = h3("Fonction générique exécutée"),value = "combine_periodes"),
+                       textInput("dt","Table de données",value = "Data"),
+                       fileInput("file_tab4", "Veuillez choisir votre cohorte d'intérêt"),
+                       textInput("id","Identifiant du bénéficiaire",value="ID"),
+                       helpText("Nom de la colonne indiquant l'identifiant du bénéficiaire"),
+                       textInput("debut","Début de la période",value="DatAdm"),
+                       helpText("Nom de la colonne indiquant le début de la période"),
+                       textInput("fin","fin de la période",value="DatDep"),
+                       helpText("Nom de la colonne indiquant le fin de la période"),
+                       numericInput("njours","Nombre de jours",value=1),
+                       helpText("Nombre de jours max entre le début et la fin précédente pour effectuer une combinaison"),
+                       textInput("par_cols","Autres cols à considérer",value = "NULL"),
+                       helpText("Nom des autres colonnes qui doivent être incluses dans l'analyse. Par exemple des codes de médicaments. Par défaut `NULL`"),
+                       checkboxInput("Code_sql_tab4", "Paramétres d'affichage du script", value = FALSE),
+                       uiOutput("Code_sql_select_tab4"),
+
+                       selectInput("fileType_tab4", "Download: Type fichier:", choices = c("csv", "txt")),
+                       actionButton("Executer_tab4", "Exécuter la requête",style = "background-color: green;color: white;"),
+                       actionButton("reset_tab4", "Réinitialiser les champs")),
+                     mainPanel(
+                       tabsetPanel(type="tabs",
+                                   tabPanel("Résultats", style='width: 1000px; height: 1000px',
+                                            h4("Résultats de la requête"),
+                                            h5("Script:"),
+                                            p("Afficher le script exécuté pour effectuer la requête demandée.", style = "font-family: 'times'; font-si16pt"),
+                                            aceEditor(outputId = "ace_tab4",
+                                                      selectionId = "selection_tab4",
+                                                      placeholder = "Afficher le script de la requête ..."),
+                                            h5("Message de progression et warnings:"),
+                                            verbatimTextOutput("result_tab4"),
+                                            uiOutput("DT_final_ui_tab4")),
+                                   tabPanel("Vignettes", style='width: 1000px; height: 1000px',
+                                            h4("vignette de la fonction")#,
+                                            #includeHTML("vignettes/"))
+                                   )
+                       )
+                     )
+                   )
           )
-          #####
         )
     )
   )
+
 
 
   # server- Define the server logic for the Shiny app ####
@@ -188,7 +232,7 @@ RequeteGeneriqueBDCA_shiny<-function(){
     #bs_themer()
 
     # Extraction Donnees ####
-    ## renderUI: extraction donnees ####
+    ## renderUI: ####
     ### Fonction exécutée####
     observeEvent(input$DT, {
       if (input$DT == "SMOD") {
@@ -818,12 +862,10 @@ RequeteGeneriqueBDCA_shiny<-function(){
         }
       }
     })
-
-
-
-
+    #####
+    '#####
+     #####'
     # Creation cohorte ####
-    ## renderUI Creation cohort ####
     # Résultat: Création cohort ####
     observeEvent(input$Executer_tab2, {
       warnings <- reactiveValues(data = character(0))
@@ -898,12 +940,9 @@ RequeteGeneriqueBDCA_shiny<-function(){
       })
 
     })
-
-
-
-
-
-
+    #####
+    '#####
+     #####'
     # Standardisation ####
     observeEvent(input$Executer_tab3, {
       output$image <- renderImage({
@@ -913,6 +952,201 @@ RequeteGeneriqueBDCA_shiny<-function(){
         )
       }, deleteFile = FALSE)
     })
+
+    '#####
+     #####'
+    # combine périodes / episodes soins ####
+    ## renderUI: ####
+    ### Affichage code sql ####
+    tmp<- reactiveVal("r")
+    observeEvent(input$mode_tab4, {
+      tmp(input$mode_tab4)
+    })
+
+    tmp1<- reactiveVal("cobalt")
+    observeEvent(input$theme_tab4, {
+      tmp1(input$theme_tab4)
+    })
+
+    output$Code_sql_select_tab4 <- renderUI({
+      if (input$Code_sql_tab4) {
+        tagList(selectInput("mode_tab4", "Mode d'affichage du code générique: ", choices = getAceModes(), selected = tmp()),
+                helpText("Par défaut, le code est affiché en mode r sous l'onglet 'script:'. Il est possible de choisir d'autres modes"),
+                selectInput("theme_tab4", "Thème d'affichage du code générique: ", choices = getAceThemes(), selected = tmp1()),
+                helpText("Par défaut, le code est affiché avec le thème 'cobalt'. Il est possible de choisir d'autres thèmes")
+
+        )
+      }
+    })
+    # Résultats: combine périodes / epi soins ####
+    observeEvent(input$Executer_tab4, {
+      if(is.null(input$file_tab4)){
+        showNotification("L'exécution de la requête a été intérompue: L'argument 'file' est vide. Veuillez-svp selectionner un fichier pour votre cohorte d'intérêt", duration = 0, type="warning")
+      }
+
+      warnings <- reactiveValues(data = character(0))
+      result_tab4 <- eventReactive(input$Executer_tab4, {
+
+        DT <- if (input$dt == "NULL") {
+          NULL
+        } else {
+          tmp <- data.table::fread(input$file_tab4$datapath)
+          DT<-tmp
+          assign("DT", DT, envir = .GlobalEnv)
+        }
+
+        par_cols<-if (input$par_cols == "NULL") {
+          NULL
+        } else {
+          unlist(str_split(input$par_cols, ","))
+        }
+
+
+        DT_final<-withCallingHandlers(
+          RequeteGeneriqueBDCA::combiner_periodes(
+            dt=DT,
+            id=input$id,
+            debut=input$debut,
+            fin=input$fin,
+            njours=input$njours,
+            par_cols=par_cols
+          ),
+
+          warning = function(w) {
+            warnings$data <- c(warnings$data, w$message)})
+
+      })
+      # afficher le code sql ####
+      init <- eventReactive(input$Executer_tab4,{
+        if (input$dt == "Data") {
+          return('
+    # Convertir data.table au besoin
+    if (!is.data.table(dt)) {
+    dt <- as.data.table(dt)
+    }
+
+    # Sélectionner et renommer les colonnes nécessaires
+    if (is.null(par_cols)) {
+    dt <- dt[, c(id, debut, fin), with = FALSE]
+    } else {
+    dt <- dt[, c(id, par_cols, debut, fin), with = FALSE]
+    }
+    setnames(dt, c(id, debut, fin), c("id", "debut", "fin"))
+
+    # Trier en ordre croissant les périodes
+    if (is.null(par_cols)) {
+    setorder(dt, id, debut, fin)
+    } else {
+    setorderv(dt, c("id", par_cols, "debut", "fin"))
+    }
+
+    # Combiner les périodes qui se chevauchent
+    if (is.null(par_cols)) {
+    dt[, diff := as.integer(debut - shift(fin)), .(id)]  # nombre de jours entre début{i} et fin{i-1}
+    idx <- rmNA(dt[, .I[diff <= njours]])  # vérifier si une combinaison des périodes doit être faite
+    while (length(idx)) {
+    dt[is.na(diff), diff := 0L]
+    dt[, per := 0L][diff > 1, per := 1L]  # 0=même période, 1=changement de période
+    dt[, per := cumsum(per) + 1L, .(id)]  # numéroter les périodes de 1 à N
+    dt <- dt[  # combiner les mêmes périodes en conservant le min et le max
+    , .(debut = min(debut),
+    fin = max(fin)),
+    .(id, per)
+    ][, per := NULL]  # supprimer la colonne
+
+    # Vérifier si on doit refaire lalgorithme
+    dt[, diff := as.integer(debut - shift(fin)), .(id)]  # nombre de jours entre début{i} et fin{i-1}
+    idx <- rmNA(dt[, .I[diff <= njours]])  # vérifier si une combinaison des périodes doit être faite
+    }
+    } else {
+    dt[, diff := as.integer(debut - shift(fin)), by = c("id", par_cols)]  # nombre de jours entre début{i} et fin{i-1}
+    idx <- rmNA(dt[, .I[diff <= njours]])  # vérifier si une combinaison des périodes doit être faite
+    while (length(idx)) {  # appliquer lalgorithme à chaque fois quil y a au moins un diff <= njours
+    dt[is.na(diff), diff := 0L]
+    dt[, per := 0L][diff > 1, per := 1L]  # 0=même période, 1=changement de période
+    dt[, per := cumsum(per) + 1L, by = c("id", par_cols)]  # numéroter les périodes de 1 à N
+    dt <- dt[  # combiner les mêmes périodes en conservant le min et le max
+    , .(debut = min(debut),
+    fin = max(fin)),
+    by = c("id", par_cols, "per")
+    ][, per := NULL]  # supprimer la colonne
+
+    # Vérifier si on doit refaire lalgorithme
+    dt[, diff := as.integer(debut - shift(fin)), by = c("id", par_cols)]  # nombre de jours entre début{i} et fin{i-1}
+    idx <- rmNA(dt[, .I[diff <= njours]])  # vérifier si une combinaison des périodes doit être faite
+    }
+    }
+
+    # Arranger la table finale
+    dt[, diff := NULL]
+    setnames(dt, c("id", "debut", "fin"), c(id, debut, fin))
+
+    return(dt)')}
+        else{
+          return ("Afficher le script de la requête ...")
+        }
+      })
+      observe({ cat(input$ace_tab4, "\n")})
+      observe({cat(input$ace_selection_tab4, "\n")})
+      observe({
+        updateAceEditor(
+          session,
+          "ace_tab4",
+          value = init(),
+          theme = tmp1(),
+          mode = tmp(),
+        )
+      })
+
+      # afficher le message de progression ####
+      output$result_tab4 <- renderPrint({
+        if(is.null(input$file_tab4)){
+          NULL
+        } else {
+          withProgress(
+            message = "La requête est en exécution. Veuillez-svp patienter...",
+            value = 0,
+            {
+              n <- 10
+              for (i in 1:9) {
+                Sys.sleep(0.5)
+                incProgress(1/n, detail = paste("Doing part", i*10,"%"))
+              }
+              result_tab4<-result_tab4()
+              if (length(warnings$data) > 0) {
+                print(paste("Warnings: ", warnings$data))
+              }
+            }
+          )
+        }
+      }
+      )
+
+      # Définir les noms tableaux / figs à affichés ####
+      output$DT_final_ui_tab4 <- renderUI({navbarPage("Cohorte et Tableaux descriptifs", # we can use a tabsetPanel instide navbarPage
+                                                      tabPanel("DT_final_combin",
+                                                               downloadButton("downloadData_tab4", "Download"),
+                                                               dataTableOutput("DT_final_combin")
+                                                      ))})
+      # Afficher la cohorte ####
+      output$DT_final_combin <- renderDataTable(result_tab4()) #DT::renderDT()
+      # Download BD ####
+      observeEvent(input$Executer_tab4, {
+        output$downloadData_tab4 <- downloadHandler(
+          filename = function() {
+            paste("DT_final_combin-", Sys.Date(), ".", input$fileType_tab4, sep = "")
+          },
+          content = function(file) {
+            if (input$fileType_tab4 == "csv") {
+              write.csv(result_tab4(), file, row.names = FALSE)
+            } else {
+              write.table(result_tab4(), file, sep = ";", dec = ".",quote=FALSE,row.names = FALSE, col.names = TRUE)
+            }
+          }
+        )
+      })
+
+    })
     # rénésialisation des champs ####
     observeEvent(input$reset, {
       updateAceEditor(session, "ace", value = "")
@@ -920,6 +1154,17 @@ RequeteGeneriqueBDCA_shiny<-function(){
       output$DT_final_ui <- renderUI({NULL})
       output$DT_final_ui1 <- renderUI({NULL})
       output$DT_final <- renderDataTable({NULL})
+    })
+    observeEvent(input$reset_tab2, {
+      output$result_tab2 <- renderPrint({NULL})
+      output$DT_final_ui_tab2 <- renderUI({NULL})
+      output$cohort_final <- renderDataTable({NULL})
+    })
+    observeEvent(input$reset_tab4, {
+      updateAceEditor(session, "ace_tab4", value = "")
+      output$result_tab4 <- renderPrint({NULL})
+      output$DT_final_ui_tab4 <- renderUI({NULL})
+      output$DT_final_combin <- renderDataTable({NULL})
     })
 
   })

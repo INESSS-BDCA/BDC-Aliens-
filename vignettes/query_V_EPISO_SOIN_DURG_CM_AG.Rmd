@@ -1,0 +1,388 @@
+---
+title: "query_V_EPISO_SOIN_DURG_CM_AG"
+#subtitle: ""
+author: "Auteurs: Ahmed Ghachem"
+date: "Date de création: 28 février 2023"
+output:
+  rmarkdown::html_vignette:
+    number_sections: true
+    toc: true
+params: 
+  output_dir: "C:/Users/MS069/Desktop/Ahmed/INESSS-BDCA/vignettes"
+vignette: >
+  %\VignetteIndexEntry{query_V_EPISO_SOIN_DURG_CM_AG}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  eval = FALSE
+)
+```
+
+# Installation de la librairie R *RequeteGeneriqueBDCA*
+
+## Fichier nécessaire
+
+Télécharger le fichier `RequeteGeneriqueBDCA.x.y.tar.gz` à partir de Microsoft Teams.<br>
+[INESSS - Documentation BDCA > Documents > Outils > Librairie R INESSS > RequeteGeneriqueBDCA_x.y.z.tar.gz](https://msss365.sharepoint.com/:f:/r/teams/INESSS-DocumentationBDCA/Shared%20Documents/Outils/Librairie%20R%20INESSS?csf=1&web=1&e=j5SylU).
+
+Ouvrir RStudio.
+
+Dans la console, écrire le code suivant :
+```{r, eval=FALSE}
+remotes::install_local("C:\\msXXX\\Desktop\\RequeteGeneriqueBDCA_x.y.z.tar.gz")
+```
+Prendre note que les «`\`» sont doubles.
+
+Si la librairie `remotes` n'est pas installée, écrire dans la console le code suivant : `install.packages("remotes")`.
+
+Avant d'installer une librairie, il est préférable de ne pas l'avoir *appelé* auparavant.
+
+Il est déconseillé de mettre à jour les librairies utilisées par *RequeteGeneriqueBDCA*.
+
+L'installation se termine lorsqu'on peut lire dans la console : *DONE (RequeteGeneriqueBDCA)*.
+
+
+## Activer la librairie
+      
+Après avoir installé la librairie *RequeteGeneriqueBDCA*, il suffit de l'activer pour avoir accès aux fonctions :
+```{r, eval=FALSE}
+library(RequeteGeneriqueBDCA)
+```
+
+---
+# query_V_EPISO_SOIN_DURG_CM_AG
+
+La fonction `query_V_EPISO_SOIN_DURG_CM_AG` est une `parent_function` qui retourne une syntaxe sql pour: <br/>
+1) extraire les variables pertinentes de BDCU combinées avec d'autres vues de données <br/>
+2) extraire les diagnostics pour la création d'une cohorte <br/>
+
+
+Elle est utilisée par: <br/>
+- la fonction [user_V_EPISO_SOIN_DURG_CM_AG](user_V_EPISO_SOIN_DURG_CM_AG.html) <br/>
+- la fonction [SQL_reperage_cond_med](SQL_reperage_cond_med.html) <br/>
+- ...
+
+## La fonction
+
+```{r, eval=FALSE}
+query_I_SMOD_SERV_MD_CM_AG(query,
+                           debut_periode, 
+                           fin_periode, 
+                           diagn,
+                           date_dx_var,
+                           benef_adr,
+                           date_adr,
+                           debut_cohort,
+                           fin_cohort)
+```
+
+## Définition des arguments
+
+### query
+Indiquant la requête qu'on veut exécuter. 
+```{r}
+query="extraction_BDCU" # extraire les variables pertinentes de BDCU combinées avec d'autres vues de données pour rajouter les caractéristiques de bénéficiaire, dispensateur et l'établissement du soins. 
+query="extraction_Dx" # extraire les diagnostics pour la création d'une cohort.
+
+
+```
+
+### debut_periode & fin_periode
+
+Indiquant le début et la fin de la période d'étude au format `AAAA-MM-JJ`.
+```{r, eval=FALSE}
+debut_periode = "2021-04-01", fin_periode = "2022-03-31"
+```
+
+### diagn
+
+Un vecteur indiquant les codes de diagnostics *CIM9* et/ou *CIM10* à extraire dont l'objectif est de créer une cohorte. 
+```{r}
+diagn=c('5995%','6180%','6181%','6183%','6184%','N810%','N811%','N812%')
+```
+
+### date_dx_var
+      
+Un vecteur indiquant si on utilise la date d'admission ou la date de départ comme date indexe pour l'étude.   
+```{r, eval=FALSE}
+date_dx_var=c('admis','depar')
+```
+    
+### benef_adr
+Permet de définir la méthode d'identification de l'adresse du bénéficiaire.
+```{r}
+benef_adr=c("date_fixe","dernière_adresse","première_adresse","long_adresse")
+
+```
+
+### date_adr
+Si `benef_adr`="date_fixe", `date_adr` permet de choisir une date fixe pour identifier l'adresse de bénéficiaire. 
+```{r}
+date_adr="2020-07-01"
+```
+
+### debut_cohort & fin_cohort
+
+Indiquant le début et la fin de la période pour la création d'une cohorte au format `AAAA-MM-JJ`.
+```{r, eval=FALSE}
+debut_cohort = "2021-04-01", fin_cohort = "2022-03-31"
+```
+
+
+## Usage de la fonction
+
+La fonction `query_V_EPISO_SOIN_DURG_CM_AG` est principalement utilisée par la fonction `user_V_EPISO_SOIN_DURG_CM_AG`. Voir [user_V_EPISO_SOIN_DURG_CM_AG](user_V_EPISO_SOIN_DURG_CM_AG.html)<br/>. Elle peut-être également exécutée indépendament des autres fonctions.   
+
+-  **Extraction des variables pertinantes de SMOD combinées avec d'autres vues de données:**
+```{r}
+DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
+statement=query_V_EPISO_SOIN_DURG_CM_AG (
+query="extraction_BDCU",
+debut_periode="2021-04-01",
+fin_periode="2022-03-31",
+diagn = NULL, #  à préciser si on veut extraire des actes pour des bénéficiaires ayant un ou plusieurs Dx spécifiques 
+date_dx_var=c('admis', 'depar'),
+benef_adr="dernière_adresse",
+date_adr=NULL,
+debut_cohort=NULL,
+fin_cohort=NULL)
+ ))
+```
+
+# Table Résultante
+
+## Variables
+
+### Extraction des variables pertinantes de BDCU combinées avec d'autres vues de données:
+
+- **ID ** : Numéro du bénéficiaire <br/>
+- **SURG_NO_EPISO_SOIN_DURG ** :	Numéro d'épisode de soins - Départements d'urgence	<br/>
+- **SURG_AN_PER_TEMPS ** :	Année période temps	<br/>
+- **SURG_DHD_EPISO_SOIN_DURG ** :	Date et heure de début d'un épisode de soins	<br/>
+- **DD_SOIN_DURG ** :	Date_debut_epi_soins	<br/>
+- **SURG_DH_DEPAR_USAG_DURG ** :	Date et heure de départ d'un usager	<br/>
+- **DF_SOIN_DURG ** :	Date_fin_epi_soins	<br/>
+- **SURG_DH_PREM_TRIAG_DURG ** :	Date et heure du premier triage d'urgence	<br/>
+- **SURG_DH_PRIS_CHARG_DURG ** :	Date et heure de prise en charge	<br/>
+- **SURG_DH_DEM_ADMIS_DURG ** :	Date et heure de la demande d'admission en CH	<br/>
+- **SURG_DH_DECES_DURG ** :	Date et heure du décès	<br/>
+- **SURG_COD_PRIOR_TRIAG_DURG ** :	Code de priorité du premier triage	<br/>
+- **SURG_COD_AUTNM_PREM_TRIAG_DURG ** 	Code d'autonomie après le premier triage	<br/>
+- **SURG_COD_RAIS_VISIT_DURG ** :	Code de raison de visite en urgence	<br/>
+- **SURG_CATG_MAJR_DIAGN_DURG ** :	Catégorie majeure de diagnostic	<br/>
+- **SURG_COD_DIAGN_MDCAL_CLINQ **	Code de diagnostic médical clinique	<br/>
+- **DATE_DX ** :	Définie selon SURG_DHD_EPISO_SOIN_DURG (admis) ou SURG_DH_DEPAR_USAG_DURG (depar)	<br/>
+- **SURG_NBR_CNSUL_DURG ** :	Nombre de consultations en département d'urgence	<br/>
+- **SURG_COD_MODE_ARRIV_DURG ** :	Code du mode d'arrivée de l'usager en urgence	<br/>
+- **SURG_TYP_ORITN_USAG_DEPAR_DURG ** :	Type d'orientation de l'usager à son départ	<br/>
+- **SURG_NO_ETAB_MSSS ** :	Numero de l'etablissement attribue par MSSS	<br/>
+- **Sexe ** : Sexe du bénéficiaire <br/>
+- **DatNais ** : Date de naissance du bénéficiaire au format *AAAA-MM-JJ* <br/>
+- **DatDeces ** : Date de décès du bénéficiaire au format *AAAA-MM-JJ* <br/>
+- **RSS_Benf **: Régions sociosanitaires (RSS) du bénéficiaire <br/>
+- **RLS_Benef ** : Réseaux locaux de services (RLS) du bénéficiaire <br/>
+- **NomRSS_Benef ** : Nom régions sociosanitaires (RSS) du bénéficiaire <br/>
+- **NomRLS_Benef ** : Nom réseaux locaux de services (RLS) du bénéficiaire <br/>
+- **RLS_ETAB ** : Régions sociosanitaires (RSS) de l'établissement <br/>
+- **NomRLS_Etab ** : Nom réseaux locaux de services (RLS) de l'établissement <br/>
+- **RSS_ETAB ** : Régions sociosanitaires (RSS) de l'établissement <br/>
+- **NOM_RSS_Etab ** : Nom régions sociosanitaires (RSS) de l'établissement <br/>
+- **NOM_ETAB ** : Nom de l'établissement <br/>
+***
+
+
+# Discription de la syntaxe SQL
+    
+## Vues utilisées
+
+### Extraction des variables pertinantes de BDCU combinées avec d'autres vues de données:
+- RES_SSS.V_EPISO_SOIN_DURG_CM (BDCU)
+- PROD.V_FICH_ID_BEN_CM (FIPA)
+- PROD.D_DISP_SPEC_CM (FIP)
+- Prod.V_ETAB_USUEL
+- Prod.I_BENEF_ADR_CM
+- DONNE_INESSS.tGI_RLS_RTS
+- Prod.V_ETAB_USUEL_DERN
+- RES_SSS.V_NOM_ETAB_DERN_TYP_NOM
+- Prod.V_RPERT_COD_ACTE
+- Prod.V_DECOU_GEO_POSTL_DERN_CP
+- Prod.V_COD_CATG_ETAB_EI
+
+### Extraction des diagnostics:
+- RES_SSS.V_EPISO_SOIN_DURG_CM (BDCU)
+
+
+## Syntaxe SQL
+
+### Extraction des variables pertinantes de SMOD:
+```{r}
+SELECT
+-- vue: RES_SSS.V_EPISO_SOIN_DURG_CM
+BD_BDCU.SURG_NO_INDIV_BEN_BANLS AS ID,
+CAST(BD_BDCU.SURG_NO_EPISO_SOIN_DURG AS CHAR(18)), -- Attention si vous faites un jumlage avec dautres vues en utilisant cette variable, assurez-vous que lautre variable soit de type CHAR
+--CAST(BD_BDCU.SURG_NO_EPISO_SOIN_DURG AS INT) AS Num_SURG_NO_EPISO_SOIN_DURG,-- Numéro dépisode de soins - Départements durgence
+BD_BDCU.SURG_AN_PER_TEMPS, --Année période temps
+BD_BDCU.SURG_DHD_EPISO_SOIN_DURG,
+Cast(BD_BDCU.SURG_DHD_EPISO_SOIN_DURG AS DATE) AS DD_SOIN_DURG, --Date et heure de début dun épisode de soins
+BD_BDCU.SURG_DH_DEPAR_USAG_DURG,
+CAST(BD_BDCU.SURG_DH_DEPAR_USAG_DURG AS DATE) AS DF_SOIN_DURG, --DateHeure de départ dun usager
+BD_BDCU.SURG_DH_PREM_TRIAG_DURG, --Date heure du premier triage durgence
+BD_BDCU.SURG_DH_PRIS_CHARG_DURG, --Date et heure de prise en charge
+BD_BDCU.SURG_DH_DEM_ADMIS_DURG, --Date et heure de la demande dadmission en CH
+BD_BDCU.SURG_DH_DECES_DURG, --Date et heure du décès
+BD_BDCU.SURG_COD_PRIOR_TRIAG_DURG, --Code de priorité du premier triage
+BD_BDCU.SURG_COD_AUTNM_PREM_TRIAG_DURG, --Code dautonomie après le premier triage
+BD_BDCU.SURG_COD_RAIS_VISIT_DURG, --Code de raison de visite en urgence
+BD_BDCU.SURG_CATG_MAJR_DIAGN_DURG, --Catégorie majeure de diagnostic
+BD_BDCU.SURG_COD_DIAGN_MDCAL_CLINQ, --Code de diagnostic médical clinique 
+/*BD_BDCU.query_V_EPISO_SOIN_DURG_CM.date_dx_var(date_dx_var) as DATE_DX, */
+BD_BDCU.SURG_NBR_CNSUL_DURG, --Nombre de consultations en département durgence
+BD_BDCU.SURG_COD_MODE_ARRIV_DURG,--Code du mode darrivée de lusager en urgence
+BD_BDCU.SURG_TYP_ORITN_USAG_DEPAR_DURG,--Type dorientation de lusager à son départ
+BD_BDCU.SURG_NO_ETAB_MSSS,--Numero de letablissement attribue par MSSS
+
+-- vue: PROD.V_FICH_ID_BEN_CM (FIPA); Prod.I_BENF_ADR_CM; DONNE_INESSS.tGI_RLS_RTS
+BD_Caract_benef.Sexe,
+BD_Caract_benef.DatNais,
+BD_Caract_benef.DatDeces,
+--BD_Caract_benef.Age,
+BD_Caract_benef.RSS_Benf,
+BD_Caract_benef.RLS_Benef,
+BD_Caract_benef.NomRSS_Benef,
+BD_Caract_benef.NomRLS_Benef,
+
+-- vue: RES_SSS.V_ETAB_CTRE_HOSP_MSSS_DERN; PROD.V_DECOU_GEO_POSTL_DERN_CP; DONNE_INESSS.tGI_NOM_ETAB_HOSP; DONNE_INESSS.tGI_RLS_RTS
+W.LGEO_COD_TERRI_RLS AS RLS_ETAB,
+W.NomRLS_Etab,
+W.CODE_RSS AS RSS_ETAB,
+W.NOM_RSS AS NOM_RSS_Etab,
+W.NOM_ETAB 
+
+FROM RES_SSS.V_EPISO_SOIN_DURG_CM AS BD_BDCU
+
+
+---Requête caractéristiques, rss, rls bénéficiaire
+LEFT JOIN (
+SELECT
+ID,
+Sexe,
+DatNais,
+DatDeces,
+--Age,
+RSS_Benf,
+RLS_Benef,
+NomRSS_Benef,
+NomRLS_Benef
+
+FROM (
+SELECT
+B.BENF_NO_INDIV_BEN_BANLS AS ID,
+B.BENF_COD_SEXE AS Sexe,  --Sexe du bénéficiaire
+B.BENF_DAT_NAISS AS DatNais,  --Date de naissance
+B.BENF_DAT_DECES AS DatDeces, --Date de décès
+--CAST(((CAST('2020-07-01' AS DATE FORMAT 'yyyy-mm-dd')) - B.BENF_DAT_NAISS) / 365.25 AS BIGINT) AS Age,
+
+/* On fait le recodage du code RSS pour le code RLS 1610, les variables avec les NOMS (RSS) sont correctes  */
+CASE WHEN BD_Adr.LGEO_COD_RSS=16 AND BD_Adr.LGEO_COD_TERRI_RLS IN ('1610') THEN 15
+ELSE BD_Adr.LGEO_COD_RSS END AS RSS_Benf,
+BD_NomReg_Ben.NomRSS_Benef,
+
+/* On ajoute un codes RLS fonctionnel pour les régions sans RLS on fait le recodgae de code RLS 1610, les variables avec les NOMS (RLS) sont correctes */
+CASE
+WHEN BD_Adr.LGEO_COD_RSS=10 THEN '1001'
+WHEN BD_Adr.LGEO_COD_RSS=17 THEN '1701'
+WHEN BD_Adr.LGEO_COD_RSS=18 THEN '1801'
+WHEN BD_Adr.LGEO_COD_TERRI_RLS IN ('1610') THEN '0511' ELSE BD_Adr.LGEO_COD_TERRI_RLS END AS RLS_Benef,
+BD_NomReg_Ben.NomRLS_Benef
+
+FROM PROD.V_FICH_ID_BEN_CM AS B
+
+/**********************************************************
+Découpage géographique du bénéficiaire : codes RSS et RLS
+***********************************************************/
+/* On sélectionne la dernière adresse du bénéficiaire durant la période sélectionnée.
+Autres méthodes :
+1- cibler la première (la plus récente) adresse de la période
+2- cibler ladresse dans laquelle le BEN a résidé le plus longtemps durant la période
+3- cibler ladresse à une date fixe (p. ex. 31 mars, 1 juillet, mi-année) */
+
+LEFT JOIN (
+query_V_EPISO_SOIN_DURG_CM.where_I_BENF_ADR_CM(benef_adr,debut_periode,fin_periode,date_adr),
+) AS BD_Adr
+ON B.BENF_NO_INDIV_BEN_BANLS=BD_Adr.BENF_NO_INDIV_BEN_BANLS
+
+/* On ajoute ici les NOMS des codes RSS et RLS du bénéficiaire : ceci serait optionnel si la requête est trop lourde */
+LEFT JOIN (
+SELECT
+CodRLS,
+NomRLS AS NomRLS_Benef,
+NomRSS AS NomRSS_Benef
+FROM DONNE_INESSS.tGI_RLS_RTS) AS BD_NomReg_Ben
+ON BD_Adr.LGEO_COD_TERRI_RLS=BD_NomReg_Ben.CodRLS
+) AS BD_Caract
+) AS BD_Caract_benef
+ON BD_Caract_benef.ID=BD_BDCU.SURG_NO_INDIV_BEN_BANLS
+
+
+
+---Requête Étabilissement de soins
+LEFT JOIN (
+SELECT
+Z.ETAB_NO_ETAB_MSSS,
+Z.LGEO_COD_TERRI_RLS,
+Z.NomRLS_Etab,
+Z.CODE_RSS,
+Z.NOM_RSS,
+NOM_ETAB
+
+FROM (
+SELECT *
+FROM (
+SELECT distinct
+ETAB_NO_ETAB,
+ETAB_NO_ETAB_MSSS,
+ETAB_COD_POSTL
+FROM RES_SSS.V_ETAB_CTRE_HOSP_MSSS_DERN
+) AS A
+
+LEFT JOIN (
+SELECT
+LGEO_COD_POSTL,
+LGEO_COD_TERRI_RLS
+FROM PROD.V_DECOU_GEO_POSTL_DERN_CP
+QUALIFY ROW_NUMBER() OVER (PARTITION BY LGEO_COD_POSTL ORDER BY LGEO_DD_PER DESC)=1
+) AS B
+ON A.ETAB_COD_POSTL=B.LGEO_COD_POSTL
+
+LEFT JOIN (
+select
+NO_ETAB_MSSS,
+NOM_ETAB,
+CODE_RSS,
+NOM_RSS
+FROM DONNE_INESSS.tGI_NOM_ETAB_HOSP
+where ROW_NO_ETAB_MSSS=1
+) AS F
+ON A.ETAB_NO_ETAB_MSSS=F.NO_ETAB_MSSS
+
+LEFT JOIN (
+SELECT
+CodRLS,
+NomRLS AS NomRLS_Etab
+FROM DONNE_INESSS.tGI_RLS_RTS
+) AS Y
+ON B.LGEO_COD_TERRI_RLS=Y.CodRLS
+) AS Z
+) AS W
+ON BD_BDCU.SURG_NO_ETAB_MSSS=W.ETAB_NO_ETAB_MSSS
+
+/* WHERE query_V_EPISO_SOIN_DURG_CM.date_dx_var(date_dx_var) between to_date('",debut_periode,"') and to_date('",fin_periode,"')*/
+/* query_V_EPISO_SOIN_DURG_CM.diagn(diagn)*/
+AND SURG_COD_PRIOR_TRIAG_DURG IN ('1','2','3','4','5')
+ORDER BY 1
+```

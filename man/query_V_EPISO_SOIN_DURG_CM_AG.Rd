@@ -24,7 +24,7 @@ query_V_EPISO_SOIN_DURG_CM_AG(
 
 \item{diagn}{\code{vector} indiquant les codes de diagnostics \emph{CIM9} et/ou \emph{CIM10} à extraire.}
 
-\item{date_dx_var}{\code{'admis'} ou \code{'depar'}. Indique si on utilise la date d'admission ou la date de départ comme date de diagnostic pour l'étude.}
+\item{date_dx_var}{\code{'admis'} ou \code{'depar'}. Indique si on utilise la date d'admission ou la date de départ comme date indexe pour l'étude.}
 }
 \value{
 chaîne de caractères, code SQL.

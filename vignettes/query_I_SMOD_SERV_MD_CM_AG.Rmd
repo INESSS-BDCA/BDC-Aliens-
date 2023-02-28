@@ -56,12 +56,12 @@ library(RequeteGeneriqueBDCA)
 
 ---
 
+
 # query_I_SMOD_SERV_MD_CM_AG
 
 La fonction `query_I_SMOD_SERV_MD_CM_AG` est une `parent_function` qui retourne une syntaxe sql pour: <br/>
-1) extraire les variables pertinantes de SMOD <br/>
-2) extraire les variables pertinentes de SMOD combinées avec d'autres bases de données <br/>
-3) extraire les diagnostics pour la création d'une cohorte <br/>
+1) extraire les variables pertinentes de SMOD combinées avec d'autres vues de données <br/>
+2) extraire les diagnostics pour la création d'une cohorte <br/>
 
 
 Elle est utilisée par: <br/>
@@ -73,36 +73,35 @@ Elle est utilisée par: <br/>
 
 ```{r, eval=FALSE}
 query_I_SMOD_SERV_MD_CM_AG(query,
-                           debut, 
-                           fin, 
+                           debut_periode, 
+                           fin_periode, 
                            diagn,
                            CodeActe,
                            omni_spec,
                            catg_etab,
                            code_stat_decis,
                            benef_adr,
-                           date_adr)
+                           date_adr,
+                           debut_cohort,
+                           fin_cohort)
 ```
-
 
 ## Définition des arguments
 
 ### query
 Indiquant la requête qu'on veut exécuter. 
 ```{r}
-query="extraction_SMOD" # extraire les variables pertinentes de SMOD
-query="extraction_SMOD_combi" # extraire les variables pertinentes de SMOD combinées avec d'autres bases de données 
-query="extraction_Dx" # extraire les diagnostics pour la création d'une cohort
-query="date_visite" # extraire les dates de visites / services entre la date de début et la date de fin d'une étude
-query="calcul_Nb_acte" # calculer le nombre d'acte par bénéficiaire entre la date de début et la date de fin d'une étude
+query="extraction_SMOD" # extraire les variables pertinentes de SMOD combinées avec d'autres vues de données pour rajouter les caractéristiques de bénéficiaire, dispensateur et l'établissement du soins. 
+query="extraction_Dx" # extraire les diagnostics pour la création d'une cohort.
+
 
 ```
 
-### debut & fin
+### debut_periode & fin_periode
 
 Indiquant le début et la fin de la période d'étude au format `AAAA-MM-JJ`.
 ```{r, eval=FALSE}
-debut = "2021-04-01", fin = "2022-03-31"
+debut_periode = "2021-04-01", fin_periode = "2022-03-31"
 ```
 
 ### diagn
@@ -156,85 +155,42 @@ Si `benef_adr`="date_fixe", `date_adr` permet de choisir une date fixe pour iden
 date_adr="2020-07-01"
 ```
 
+### debut_cohort & fin_cohort
 
+Indiquant le début et la fin de la période pour la création d'une cohorte au format `AAAA-MM-JJ`.
+```{r, eval=FALSE}
+debut_cohort = "2021-04-01", fin_cohort = "2022-03-31"
+```
 
 
 
 ## Usage de la fonction
 
-La fonction `query_I_SMOD_SERV_MD_CM_AG` est principalement utilisée via la fonction `user_I_SMOD_SERV_MD_CM_AG`. Voir [user_I_SMOD_SERV_MD_CM_AG](user_I_SMOD_SERV_MD_CM_AG.html)<br/>. Elle peut-être également exécutée indépendament des autres fonctions.   
+La fonction `query_I_SMOD_SERV_MD_CM_AG` est principalement utilisée par la fonction `user_I_SMOD_SERV_MD_CM_AG`. Voir [user_I_SMOD_SERV_MD_CM_AG](user_I_SMOD_SERV_MD_CM_AG.html)<br/>. Elle peut-être également exécutée indépendament des autres fonctions.   
 
--  **Extraction des variables pertinantes de SMOD:**
+-  **Extraction des variables pertinantes de SMOD combinées avec d'autres vues de données:**
 ```{r}
 DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
 statement=query_I_SMOD_SERV_MD_CM_AG (
 query="extraction_SMOD",
-debut="2021-04-01",
-fin="2022-03-31",
-diagn = NULL, #  à préciser si on veut extraire des actes pour des bénéficiaires ayant un ou plusieurs Dx spécifiques 
-CodeActe=c('07122', '07237', '07800', '07089', '0780'),
-omni_spec=NULL,
-catg_etab=NULL,
-code_stat_decis="PAY",
-benef_adr=NULL,
-date_adr=NULL)
- ))
-```
-
--  **Extraction des variables pertinantes de SMOD combinées avec d'autres bases de données:**
-```{r}
-DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
-statement=query_I_SMOD_SERV_MD_CM_AG (
-query="extraction_SMOD_combin",
-debut="2021-04-01",
-fin="2022-03-31",
+debut_periode="2021-04-01",
+fin_periode="2022-03-31",
 diagn = NULL, #  à préciser si on veut extraire des actes pour des bénéficiaires ayant un ou plusieurs Dx spécifiques 
 CodeActe=c('07122', '07237', '07800', '07089', '0780'),
 omni_spec="all",
 catg_etab="all",
 code_stat_decis="PAY",
 benef_adr="dernière_adresse",
-date_adr=NULL)
+date_adr=NULL,
+debut_cohort=NULL,
+fin_cohort=NULL)
  ))
 ```
-
-- **Extraction des diagnostics:**
-```{r}
-DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
-statement=query_I_SMOD_SERV_MD_CM_AG (
-query="extraction_Dx",
-debut="2021-04-01",
-fin="2022-03-31",
-diagn=c('5995%','6180%','6181%','6183%','6184%','N810%','N811%','N812%'),
-CodeActe=NULL,
-omni_spec=NULL,
-catg_etab=NULL,
-code_stat_decis="PAY",
-benef_adr=NULL,
-date_adr=NULL)
- ))
-```
-
 
 # Table Résultante
 
 ## Variables
 
-### Extraction des variables pertinantes de SMOD:
-- **ID** : Numéro d'identification du bénéficiaire. <br/>
-- **AnFinan** : Année financière de l'acte. <br/>
-- **AnCivil** : Année civile de l'acte. <br/>
-- **DateActe** : Date  de l'acte au format *AAAA-MM-JJ*. <br/>
-- **CodeActe** : Actes demandés dans l'argument CodeActe. <br/>
-- **CoutActe** : Cout de l'acte. <br/>
-- **DxActe** : Diagnostique associé à l'acte. <br/>
-- **NumDispSp** : Numéro de dispensateur. <br/>
-- **SMOD_COD_ROLE** : Code des rôles selon l'entent. <br/>
-- **SMOD_COD_SPEC** : Spécialité de dispensateur indiqué dans `SMOD`. <br/>
-- **NumDispRef** : Numéro de dispensateur référent. <br/>
-- **SMOD_COD_ENTEN** : Code d'entente sert à associer les dispensateurs à un groupe spécifique.<br/>
-- **Num_ETAB_USUEL** : Numéro de l'établissement. <br/>
-- **ETAB_COD_SECT_ACTIV_ETAB** : Identifie de façon unique chacun des secteurs d'activités dans lesquels les différents établissements peuvent oeuvrer.<br/>
 
 ### Extraction des variables pertinantes de SMOD combinées avec d'autres bases de données:
 
@@ -269,11 +225,6 @@ date_adr=NULL)
 - **RLS_Etab** : Réseaux locaux de services (RLS) de l'établissement. <br/>
 - **NomRSS_Etab** : Nom régions sociosanitaires (RSS) de l'établissement. <br/>
 - **NomRLS_Etab** : Nom réseaux locaux de services (RLS) de l'établissement. <br/>
-
-### Extraction des diagnostics:
-
-- **ID** : Numéro d'identification du bénéficiaire. <br/>
-- **DATE_DX** : Dates de diagnostics. Un bénéficiaire pourrait avoir plus qu'une date de diagnostic (select distinct par ID, date et Dx). <br/>
 
 ***
 
@@ -532,27 +483,5 @@ AND BD_SMOD.SMOD_COD_ACTE NOT IN (
 									)
 
 ORDER BY 1,2,3,4
-```
-
-
-### Extraction des diagnostics:
-```{r}
-SELECT
-ID,
-DATE_DX
-FROM (
-SELECT
-DISTINCT
-BD_SMOD.SMOD_NO_INDIV_BEN_BANLS as ID,
-BD_SMOD.SMOD_DAT_SERV as DATE_DX,
-BD_SMOD.SMOD_COD_DIAGN_PRIMR AS DX
-FROM PROD.I_SMOD_SERV_MD_CM AS BD_SMOD
-where BD_SMOD.SMOD_DAT_SERV between '",debut,"' and '",fin,"'
-/* "query_SQL_CodeActe.where_SMOD_COD_STA_DECIS (code_stat_decis)
-  si code_stat_decis="PAY": AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY') 
-  si code_stat_decis="PPY": AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PPY') 
-  si les deux: AND BD_SMOD.SMOD_COD_STA_DECIS IN ('PAY','PPY')" */
-AND BD_SMOD.SMOD_COD_DIAGN_PRIMR like any (",qu(diagn),")
-) AS A order by 1,2
 ```
 

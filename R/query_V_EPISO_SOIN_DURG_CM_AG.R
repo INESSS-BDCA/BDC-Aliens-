@@ -5,7 +5,7 @@
 #' @param debut_cohort Date de début de la période d'étude.
 #' @param fin_cohort Date de fin de la période d'étude.
 #' @param diagn `vector` indiquant les codes de diagnostics *CIM9* et/ou *CIM10* à extraire.
-#' @param date_dx_var `'admis'` ou `'depar'`. Indique si on utilise la date d'admission ou la date de départ comme date de diagnostic pour l'étude.
+#' @param date_dx_var `'admis'` ou `'depar'`. Indique si on utilise la date d'admission ou la date de départ comme date indexe pour l'étude.
 #'
 #' @return chaîne de caractères, code SQL.
 #' @keywords internal

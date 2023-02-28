@@ -3,17 +3,17 @@
 \encoding{UTF-8}
 \name{RequeteGeneriqueBDCA_shiny}
 \alias{RequeteGeneriqueBDCA_shiny}
-\title{user_I_SMOD_SERV_MD_CM_shiny}
+\title{RequeteGeneriqueBDCA_shiny}
 \usage{
 RequeteGeneriqueBDCA_shiny()
 }
 \description{
-L'application \code{user_I_SMOD_SERV_MD_CM_shiny} est destinée aux utilisateurs. Elle permet d'exécuter la rêquete SQL retournée par la fonction \code{query_I_SMOD_SERV_MD_CM_AG}.\cr
-Pour plus d'information, veuillez consulter la vignette de la fonction \code{user_I_SMOD_SERV_MD_CM_AG}.\cr
+L'application \code{RequeteGeneriqueBDCA_shiny} est destinée aux utilisateurs.
 
 #' Elle permet: \cr
 \enumerate{
-\item d'extraire les variables pertinantes de la base de données SMOD, jumlées avec d'autres bases de données pour rajouter les caractéristiques de dispensateur, du bénéficiaire et de l'établissement de soins.\cr
-\item d'extraire les variables pertinantes de la base de données SMOD et d'effectuer des analyses discriptives afin d'orienter la prise de décision.\cr
+\item d'extraire les variables pertinantes de différentes vues de données.\cr
+\item de creéer une cohorte en utilisant les Dx cim9 et cim10.\cr
+\item d'appliquer une standardisation directe ou indirect. \cr
 }
 }
