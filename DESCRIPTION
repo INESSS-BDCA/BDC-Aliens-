@@ -1,18 +1,19 @@
 Package: RequeteGeneriqueBDCA
 type: Package
-Title: Automatisation des reqêtes génériques
+Title: Automatisation des requêtes génériques
 Version: 1.0.0.0
 Authors@R: person("Ahmed", "ghachem", , "ahmed.ghachem@inesss.qc.ca", role = c("aut", "cre"))
 Maintainer: Ahmed Ghachem <ahmed.ghachem@inesss.qc.ca>
-Description: Le package RequeteGeneriqueBDCA regroupe plusieurs rêquetes génériques SQL permettant l'automatisation de l'extraction des données.
+Description: Le package RequeteGeneriqueBDCA regroupe plusieurs rêquetes génériques SQL permettant l'automatisation de l'extraction des données, ainsi que d'autres fonctions génériques.
 Depends:
     R (>= 2.10)
-Imports: data.table, odbc, lubridate, dplyr
+Imports: remotes, data.table, odbc, lubridate, dplyr, bslib ,plotly, shiny, shinyAce, shinycssloaders, shinyjs, shinyWidgets, stringr, expss, epiDisplay, gridExtra, testthat 
 Suggests: 
     knitr,
     rmarkdown
 VignetteBuilder: 
     knitr
+VignetteEngine: knitr::knitr
 License: GPL-3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

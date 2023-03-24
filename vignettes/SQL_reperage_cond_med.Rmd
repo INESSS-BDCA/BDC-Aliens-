@@ -9,7 +9,7 @@ output:
     number_sections: true
     toc: true
 params: 
-  output_dir: "C:/Users/MS069/Desktop/Ahmed/INESSS-BDCA/vignettes"
+  output_dir: "vignettes"
 vignette: >
   %\VignetteIndexEntry{SQL_reperage_cond_med}
   %\VignetteEngine{knitr::rmarkdown}

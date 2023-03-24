@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Auteurs: Ahmed Ghachem" />
+
+
+<title>query_I_SMOD_SERV_MD_CM_AG</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">query_I_SMOD_SERV_MD_CM_AG</h1>
+<h4 class="author">Auteurs: Ahmed Ghachem</h4>
+<h4 class="date">Date de création: 23 janvier 2023</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#installation-de-la-librairie-r-requetegeneriquebdca"><span class="toc-section-number">1</span> Installation de la librairie R
+<em>RequeteGeneriqueBDCA</em></a>
+<ul>
+<li><a href="#fichier-nécessaire"><span class="toc-section-number">1.1</span> Fichier nécessaire</a></li>
+<li><a href="#activer-la-librairie"><span class="toc-section-number">1.2</span> Activer la librairie</a></li>
+</ul></li>
+<li><a href="#query_i_smod_serv_md_cm_ag"><span class="toc-section-number">2</span> query_I_SMOD_SERV_MD_CM_AG</a>
+<ul>
+<li><a href="#la-fonction"><span class="toc-section-number">2.1</span>
+La fonction</a></li>
+<li><a href="#définition-des-arguments"><span class="toc-section-number">2.2</span> Définition des arguments</a>
+<ul>
+<li><a href="#query"><span class="toc-section-number">2.2.1</span>
+query</a></li>
+<li><a href="#debut_periode-fin_periode"><span class="toc-section-number">2.2.2</span> debut_periode &amp;
+fin_periode</a></li>
+<li><a href="#diagn"><span class="toc-section-number">2.2.3</span>
+diagn</a></li>
+<li><a href="#codeacte"><span class="toc-section-number">2.2.4</span>
+CodeActe</a></li>
+<li><a href="#omni_spec"><span class="toc-section-number">2.2.5</span>
+omni_spec</a></li>
+<li><a href="#catg_etab"><span class="toc-section-number">2.2.6</span>
+catg_etab</a></li>
+<li><a href="#code_stat_decis"><span class="toc-section-number">2.2.7</span> code_stat_decis</a></li>
+<li><a href="#benef_adr"><span class="toc-section-number">2.2.8</span>
+benef_adr</a></li>
+<li><a href="#date_adr"><span class="toc-section-number">2.2.9</span>
+date_adr</a></li>
+<li><a href="#debut_cohort-fin_cohort"><span class="toc-section-number">2.2.10</span> debut_cohort &amp;
+fin_cohort</a></li>
+</ul></li>
+<li><a href="#usage-de-la-fonction"><span class="toc-section-number">2.3</span> Usage de la fonction</a></li>
+</ul></li>
+<li><a href="#table-résultante"><span class="toc-section-number">3</span> Table Résultante</a>
+<ul>
+<li><a href="#variables"><span class="toc-section-number">3.1</span>
+Variables</a>
+<ul>
+<li><a href="#extraction-des-variables-pertinantes-de-smod-combinées-avec-dautres-bases-de-données"><span class="toc-section-number">3.1.1</span> Extraction des variables
+pertinantes de SMOD combinées avec d’autres bases de données:</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#discription-de-la-syntaxe-sql"><span class="toc-section-number">4</span> Discription de la syntaxe SQL</a>
+<ul>
+<li><a href="#vues-utilisées"><span class="toc-section-number">4.1</span> Vues utilisées</a>
+<ul>
+<li><a href="#extraction-des-variables-pertinantes-de-smod"><span class="toc-section-number">4.1.1</span> Extraction des variables
+pertinantes de SMOD:</a></li>
+<li><a href="#extraction-des-variables-pertinantes-de-smod-combinées-avec-dautres-bases-de-données-1"><span class="toc-section-number">4.1.2</span> Extraction des variables
+pertinantes de SMOD combinées avec d’autres bases de données:</a></li>
+<li><a href="#extraction-des-diagnostics"><span class="toc-section-number">4.1.3</span> Extraction des
+diagnostics:</a></li>
+</ul></li>
+<li><a href="#syntaxe-sql"><span class="toc-section-number">4.2</span>
+Syntaxe SQL</a>
+<ul>
+<li><a href="#extraction-des-variables-pertinantes-de-smod-1"><span class="toc-section-number">4.2.1</span> Extraction des variables
+pertinantes de SMOD:</a></li>
+<li><a href="#extraction-des-variables-pertinantes-de-smod-combinées-avec-dautres-bases-de-données-2"><span class="toc-section-number">4.2.2</span> Extraction des variables
+pertinantes de SMOD combinées avec d’autres bases de données:</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+
+<div id="installation-de-la-librairie-r-requetegeneriquebdca" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Installation de la
+librairie R <em>RequeteGeneriqueBDCA</em></h1>
+<div id="fichier-nécessaire" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Fichier
+nécessaire</h2>
+<p>Télécharger le fichier <code>RequeteGeneriqueBDCA.x.y.tar.gz</code> à
+partir de Microsoft Teams.<br> <a href="https://msss365.sharepoint.com/:f:/r/teams/INESSS-DocumentationBDCA/Shared%20Documents/Outils/Librairie%20R%20INESSS?csf=1&amp;web=1&amp;e=j5SylU">INESSS
+- Documentation BDCA &gt; Documents &gt; Outils &gt; Librairie R INESSS
+&gt; RequeteGeneriqueBDCA_x.y.z.tar.gz</a>.</p>
+<p>Ouvrir RStudio.</p>
+<p>Dans la console, écrire le code suivant :</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_local</span>(<span class="st">&quot;C:</span><span class="sc">\\</span><span class="st">msXXX</span><span class="sc">\\</span><span class="st">Desktop</span><span class="sc">\\</span><span class="st">RequeteGeneriqueBDCA_x.y.z.tar.gz&quot;</span>)</span></code></pre></div>
+<p>Prendre note que les «<code>\</code>» sont doubles.</p>
+<p>Si la librairie <code>remotes</code> n’est pas installée, écrire dans
+la console le code suivant :
+<code>install.packages(&quot;remotes&quot;)</code>.</p>
+<p>Avant d’installer une librairie, il est préférable de ne pas l’avoir
+<em>appelé</em> auparavant.</p>
+<p>Il est déconseillé de mettre à jour les librairies utilisées par
+<em>RequeteGeneriqueBDCA</em>.</p>
+<p>L’installation se termine lorsqu’on peut lire dans la console :
+<em>DONE (RequeteGeneriqueBDCA)</em>.</p>
+</div>
+<div id="activer-la-librairie" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> Activer la
+librairie</h2>
+<p>Après avoir installé la librairie <em>RequeteGeneriqueBDCA</em>, il
+suffit de l’activer pour avoir accès aux fonctions :</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RequeteGeneriqueBDCA)</span></code></pre></div>
+<hr />
+</div>
+</div>
+<div id="query_i_smod_serv_md_cm_ag" class="section level1" number="2">
+<h1><span class="header-section-number">2</span>
+query_I_SMOD_SERV_MD_CM_AG</h1>
+<p>La fonction <code>query_I_SMOD_SERV_MD_CM_AG</code> est une
+<code>parent_function</code> qui retourne une syntaxe sql pour: <br /> 1)
+extraire les variables pertinentes de SMOD combinées avec d’autres vues
+de données <br /> 2) extraire les diagnostics pour la création d’une
+cohorte <br /></p>
+<p>Elle est utilisée par: <br /> - la fonction <a href="user_I_SMOD_SERV_MD_CM_AG.html">user_I_SMOD_SERV_MD_CM_AG</a>
+<br /> - la fonction <a href="SQL_reperage_cond_med.html">SQL_reperage_cond_med</a> <br /> -
+…</p>
+<div id="la-fonction" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> La fonction</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">query_I_SMOD_SERV_MD_CM_AG</span>(query,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                           debut_periode, </span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                           fin_periode, </span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                           diagn,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                           CodeActe,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                           omni_spec,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                           catg_etab,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                           code_stat_decis,</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                           benef_adr,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                           date_adr,</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                           debut_cohort,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                           fin_cohort)</span></code></pre></div>
+</div>
+<div id="définition-des-arguments" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Définition des
+arguments</h2>
+<div id="query" class="section level3" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> query</h3>
+<p>Indiquant la requête qu’on veut exécuter.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>query<span class="ot">=</span><span class="st">&quot;extraction_SMOD&quot;</span> <span class="co"># extraire les variables pertinentes de SMOD combinées avec d&#39;autres vues de données pour rajouter les caractéristiques de bénéficiaire, dispensateur et l&#39;établissement du soins. </span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>query<span class="ot">=</span><span class="st">&quot;extraction_Dx&quot;</span> <span class="co"># extraire les diagnostics pour la création d&#39;une cohort.</span></span></code></pre></div>
+</div>
+<div id="debut_periode-fin_periode" class="section level3" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> debut_periode &amp;
+fin_periode</h3>
+<p>Indiquant le début et la fin de la période d’étude au format
+<code>AAAA-MM-JJ</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>debut_periode <span class="ot">=</span> <span class="st">&quot;2021-04-01&quot;</span>, fin_periode <span class="ot">=</span> <span class="st">&quot;2022-03-31&quot;</span></span></code></pre></div>
+</div>
+<div id="diagn" class="section level3" number="2.2.3">
+<h3><span class="header-section-number">2.2.3</span> diagn</h3>
+<p>Un vecteur indiquant les codes de diagnostics <em>CIM9</em> et/ou
+<em>CIM10</em> à extraire dont l’objectif est de créer une cohorte.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>diagn<span class="ot">=</span><span class="fu">c</span>(<span class="st">&#39;5995%&#39;</span>,<span class="st">&#39;6180%&#39;</span>,<span class="st">&#39;6181%&#39;</span>,<span class="st">&#39;6183%&#39;</span>,<span class="st">&#39;6184%&#39;</span>,<span class="st">&#39;N810%&#39;</span>,<span class="st">&#39;N811%&#39;</span>,<span class="st">&#39;N812%&#39;</span>)</span></code></pre></div>
+</div>
+<div id="codeacte" class="section level3" number="2.2.4">
+<h3><span class="header-section-number">2.2.4</span> CodeActe</h3>
+<p>Un vecteur indiquant les codes d’acte à extraire.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>CodeActe<span class="ot">=</span><span class="fu">c</span>(<span class="st">&#39;06452&#39;</span>,<span class="st">&#39;06148&#39;</span>,<span class="st">&#39;06154&#39;</span>,<span class="st">&#39;06265&#39;</span>,<span class="st">&#39;06251&#39;</span>,<span class="st">&#39;06216&#39;</span>,<span class="st">&#39;06208&#39;</span>,<span class="st">&#39;06164&#39;</span>,<span class="st">&#39;06270&#39;</span>,<span class="st">&#39;06276&#39;</span>)</span></code></pre></div>
+</div>
+<div id="omni_spec" class="section level3" number="2.2.5">
+<h3><span class="header-section-number">2.2.5</span> omni_spec</h3>
+<p>Permet d’extraire les actes facturés par les omnipraticiens et/ou les
+spécialistes.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>omni_spec<span class="ot">=</span><span class="st">&quot;all&quot;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>omni_spec<span class="ot">=</span><span class="st">&quot;omni&quot;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>omni_spec<span class="ot">=</span><span class="st">&quot;spec&quot;</span></span></code></pre></div>
+</div>
+<div id="catg_etab" class="section level3" number="2.2.6">
+<h3><span class="header-section-number">2.2.6</span> catg_etab</h3>
+<p>Permet d’extraire les dates de visites selon la catégorie de
+l’établissement.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>catg_etab<span class="ot">=</span><span class="st">&quot;all&quot;</span> <span class="co"># les visites effectuées dans toutes les catégories d&#39;établissement confondues</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>catg_etab<span class="ot">=</span><span class="st">&quot;ambulatoire&quot;</span> <span class="co"># les visites effectuées en ambilatoire</span></span></code></pre></div>
+</div>
+<div id="code_stat_decis" class="section level3" number="2.2.7">
+<h3><span class="header-section-number">2.2.7</span>
+code_stat_decis</h3>
+<p>Permet d’extraire les actes selon leurs statuts de paiement.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>code_stat_decis<span class="ot">=</span><span class="fu">c</span>(<span class="st">&quot;PAY&quot;</span>,<span class="st">&quot;PPY&quot;</span>)</span></code></pre></div>
+</div>
+<div id="benef_adr" class="section level3" number="2.2.8">
+<h3><span class="header-section-number">2.2.8</span> benef_adr</h3>
+<p>Permet de définir la méthode d’identification de l’adresse du
+bénéficiaire.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>benef_adr<span class="ot">=</span><span class="fu">c</span>(<span class="st">&quot;date_fixe&quot;</span>,<span class="st">&quot;dernière_adresse&quot;</span>,<span class="st">&quot;première_adresse&quot;</span>,<span class="st">&quot;long_adresse&quot;</span>)</span></code></pre></div>
+</div>
+<div id="date_adr" class="section level3" number="2.2.9">
+<h3><span class="header-section-number">2.2.9</span> date_adr</h3>
+<p>Si <code>benef_adr</code>=“date_fixe”, <code>date_adr</code> permet
+de choisir une date fixe pour identifier l’adresse de bénéficiaire.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>date_adr<span class="ot">=</span><span class="st">&quot;2020-07-01&quot;</span></span></code></pre></div>
+</div>
+<div id="debut_cohort-fin_cohort" class="section level3" number="2.2.10">
+<h3><span class="header-section-number">2.2.10</span> debut_cohort &amp;
+fin_cohort</h3>
+<p>Indiquant le début et la fin de la période pour la création d’une
+cohorte au format <code>AAAA-MM-JJ</code>.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>debut_cohort <span class="ot">=</span> <span class="st">&quot;2021-04-01&quot;</span>, fin_cohort <span class="ot">=</span> <span class="st">&quot;2022-03-31&quot;</span></span></code></pre></div>
+</div>
+</div>
+<div id="usage-de-la-fonction" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Usage de la
+fonction</h2>
+<p>La fonction <code>query_I_SMOD_SERV_MD_CM_AG</code> est
+principalement utilisée par la fonction
+<code>user_I_SMOD_SERV_MD_CM_AG</code>. Voir <a href="user_I_SMOD_SERV_MD_CM_AG.html">user_I_SMOD_SERV_MD_CM_AG</a><br />.
+Elle peut-être également exécutée indépendament des autres
+fonctions.</p>
+<ul>
+<li><strong>Extraction des variables pertinantes de SMOD combinées avec
+d’autres vues de données:</strong></li>
+</ul>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>DT<span class="ot">&lt;-</span>data.table<span class="sc">::</span><span class="fu">as.data.table</span>(odbc<span class="sc">::</span><span class="fu">dbGetQuery</span>(<span class="at">conn=</span><span class="fu">SQL_connexion</span>(),</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="at">statement=</span><span class="fu">query_I_SMOD_SERV_MD_CM_AG</span> (</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="at">query=</span><span class="st">&quot;extraction_SMOD&quot;</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="at">debut_periode=</span><span class="st">&quot;2021-04-01&quot;</span>,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="at">fin_periode=</span><span class="st">&quot;2022-03-31&quot;</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="at">diagn =</span> <span class="cn">NULL</span>, <span class="co">#  à préciser si on veut extraire des actes pour des bénéficiaires ayant un ou plusieurs Dx spécifiques </span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="at">CodeActe=</span><span class="fu">c</span>(<span class="st">&#39;07122&#39;</span>, <span class="st">&#39;07237&#39;</span>, <span class="st">&#39;07800&#39;</span>, <span class="st">&#39;07089&#39;</span>, <span class="st">&#39;0780&#39;</span>),</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a><span class="at">omni_spec=</span><span class="st">&quot;all&quot;</span>,</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="at">catg_etab=</span><span class="st">&quot;all&quot;</span>,</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="at">code_stat_decis=</span><span class="st">&quot;PAY&quot;</span>,</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="at">benef_adr=</span><span class="st">&quot;dernière_adresse&quot;</span>,</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a><span class="at">date_adr=</span><span class="cn">NULL</span>,</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a><span class="at">debut_cohort=</span><span class="cn">NULL</span>,</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a><span class="at">fin_cohort=</span><span class="cn">NULL</span>)</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a> ))</span></code></pre></div>
+</div>
+</div>
+<div id="table-résultante" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Table Résultante</h1>
+<div id="variables" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Variables</h2>
+<div id="extraction-des-variables-pertinantes-de-smod-combinées-avec-dautres-bases-de-données" class="section level3" number="3.1.1">
+<h3><span class="header-section-number">3.1.1</span> Extraction des
+variables pertinantes de SMOD combinées avec d’autres bases de
+données:</h3>
+<ul>
+<li><strong>ID</strong> : Numéro d’identification du bénéficiaire.
+<br /></li>
+<li><strong>AnFinan</strong> : Année financière de l’acte. <br /></li>
+<li><strong>AnCivil</strong> : Année civile de l’acte. <br /></li>
+<li><strong>DateActe</strong> : Date de l’acte au format
+<em>AAAA-MM-JJ</em>. <br /></li>
+<li><strong>CodeActe</strong> : Actes demandés dans l’argument CodeActe.
+<br /></li>
+<li><strong>CoutActe</strong> : Cout de l’acte. <br /></li>
+<li><strong>DxActe</strong> : Diagnostique associé à l’acte. <br /></li>
+<li><strong>Num_ETAB_USUEL</strong> : Numéro de l’établissement.
+<br /></li>
+<li><strong>SMOD_COD_ROLE</strong> : Code des rôles selon l’entent.
+<br /></li>
+<li><strong>SMOD_COD_ENTEN</strong> : Code d’entente sert à associer les
+dispensateurs à un groupe spécifique.<br /></li>
+<li><strong>ETAB_COD_SECT_ACTIV_ETAB</strong> : Identifie de façon
+unique chacun des secteurs d’activités dans lesquels les différents
+établissements peuvent oeuvrer.<br /></li>
+<li><strong>Sexe</strong> : Sexe du bénéficiaire. <br /></li>
+<li><strong>DatNais</strong> : Date de naissance du bénéficiaire au
+format <em>AAAA-MM-JJ</em>. <br /></li>
+<li><strong>Datdeces</strong> : Date de décès du bénéficiaire au format
+<em>AAAA-MM-JJ</em>. <br /></li>
+<li><strong>Age</strong> : Age du bénéficiaire calculé jusqu’à la date
+de l’acte. <br /></li>
+<li><strong>NumDispSp</strong> : Numéro de dispensateur. <br /></li>
+<li><strong>SMOD_COD_SPEC</strong> : Spécialité de dispensateur indiqué
+dans <code>SMOD</code>. <br /></li>
+<li><strong>SPDisp_fip</strong> : Spécialité de dispensateur indiqué
+dans <code>FIP</code>. <br /></li>
+<li><strong>NumDispRef</strong> : Numéro de dispensateur référent.
+<br /></li>
+<li><strong>SPDispRefs</strong> : Spécialité de dispensateur référent.
+<br /></li>
+<li><strong>NO_ETAB</strong> : Numéro de l’établissement. <br /></li>
+<li><strong>Cat_Etab</strong> Catégorie de l’établissement. <br /></li>
+<li><strong>NOM_ETAB</strong> : Nom de l’établissement. <br /></li>
+<li><strong>RSS_Benf</strong> : Régions sociosanitaires (RSS) du
+bénéficiaire. <br /></li>
+<li><strong>RLS_Benef</strong> : Réseaux locaux de services (RLS) du
+bénéficiaire. <br /></li>
+<li><strong>NomRSS_Benef</strong> : Nom régions sociosanitaires (RSS) du
+bénéficiaire. <br /></li>
+<li><strong>NomRLS_Benef</strong> : Nom réseaux locaux de services (RLS)
+du bénéficiaire. <br /></li>
+<li><strong>RSS_Etab</strong> : Régions sociosanitaires (RSS) de
+l’établissement. <br /></li>
+<li><strong>RLS_Etab</strong> : Réseaux locaux de services (RLS) de
+l’établissement. <br /></li>
+<li><strong>NomRSS_Etab</strong> : Nom régions sociosanitaires (RSS) de
+l’établissement. <br /></li>
+<li><strong>NomRLS_Etab</strong> : Nom réseaux locaux de services (RLS)
+de l’établissement. <br /></li>
+</ul>
+<hr />
+</div>
+</div>
+</div>
+<div id="discription-de-la-syntaxe-sql" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Discription de la
+syntaxe SQL</h1>
+<div id="vues-utilisées" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Vues utilisées</h2>
+<div id="extraction-des-variables-pertinantes-de-smod" class="section level3" number="4.1.1">
+<h3><span class="header-section-number">4.1.1</span> Extraction des
+variables pertinantes de SMOD:</h3>
+<ul>
+<li>PROD.I_SMOD_SERV_MD_CM (SMOD)</li>
+</ul>
+</div>
+<div id="extraction-des-variables-pertinantes-de-smod-combinées-avec-dautres-bases-de-données-1" class="section level3" number="4.1.2">
+<h3><span class="header-section-number">4.1.2</span> Extraction des
+variables pertinantes de SMOD combinées avec d’autres bases de
+données:</h3>
+<ul>
+<li>PROD.I_SMOD_SERV_MD_CM (SMOD)</li>
+<li>PROD.V_FICH_ID_BEN_CM (FIPA)</li>
+<li>PROD.D_DISP_SPEC_CM (FIP)</li>
+<li>Prod.V_ETAB_USUEL</li>
+<li>Prod.I_BENEF_ADR_CM</li>
+<li>DONNE_INESSS.tGI_RLS_RTS</li>
+<li>Prod.V_ETAB_USUEL_DERN</li>
+<li>RES_SSS.V_NOM_ETAB_DERN_TYP_NOM</li>
+<li>Prod.V_RPERT_COD_ACTE</li>
+<li>Prod.V_DECOU_GEO_POSTL_DERN_CP</li>
+<li>Prod.V_COD_CATG_ETAB_EI</li>
+</ul>
+</div>
+<div id="extraction-des-diagnostics" class="section level3" number="4.1.3">
+<h3><span class="header-section-number">4.1.3</span> Extraction des
+diagnostics:</h3>
+<ul>
+<li>PROD.I_SMOD_SERV_MD_CM (SMOD)</li>
+</ul>
+</div>
+</div>
+<div id="syntaxe-sql" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Syntaxe SQL</h2>
+<div id="extraction-des-variables-pertinantes-de-smod-1" class="section level3" number="4.2.1">
+<h3><span class="header-section-number">4.2.1</span> Extraction des
+variables pertinantes de SMOD:</h3>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>SELECT</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="sc">--</span> Sources des variables <span class="sc">:</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="sc">--</span> Nom de vue <span class="sc">:</span> <span class="fu">Prod.I_SMOD_SERV_MD_CM</span> (SMOD)</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>BD_SMOD.SMOD_NO_INDIV_BEN_BANLS AS ID, <span class="sc">--</span>Identifiant du bénéficiaire banalisé</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>case when <span class="fu">EXTRACT</span>(MONTH FROM SMOD_DAT_SERV) between <span class="dv">4</span> and <span class="dv">12</span> THEN <span class="fu">EXTRACT</span>(YEAR FROM SMOD_DAT_SERV)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>ELSE <span class="fu">EXTRACT</span>(YEAR FROM SMOD_DAT_SERV)<span class="sc">-</span><span class="dv">1</span> end AS AnFinan, <span class="sc">--</span>Année financière</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a><span class="fu">Extract</span> (YEAR From BD_SMOD.SMOD_DAT_SERV) AS AnCivil,  <span class="sc">--</span>Année civile</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>BD_SMOD.SMOD_DAT_SERV AS DateActe,  <span class="sc">--</span>Date Acte</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>BD_SMOD.SMOD_COD_ACTE AS CodeActe,  <span class="sc">--</span>Code Acte</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>BD_SMOD.SMOD_MNT_PAIMT AS CoutActe,  <span class="sc">--</span>Coût Acte</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>BD_SMOD.SMOD_COD_DIAGN_PRIMR AS DxActe,  <span class="sc">--</span>Premier diagnostic porté par le professionnel</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>BD_SMOD.DISP_NO_SEQ_DISP_BANLS AS NumDispSp,  <span class="sc">--</span>Numéro du dispensateur</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>BD_SMOD.SMOD_COD_ROLE, <span class="sc">--</span>Code des rôles selon lentente</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>BD_SMOD.SMOD_COD_SPEC AS SMOD_COD_SPEC, <span class="sc">--</span>Spécialité du <span class="fu">dispensateur</span> (SMOD)</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>BD_SMOD.DISP_NO_SEQ_DISP_REFNT_BANLS AS NumDispRef,  <span class="sc">--</span>Numéro du médecin référent</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>BD_SMOD.SMOD_COD_ENTEN AS SMOD_COD_ENTEN,  <span class="sc">--</span>Code de lentente</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>BD_SMOD.SMOD_NO_ETAB_USUEL AS Num_ETAB_USUEL,  <span class="sc">--</span>Ancien numéro de létablissement</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>BD_SMOD.ETAB_COD_SECT_ACTIV_ETAB AS ETAB_COD_SECT_ACTIV_ETAB  <span class="sc">--</span>secteur dactivité</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>FROM Prod.I_SMOD_SERV_MD_CM AS BD_SMOD</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>WHERE BD_SMOD.SMOD_DAT_SERV BETWEEN <span class="st">&#39;&quot;,debut,&quot;&#39;</span> AND <span class="st">&#39;&quot;,fin,&quot;&#39;</span></span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="fu">query_SQL_CodeActe.where_SMOD_COD_STA_DECIS</span> (code_stat_decis)</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a><span class="fu">query_SQL_CodeActe.where_SMOD_COD_ACTE</span> (CodeActe)</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a><span class="fu">query_I_SMOD_SERV_MD_CM.diagn</span>(diagn)</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">*</span> <span class="st">&quot;Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à des consultations,</span></span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a><span class="st">mais, plutôt à des suppléments monétaires associés à une demande de facturation&quot;</span> <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb15-29"><a href="#cb15-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-30"><a href="#cb15-30" aria-hidden="true" tabindex="-1"></a>AND BD_SMOD.SMOD_COD_ACTE NOT <span class="fu">IN</span> (</span>
+<span id="cb15-31"><a href="#cb15-31" aria-hidden="true" tabindex="-1"></a>SELECT DISTINCT NMOD_COD_ACTE</span>
+<span id="cb15-32"><a href="#cb15-32" aria-hidden="true" tabindex="-1"></a>FROM Prod.V_RPERT_COD_ACTE</span>
+<span id="cb15-33"><a href="#cb15-33" aria-hidden="true" tabindex="-1"></a>WHERE NMOD_COD_GRP_ACTE <span class="fu">IN</span> (<span class="dv">170</span>, <span class="dv">180</span>, <span class="dv">181</span>, <span class="dv">182</span>, <span class="dv">183</span>, <span class="dv">187</span>, <span class="dv">195</span>, <span class="dv">196</span>, <span class="dv">197</span>, <span class="dv">198</span>, <span class="dv">199</span>, <span class="dv">854</span>))</span>
+<span id="cb15-34"><a href="#cb15-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-35"><a href="#cb15-35" aria-hidden="true" tabindex="-1"></a>ORDER BY <span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span></span></code></pre></div>
+</div>
+<div id="extraction-des-variables-pertinantes-de-smod-combinées-avec-dautres-bases-de-données-2" class="section level3" number="4.2.2">
+<h3><span class="header-section-number">4.2.2</span> Extraction des
+variables pertinantes de SMOD combinées avec d’autres bases de
+données:</h3>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>SELECT</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="sc">--</span> Sources des variables <span class="sc">:</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="sc">--</span> Nom de vue <span class="sc">:</span> <span class="fu">Prod.I_SMOD_SERV_MD_CM</span> (SMOD)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>BD_SMOD.SMOD_NO_INDIV_BEN_BANLS AS ID, <span class="sc">--</span>Identifiant du bénéficiaire banalisé</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>case when <span class="fu">EXTRACT</span>(MONTH FROM SMOD_DAT_SERV) between <span class="dv">4</span> and <span class="dv">12</span> THEN <span class="fu">EXTRACT</span>(YEAR FROM SMOD_DAT_SERV)</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>ELSE <span class="fu">EXTRACT</span>(YEAR FROM SMOD_DAT_SERV)<span class="sc">-</span><span class="dv">1</span> end AS AnFinan, <span class="sc">--</span>Année financière</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="fu">Extract</span> (YEAR From BD_SMOD.SMOD_DAT_SERV) AS AnCivil,  <span class="sc">--</span>Année civile</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>BD_SMOD.SMOD_DAT_SERV AS DateActe,  <span class="sc">--</span>Date Acte</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>BD_SMOD.SMOD_COD_ACTE AS CodeActe,  <span class="sc">--</span>Code Acte</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>BD_SMOD.SMOD_MNT_PAIMT AS CoutActe,  <span class="sc">--</span>Coût Acte</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>BD_SMOD.SMOD_COD_DIAGN_PRIMR AS DxActe,  <span class="sc">--</span>Premier diagnostic porté par le professionnel</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>BD_SMOD.SMOD_NO_ETAB_USUEL AS Num_ETAB_USUEL,  <span class="sc">--</span>Ancien numéro de létablissement</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>BD_SMOD.SMOD_COD_ROLE, <span class="sc">--</span>Code des rôles selon lentente</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>BD_SMOD.SMOD_COD_ENTEN AS CodEntente,  <span class="sc">--</span>Code de lentente</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>BD_SMOD.ETAB_COD_SECT_ACTIV_ETAB AS SecActiv,  <span class="sc">--</span>secteur dactivité</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a><span class="sc">--</span> Nom de vue <span class="sc">:</span> <span class="fu">PROD.V_FICH_ID_BEN_CM</span> (FIPA)</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>BD_Caract.BENF_COD_SEXE AS Sexe,  <span class="sc">--</span>Sexe du bénéficiaire</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>BD_Caract.BENF_DAT_NAISS AS DatNais,  <span class="sc">--</span>Date de naissance</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>BD_Caract.BENF_DAT_DECES AS DatDeces,  <span class="sc">--</span>Date de décès</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a><span class="fu">Cast</span>(((BD_SMOD.SMOD_DAT_SERV) <span class="sc">-</span> BD_Caract.BENF_DAT_NAISS) <span class="sc">/</span> <span class="fl">365.25</span> AS BIGINT) AS Age,  <span class="sc">--</span>Age calculé à la date de service</span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a><span class="sc">--</span> Nom de vue <span class="sc">:</span> <span class="fu">PROD.D_DISP_SPEC_CM</span> (FIP)</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>BD_SMOD.DISP_NO_SEQ_DISP_BANLS AS NumDispSp,  <span class="sc">--</span>Numéro du dispensateur</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a>BD_SMOD.SMOD_COD_SPEC AS SPDisp_smod, <span class="sc">--</span>Spécialité du <span class="fu">dispensateur</span> (SMOD)</span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a>BD_Disp.DISP_COD_SPEC AS SPDisp_fip,  <span class="sc">--</span>Spécialité du <span class="fu">dispensateur</span> (FIP)</span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true" tabindex="-1"></a>BD_SMOD.DISP_NO_SEQ_DISP_REFNT_BANLS AS NumDispRef,  <span class="sc">--</span>Numéro du médecin référent</span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true" tabindex="-1"></a>BD_DispR.DISP_COD_SPEC AS SPDispRefs,  <span class="sc">--</span>Spécialité du médecin référent</span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true" tabindex="-1"></a><span class="sc">--</span> Nom de vue <span class="sc">:</span> prod.V_ETAB_USUEL, V_ETAB_USUEL_DERN, V_COD_CATG_ETAB_EI</span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true" tabindex="-1"></a>BD_Etab.ETAB_NO_ETAB AS NO_ETAB,</span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true" tabindex="-1"></a>BD_Etab.ETAB_COD_CATG_ETAB_EI AS Cat_Etab, <span class="sc">--</span>(Urgence, Clinique externe, ...)</span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true" tabindex="-1"></a><span class="sc">--</span> Nom de vue <span class="sc">:</span> RES_SSS.V_NOM_ETAB_DERN_TYP_NOM</span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true" tabindex="-1"></a>BD_NomEtab.ETAB_NOM_ETAB AS NOM_ETAB,</span>
+<span id="cb16-41"><a href="#cb16-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-42"><a href="#cb16-42" aria-hidden="true" tabindex="-1"></a><span class="sc">--</span> Nom de <span class="fu">vue</span> (Info BEN) <span class="sc">:</span> <span class="fu">PROD.I_BENF_ADR_CM</span> (FIPA), tGI_RLS_RTS</span>
+<span id="cb16-43"><a href="#cb16-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-44"><a href="#cb16-44" aria-hidden="true" tabindex="-1"></a>BD_Adr.LGEO_COD_RSS AS RSS_Benf, <span class="sc">--</span>Région socio<span class="sc">-</span>sanitaire Bénéf</span>
+<span id="cb16-45"><a href="#cb16-45" aria-hidden="true" tabindex="-1"></a>CASE</span>
+<span id="cb16-46"><a href="#cb16-46" aria-hidden="true" tabindex="-1"></a>WHEN BD_Adr.LGEO_COD_RSS<span class="ot">=</span><span class="dv">10</span> THEN <span class="st">&#39;1001&#39;</span></span>
+<span id="cb16-47"><a href="#cb16-47" aria-hidden="true" tabindex="-1"></a>WHEN BD_Adr.LGEO_COD_RSS<span class="ot">=</span><span class="dv">17</span> THEN <span class="st">&#39;1701&#39;</span></span>
+<span id="cb16-48"><a href="#cb16-48" aria-hidden="true" tabindex="-1"></a>WHEN BD_Adr.LGEO_COD_RSS<span class="ot">=</span><span class="dv">18</span> THEN <span class="st">&#39;1801&#39;</span> ELSE BD_Adr.LGEO_COD_TERRI_RLS END AS RLS_Benef, <span class="sc">--</span>Code RLS Bénéf</span>
+<span id="cb16-49"><a href="#cb16-49" aria-hidden="true" tabindex="-1"></a>BD_NomReg_Ben.NomRSS_Benef,</span>
+<span id="cb16-50"><a href="#cb16-50" aria-hidden="true" tabindex="-1"></a>BD_NomReg_Ben.NomRLS_Benef,</span>
+<span id="cb16-51"><a href="#cb16-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-52"><a href="#cb16-52" aria-hidden="true" tabindex="-1"></a><span class="sc">--</span> Nom de <span class="fu">vue</span> (Info ETAB) <span class="sc">:</span> V_DECOU_GEO_POSTL_DERN_CP, V_ETAB_USUEL, V_ETAB_USUEL_DERN, tGI_RLS_RTS</span>
+<span id="cb16-53"><a href="#cb16-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-54"><a href="#cb16-54" aria-hidden="true" tabindex="-1"></a>BD_Etab.LGEO_COD_RSS AS RSS_Etab,</span>
+<span id="cb16-55"><a href="#cb16-55" aria-hidden="true" tabindex="-1"></a>BD_Etab.LGEO_COD_TERRI_RLS AS RLS_Etab,</span>
+<span id="cb16-56"><a href="#cb16-56" aria-hidden="true" tabindex="-1"></a>BD_NomReg_Etab.NomRSS_Etab,</span>
+<span id="cb16-57"><a href="#cb16-57" aria-hidden="true" tabindex="-1"></a>BD_NomReg_Etab.NomRLS_Etab</span>
+<span id="cb16-58"><a href="#cb16-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-59"><a href="#cb16-59" aria-hidden="true" tabindex="-1"></a>FROM Prod.I_SMOD_SERV_MD_CM AS BD_SMOD</span>
+<span id="cb16-60"><a href="#cb16-60" aria-hidden="true" tabindex="-1"></a>LEFT JOIN Prod.V_FICH_ID_BEN_CM AS BD_Caract</span>
+<span id="cb16-61"><a href="#cb16-61" aria-hidden="true" tabindex="-1"></a>ON BD_SMOD.SMOD_NO_INDIV_BEN_BANLS <span class="ot">=</span> BD_Caract.BENF_NO_INDIV_BEN_BANLS</span>
+<span id="cb16-62"><a href="#cb16-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-63"><a href="#cb16-63" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">*</span> <span class="st">&quot;cette requête cible la spécialité principale du disp dans fip au moment du service&quot;</span> <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb16-64"><a href="#cb16-64" aria-hidden="true" tabindex="-1"></a>LEFT JOIN Prod.D_DISP_SPEC_CM AS BD_Disp</span>
+<span id="cb16-65"><a href="#cb16-65" aria-hidden="true" tabindex="-1"></a>ON BD_SMOD.DISP_NO_SEQ_DISP_BANLS <span class="ot">=</span> BD_Disp.DISP_NO_SEQ_DISP_BANLS</span>
+<span id="cb16-66"><a href="#cb16-66" aria-hidden="true" tabindex="-1"></a>AND BD_Disp.DISP_COD_NIV_SPEC <span class="ot">=</span> <span class="dv">1</span> </span>
+<span id="cb16-67"><a href="#cb16-67" aria-hidden="true" tabindex="-1"></a>AND BD_SMOD.SMOD_DAT_SERV BETWEEN BD_Disp.DISP_DD_SPEC_DISP AND BD_Disp.DISP_DF_SPEC_DISP</span>
+<span id="cb16-68"><a href="#cb16-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-69"><a href="#cb16-69" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">*</span> <span class="st">&quot;Cette requête est incluse dans la version actuelle, mais elle pourrait être optionnelle, car la spécialité du médecin référent est rarement demandée&quot;</span> <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb16-70"><a href="#cb16-70" aria-hidden="true" tabindex="-1"></a>LEFT JOIN Prod.D_DISP_SPEC_CM AS BD_DispR</span>
+<span id="cb16-71"><a href="#cb16-71" aria-hidden="true" tabindex="-1"></a>ON BD_SMOD.DISP_NO_SEQ_DISP_REFNT_BANLS <span class="ot">=</span> BD_DispR.DISP_NO_SEQ_DISP_BANLS</span>
+<span id="cb16-72"><a href="#cb16-72" aria-hidden="true" tabindex="-1"></a>AND BD_DispR.DISP_COD_NIV_SPEC <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb16-73"><a href="#cb16-73" aria-hidden="true" tabindex="-1"></a>AND BD_SMOD.SMOD_DAT_SERV BETWEEN BD_DispR.DISP_DD_SPEC_DISP AND BD_DispR.DISP_DF_SPEC_DISP</span>
+<span id="cb16-74"><a href="#cb16-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-75"><a href="#cb16-75" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">*</span> <span class="st">&quot;Découpage géographique du bénéficiaire : codes RSS et RLS:</span></span>
+<span id="cb16-76"><a href="#cb16-76" aria-hidden="true" tabindex="-1"></a><span class="st">Plusieurs méthode pour sélectionner l&#39;adresse du bénéficiaire durant la période sélectionnée:</span></span>
+<span id="cb16-77"><a href="#cb16-77" aria-hidden="true" tabindex="-1"></a><span class="st">1) cibler la première adresse de la période</span></span>
+<span id="cb16-78"><a href="#cb16-78" aria-hidden="true" tabindex="-1"></a><span class="st">2) cibler la dernière adresse de la période</span></span>
+<span id="cb16-79"><a href="#cb16-79" aria-hidden="true" tabindex="-1"></a><span class="st">2) cibler l&#39;adresse dans laquelle le BEN a résidé le plus longtemps durant la période</span></span>
+<span id="cb16-80"><a href="#cb16-80" aria-hidden="true" tabindex="-1"></a><span class="st">3) cibler l&#39;adresse à une date fixe (p. ex. 31 mars, 1 juillet, mi-année)&quot;</span> <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb16-81"><a href="#cb16-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-82"><a href="#cb16-82" aria-hidden="true" tabindex="-1"></a>LEFT <span class="fu">JOIN</span> (</span>
+<span id="cb16-83"><a href="#cb16-83" aria-hidden="true" tabindex="-1"></a>SELECT</span>
+<span id="cb16-84"><a href="#cb16-84" aria-hidden="true" tabindex="-1"></a>BENF_NO_INDIV_BEN_BANLS,</span>
+<span id="cb16-85"><a href="#cb16-85" aria-hidden="true" tabindex="-1"></a>BENF_DD_ADR_BEN,</span>
+<span id="cb16-86"><a href="#cb16-86" aria-hidden="true" tabindex="-1"></a>BENF_DF_ADR_BEN,</span>
+<span id="cb16-87"><a href="#cb16-87" aria-hidden="true" tabindex="-1"></a>LGEO_COD_RSS,</span>
+<span id="cb16-88"><a href="#cb16-88" aria-hidden="true" tabindex="-1"></a>LGEO_COD_TERRI_RLS</span>
+<span id="cb16-89"><a href="#cb16-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-90"><a href="#cb16-90" aria-hidden="true" tabindex="-1"></a><span class="fu">FROM</span>(</span>
+<span id="cb16-91"><a href="#cb16-91" aria-hidden="true" tabindex="-1"></a>SELECT</span>
+<span id="cb16-92"><a href="#cb16-92" aria-hidden="true" tabindex="-1"></a>BENF_NO_INDIV_BEN_BANLS,</span>
+<span id="cb16-93"><a href="#cb16-93" aria-hidden="true" tabindex="-1"></a>BENF_DD_ADR_BEN,</span>
+<span id="cb16-94"><a href="#cb16-94" aria-hidden="true" tabindex="-1"></a>BENF_DF_ADR_BEN,</span>
+<span id="cb16-95"><a href="#cb16-95" aria-hidden="true" tabindex="-1"></a>LGEO_COD_RSS,</span>
+<span id="cb16-96"><a href="#cb16-96" aria-hidden="true" tabindex="-1"></a>LGEO_COD_TERRI_RLS,</span>
+<span id="cb16-97"><a href="#cb16-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-98"><a href="#cb16-98" aria-hidden="true" tabindex="-1"></a>CASE</span>
+<span id="cb16-99"><a href="#cb16-99" aria-hidden="true" tabindex="-1"></a><span class="fu">WHEN</span> (BENF_DD_ADR_BEN <span class="sc">&lt;=</span> <span class="st">&#39;&quot;,debut,&quot;&#39;</span> AND BENF_DF_ADR_BEN <span class="sc">&gt;=</span> <span class="st">&#39;&quot;,fin,&quot;&#39;</span>) THEN DATE <span class="st">&#39;&quot;,fin,&quot;&#39;</span> <span class="sc">-</span> DATE <span class="st">&#39;&quot;,debut,&quot;&#39;</span> <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb16-100"><a href="#cb16-100" aria-hidden="true" tabindex="-1"></a><span class="fu">WHEN</span> (BENF_DD_ADR_BEN <span class="sc">&gt;=</span> <span class="st">&#39;&quot;,debut,&quot;&#39;</span> AND BENF_DF_ADR_BEN <span class="sc">&gt;=</span> <span class="st">&#39;&quot;,fin,&quot;&#39;</span>) THEN DATE <span class="st">&#39;&quot;,fin,&quot;&#39;</span> <span class="sc">-</span> BENF_DD_ADR_BEN</span>
+<span id="cb16-101"><a href="#cb16-101" aria-hidden="true" tabindex="-1"></a><span class="fu">WHEN</span> (BENF_DD_ADR_BEN <span class="sc">&lt;=</span> <span class="st">&#39;&quot;,debut,&quot;&#39;</span> AND BENF_DF_ADR_BEN <span class="sc">&lt;=</span> <span class="st">&#39;&quot;,fin,&quot;&#39;</span>) THEN BENF_DF_ADR_BEN <span class="sc">-</span> DATE <span class="st">&#39;&quot;,debut,&quot;&#39;</span></span>
+<span id="cb16-102"><a href="#cb16-102" aria-hidden="true" tabindex="-1"></a><span class="fu">WHEN</span> (BENF_DD_ADR_BEN <span class="sc">&gt;=</span> <span class="st">&#39;&quot;,debut,&quot;&#39;</span> AND BENF_DF_ADR_BEN <span class="sc">&lt;=</span> <span class="st">&#39;&quot;,fin,&quot;&#39;</span>) THEN BENF_DF_ADR_BEN <span class="sc">-</span> BENF_DD_ADR_BEN</span>
+<span id="cb16-103"><a href="#cb16-103" aria-hidden="true" tabindex="-1"></a>ELSE <span class="dv">0</span></span>
+<span id="cb16-104"><a href="#cb16-104" aria-hidden="true" tabindex="-1"></a>END AS days_count,</span>
+<span id="cb16-105"><a href="#cb16-105" aria-hidden="true" tabindex="-1"></a><span class="fu">ROW_NUMBER</span>() <span class="fu">OVER</span> (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY days_count DESC) AS row_num <span class="sc">/</span><span class="er">*</span> <span class="st">&quot;cibler l&#39;adresse la plus longue&quot;</span> <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb16-106"><a href="#cb16-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-107"><a href="#cb16-107" aria-hidden="true" tabindex="-1"></a>FROM Prod.I_BENF_ADR_CM</span>
+<span id="cb16-108"><a href="#cb16-108" aria-hidden="true" tabindex="-1"></a>WHERE BENF_IND_ADR_HQ <span class="fu">IN</span> (<span class="st">&#39;N&#39;</span>) AND BENF_COD_TYP_ADR <span class="fu">IN</span> (<span class="st">&#39;R&#39;</span>)</span>
+<span id="cb16-109"><a href="#cb16-109" aria-hidden="true" tabindex="-1"></a><span class="fu">AND</span> (BENF_DD_ADR_BEN<span class="sc">&lt;=</span><span class="st">&#39;&quot;,fin,&quot;&#39;</span> AND BENF_DF_ADR_BEN<span class="sc">&gt;=</span><span class="st">&#39;&quot;,debut,&quot;&#39;</span>)</span>
+<span id="cb16-110"><a href="#cb16-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-111"><a href="#cb16-111" aria-hidden="true" tabindex="-1"></a>AND <span class="st">&#39;&quot;,date_adr,&quot;&#39;</span> between BENF_DD_ADR_BEN AND BENF_DF_ADR_BEN  <span class="sc">/</span><span class="er">*</span> <span class="st">&quot;cibler une date fixe&quot;</span> <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb16-112"><a href="#cb16-112" aria-hidden="true" tabindex="-1"></a>QUALIFY <span class="fu">Row_Number</span>()<span class="fu">Over</span> (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN DESC)<span class="ot">=</span><span class="dv">1</span> <span class="sc">/</span><span class="er">*</span> <span class="st">&quot;cibler la dernière adresse&quot;</span> <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb16-113"><a href="#cb16-113" aria-hidden="true" tabindex="-1"></a>QUALIFY <span class="fu">Row_Number</span>()<span class="fu">Over</span> (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN ASC)<span class="ot">=</span><span class="dv">1</span> <span class="sc">/</span><span class="er">*</span> <span class="st">&quot; cibler la première adresse&quot;</span> <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb16-114"><a href="#cb16-114" aria-hidden="true" tabindex="-1"></a>)AS A</span>
+<span id="cb16-115"><a href="#cb16-115" aria-hidden="true" tabindex="-1"></a>WHERE <span class="at">A.row_num=</span><span class="dv">1</span></span>
+<span id="cb16-116"><a href="#cb16-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-117"><a href="#cb16-117" aria-hidden="true" tabindex="-1"></a>) AS BD_Adr</span>
+<span id="cb16-118"><a href="#cb16-118" aria-hidden="true" tabindex="-1"></a>ON BD_SMOD.SMOD_NO_INDIV_BEN_BANLS<span class="ot">=</span>BD_Adr.BENF_NO_INDIV_BEN_BANLS</span>
+<span id="cb16-119"><a href="#cb16-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-120"><a href="#cb16-120" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">*</span> <span class="st">&quot;On ajoute ici les noms des codes RSS et RLS du bénéficiaire&quot;</span> <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb16-121"><a href="#cb16-121" aria-hidden="true" tabindex="-1"></a>              </span>
+<span id="cb16-122"><a href="#cb16-122" aria-hidden="true" tabindex="-1"></a>LEFT <span class="fu">JOIN</span> (</span>
+<span id="cb16-123"><a href="#cb16-123" aria-hidden="true" tabindex="-1"></a>SELECT</span>
+<span id="cb16-124"><a href="#cb16-124" aria-hidden="true" tabindex="-1"></a>CodRLS,</span>
+<span id="cb16-125"><a href="#cb16-125" aria-hidden="true" tabindex="-1"></a>NomRLS AS NomRLS_Benef,</span>
+<span id="cb16-126"><a href="#cb16-126" aria-hidden="true" tabindex="-1"></a>NomRSS AS NomRSS_Benef</span>
+<span id="cb16-127"><a href="#cb16-127" aria-hidden="true" tabindex="-1"></a>FROM DONNE_INESSS.tGI_RLS_RTS) AS BD_NomReg_Ben</span>
+<span id="cb16-128"><a href="#cb16-128" aria-hidden="true" tabindex="-1"></a>ON BD_Adr.LGEO_COD_TERRI_RLS<span class="ot">=</span>BD_NomReg_Ben.CodRLS</span>
+<span id="cb16-129"><a href="#cb16-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-130"><a href="#cb16-130" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">*</span> <span class="st">&quot;Découpage géographique de létablissement : numéro unique, catégorie, nom de létab, code et nom RSS, code et nom RLS&quot;</span> <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb16-131"><a href="#cb16-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-132"><a href="#cb16-132" aria-hidden="true" tabindex="-1"></a><span class="er">/*</span> <span class="st">&quot;On ajoute ici le numéro détablissement (unique : ETAB_NO_ETAB), le code postal de létablissement et la catégorie de létablissement&quot;</span> <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb16-133"><a href="#cb16-133" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-134"><a href="#cb16-134" aria-hidden="true" tabindex="-1"></a>LEFT <span class="fu">JOIN</span> (</span>
+<span id="cb16-135"><a href="#cb16-135" aria-hidden="true" tabindex="-1"></a>            SELECT BD_Etab.ETAB_NO_ETAB_USUEL, BD_Etab.ETAB_NO_ETAB, BD_Etab.ETAB_COD_POSTL,</span>
+<span id="cb16-136"><a href="#cb16-136" aria-hidden="true" tabindex="-1"></a>            BD_Decoup_Etab.LGEO_COD_RSS, BD_Decoup_Etab.LGEO_COD_TERRI_RLS,</span>
+<span id="cb16-137"><a href="#cb16-137" aria-hidden="true" tabindex="-1"></a>            BD_Catg_etab.ETAB_COD_CATG_ETAB_EI, BD_NomCatg_etab.ETAB_NOM_CATG_ETAB_EI</span>
+<span id="cb16-138"><a href="#cb16-138" aria-hidden="true" tabindex="-1"></a>            FROM V_ETAB_USUEL_DERN AS BD_Etab</span>
+<span id="cb16-139"><a href="#cb16-139" aria-hidden="true" tabindex="-1"></a>            LEFT JOIN Prod.V_DECOU_GEO_POSTL_DERN_CP AS BD_Decoup_Etab ON <span class="at">BD_Etab.ETAB_COD_POSTL=</span>BD_Decoup_Etab.LGEO_COD_POSTL</span>
+<span id="cb16-140"><a href="#cb16-140" aria-hidden="true" tabindex="-1"></a>            LEFT <span class="fu">JOIN</span> (SELECT DISTINCT ETAB_NO_ETAB, ETAB_COD_CATG_ETAB_EI FROM V_ETAB_USUEL</span>
+<span id="cb16-141"><a href="#cb16-141" aria-hidden="true" tabindex="-1"></a>            QUALIFY <span class="fu">Row_Number</span>()<span class="fu">Over</span> (PARTITION BY ETAB_NO_ETAB ORDER BY ETAB_DD_ETAB_USUEL DESC)<span class="ot">=</span><span class="dv">1</span>) AS BD_Catg_etab ON <span class="at">BD_Etab.ETAB_NO_ETAB=</span>BD_Catg_etab.ETAB_NO_ETAB</span>
+<span id="cb16-142"><a href="#cb16-142" aria-hidden="true" tabindex="-1"></a>            LEFT JOIN Prod.V_COD_CATG_ETAB_EI AS BD_NomCatg_etab ON <span class="at">BD_Catg_etab.ETAB_COD_CATG_ETAB_EI=</span>BD_NomCatg_etab.ETAB_COD_CATG_ETAB_EI</span>
+<span id="cb16-143"><a href="#cb16-143" aria-hidden="true" tabindex="-1"></a>            ) AS BD_Etab</span>
+<span id="cb16-144"><a href="#cb16-144" aria-hidden="true" tabindex="-1"></a>ON BD_SMOD.SMOD_NO_ETAB_USUEL<span class="ot">=</span>BD_Etab.ETAB_NO_ETAB_USUEL</span>
+<span id="cb16-145"><a href="#cb16-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-146"><a href="#cb16-146" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">*</span> <span class="st">&quot;On ajoute le NOM de létablissement&quot;</span> <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb16-147"><a href="#cb16-147" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-148"><a href="#cb16-148" aria-hidden="true" tabindex="-1"></a>LEFT <span class="fu">JOIN</span> (SELECT ETAB_NO_ETAB, ETAB_NOM_ETAB FROM RES_SSS.V_NOM_ETAB_DERN_TYP_NOM) AS BD_NomEtab</span>
+<span id="cb16-149"><a href="#cb16-149" aria-hidden="true" tabindex="-1"></a>ON BD_Etab.ETAB_NO_ETAB <span class="ot">=</span> BD_NomEtab.ETAB_NO_ETAB</span>
+<span id="cb16-150"><a href="#cb16-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-151"><a href="#cb16-151" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">*</span> <span class="st">&quot;On ajoute ici les noms des codes RSS et RLS de létablissement : ceci serait optionnel si la requête est trop lourde&quot;</span> <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb16-152"><a href="#cb16-152" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-153"><a href="#cb16-153" aria-hidden="true" tabindex="-1"></a>LEFT <span class="fu">JOIN</span> (SELECT CodRLS, NomRLS AS NomRLS_Etab, NomRSS AS NomRSS_Etab FROM DONNE_INESSS.tGI_RLS_RTS) AS BD_NomReg_Etab</span>
+<span id="cb16-154"><a href="#cb16-154" aria-hidden="true" tabindex="-1"></a>ON BD_Etab.LGEO_COD_TERRI_RLS<span class="ot">=</span>BD_NomReg_Etab.CodRLS</span>
+<span id="cb16-155"><a href="#cb16-155" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-156"><a href="#cb16-156" aria-hidden="true" tabindex="-1"></a>WHERE BD_SMOD.SMOD_DAT_SERV BETWEEN <span class="st">&#39;&quot;,debut,&quot;&#39;</span> AND <span class="st">&#39;&quot;,fin,&quot;&#39;</span></span>
+<span id="cb16-157"><a href="#cb16-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-158"><a href="#cb16-158" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">*</span> <span class="st">&quot;query_SQL_CodeActe.where_SMOD_COD_STA_DECIS (code_stat_decis)</span></span>
+<span id="cb16-159"><a href="#cb16-159" aria-hidden="true" tabindex="-1"></a><span class="st">  si code_stat_decis=&quot;</span>PAY<span class="st">&quot;: AND BD_SMOD.SMOD_COD_STA_DECIS IN (&#39;PAY&#39;) </span></span>
+<span id="cb16-160"><a href="#cb16-160" aria-hidden="true" tabindex="-1"></a><span class="st">  si code_stat_decis=&quot;</span>PPY<span class="st">&quot;: AND BD_SMOD.SMOD_COD_STA_DECIS IN (&#39;PPY&#39;) </span></span>
+<span id="cb16-161"><a href="#cb16-161" aria-hidden="true" tabindex="-1"></a><span class="st">  si les deux: AND BD_SMOD.SMOD_COD_STA_DECIS IN (&#39;PAY&#39;,&#39;PPY&#39;)&quot;</span> <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb16-162"><a href="#cb16-162" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-163"><a href="#cb16-163" aria-hidden="true" tabindex="-1"></a><span class="er">/*</span> <span class="st">&quot;query_SQL_CodeActe.where_SMOD_COD_ACTE (CodeActe)</span></span>
+<span id="cb16-164"><a href="#cb16-164" aria-hidden="true" tabindex="-1"></a><span class="st">  si CodeActe=NULL: extraction de tous les actes dans la période détude, sinon extraction des actes indiqués dans le vecteur CodeActe&quot;</span> <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb16-165"><a href="#cb16-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-166"><a href="#cb16-166" aria-hidden="true" tabindex="-1"></a><span class="er">/*</span> <span class="st">&quot;query_I_SMOD_SERV_MD_CM.diagn(diagn) </span></span>
+<span id="cb16-167"><a href="#cb16-167" aria-hidden="true" tabindex="-1"></a><span class="st">  à préciser si on veut extraire des actes pour des bénéficiaires ayant un ou plusieurs Dx spécifiques&quot;</span> <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb16-168"><a href="#cb16-168" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-169"><a href="#cb16-169" aria-hidden="true" tabindex="-1"></a><span class="er">/*</span> <span class="st">&quot;query_SQL_CodeActe.where_SMOD_COD_SPEC(omni_spec):</span></span>
+<span id="cb16-170"><a href="#cb16-170" aria-hidden="true" tabindex="-1"></a><span class="st">  si omni_spec=&quot;</span>all<span class="st">&quot;: extraction des actes facturés par les omni et les spécialistes</span></span>
+<span id="cb16-171"><a href="#cb16-171" aria-hidden="true" tabindex="-1"></a><span class="st">  si omni_spec=&quot;</span>omni<span class="st">&quot;: AND SMOD_COD_SPEC IS NULL</span></span>
+<span id="cb16-172"><a href="#cb16-172" aria-hidden="true" tabindex="-1"></a><span class="st">  si omni_spec=&quot;</span>spec<span class="st">&quot;: AND SMOD_COD_SPEC IS NOT NULL&quot;</span> <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb16-173"><a href="#cb16-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-174"><a href="#cb16-174" aria-hidden="true" tabindex="-1"></a><span class="er">/*</span> <span class="st">&quot;query_SQL_CodeActe.where_ETAB_COD_CATG_ETAB_EI(catg_etab),</span></span>
+<span id="cb16-175"><a href="#cb16-175" aria-hidden="true" tabindex="-1"></a><span class="st">  si catg_etab=&quot;</span>all<span class="st">&quot;: extraction des visites effectuées dans toutes les catégories détablissement confondues</span></span>
+<span id="cb16-176"><a href="#cb16-176" aria-hidden="true" tabindex="-1"></a><span class="st">  si catg_etab=&quot;</span>ambulatoire<span class="st">&quot;: AND (ETAB_COD_CATG_ETAB_EI IN (&#39;54X&#39;, &#39;55X&#39;, &#39;57X&#39;, &#39;9X2&#39;, &#39;8X5&#39;, &#39;4X1&#39;,&#39;0X1&#39;) OR BD_SMOD.SMOD_NO_ETAB_USUEL IS NULL)&quot;</span> <span class="sc">*</span><span class="er">/</span>    </span>
+<span id="cb16-177"><a href="#cb16-177" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-178"><a href="#cb16-178" aria-hidden="true" tabindex="-1"></a><span class="er">/*</span> <span class="st">&quot;Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à des consultations, mais, plutôt à des suppléments monétaires associés à une demande de facturation&quot;</span> <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb16-179"><a href="#cb16-179" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-180"><a href="#cb16-180" aria-hidden="true" tabindex="-1"></a>AND BD_SMOD.SMOD_COD_ACTE NOT <span class="fu">IN</span> (</span>
+<span id="cb16-181"><a href="#cb16-181" aria-hidden="true" tabindex="-1"></a>                                    SELECT DISTINCT NMOD_COD_ACTE</span>
+<span id="cb16-182"><a href="#cb16-182" aria-hidden="true" tabindex="-1"></a>                                    FROM Prod.V_RPERT_COD_ACTE</span>
+<span id="cb16-183"><a href="#cb16-183" aria-hidden="true" tabindex="-1"></a>                                    WHERE NMOD_COD_GRP_ACTE <span class="fu">IN</span> (<span class="dv">170</span>, <span class="dv">180</span>, <span class="dv">181</span>, <span class="dv">182</span>, <span class="dv">183</span>, <span class="dv">187</span>, <span class="dv">195</span>, <span class="dv">196</span>, <span class="dv">197</span>, <span class="dv">198</span>, <span class="dv">199</span>, <span class="dv">854</span>)</span>
+<span id="cb16-184"><a href="#cb16-184" aria-hidden="true" tabindex="-1"></a>                                    )</span>
+<span id="cb16-185"><a href="#cb16-185" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-186"><a href="#cb16-186" aria-hidden="true" tabindex="-1"></a>ORDER BY <span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span></span></code></pre></div>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

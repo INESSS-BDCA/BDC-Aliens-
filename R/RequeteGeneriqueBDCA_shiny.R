@@ -9,10 +9,11 @@
 #'
 #'
 #' @encoding UTF-8
-#' @import shiny shinyAce bslib shinycssloaders shinyjs plotly ggplot2 dplyr stringr
+#' @import shiny shinyAce bslib shinycssloaders shinyjs plotly ggplot2 dplyr stringr odbc expss epiDisplay shinyWidgets
 #' @export
 
 RequeteGeneriqueBDCA_shiny<-function(){
+
   # Ui- Define the user interface for the Shiny app ####
   ui <- fluidPage(
     titlePanel("Requête Générique BDCA"),
@@ -28,40 +29,126 @@ RequeteGeneriqueBDCA_shiny<-function(){
           tabPanel("Extraction des données",style='width: 1500px; height: 1000px',
                    sidebarLayout(
                      sidebarPanel(
-                       textInput("fct", label = h3("Fonction générique exécutée"),value = ""),
-                       selectInput("DT", label = "Vue de données",choices = c("SMOD","BDCU","MEDECHO")),
-                       helpText("Veuillez choisir la vue de données"),
-                       selectInput("task", "task", choices = NULL),
-                       helpText("Veuillez indiquer la requête que vous voulez exécuter"),
-                       textInput("sql_user", "Identifiant", value = "ms069a"),
-                       helpText("Veuillez indiquer votre ms0xx"),
-                       passwordInput("sql_pwd", "Mot de passe", value = "Kong2050"),
-                       helpText("Veuillez rentrer votre mot de passe teradata"),
-                       selectInput("cohort", "cohort",choices = c("NULL", "cohort")),
-                       helpText("Veuillez indiquer si vous avez une cohorte prédéfinie"),
-                       uiOutput("fileInput"),
-                       textInput("debut_periode", label = "debut_periode","2020-01-01"),
-                       helpText("Veuillez indiquer le début de la période de l'étude"),
-                       textInput("fin_periode", label ="fin_periode","2020-12-31"),
-                       helpText("Veuillez indiquer la fin de la période de l'étude"),
-                       uiOutput("DTInput"),
-                       selectInput("benef_adr", "benef_adr",choices = c("date_fixe","dernière_adresse","première_adresse","long_adresse"),selected = "dernière_adresse"),
-                       helpText("Veuillez indiquer la méthode d'identification de l'adresse du bénéficiaire"),
-                       textInput("date_adr", label = "date_adr",value="NULL"),
-                       helpText("Si benef_adr=date_fixe,veuillez indiquer une date pour identifier l'adresse du bénéficiaire"),
-                       textInput("date_age", label = "date_age",value="NULL"),
-                       helpText("Si keep_all=TRUE, veuillez indiquer la date à laquelle l’âge des bénéficaires qui n’ont pas eu d’acte est calculé.
-                               L’âge de bénéficiaires qui ont eu un acte à l’intérieur de la période de l’étude est calculé à la date de l’acte."),
-                       checkboxInput("keep_all", "keep_all", value = FALSE),
-                       helpText("Par défault keep_all=FALSE, soit garder seulement les ids ayant eu un Dx et un acte à l'interieur de la période de l'étude.
-                               Si keep_all=TRUE, garder tous les IDs"),
-                       checkboxInput("verbose", "verbose", value = TRUE),
-                       helpText("Par défault verbose=TRUE, un message de progression est affiché dans les résultats sous l'onglet 'Message de progression et warnings:'"),
-                       checkboxInput("creation_cohort", "Paramétres pour la création d'une cohorte", value = FALSE),
-                       uiOutput("creation_cohort_select"),
-                       checkboxInput("Code_sql", "Paramétres d'affichage du code sql", value = FALSE),
-                       uiOutput("Code_sql_select"),
-                       selectInput("fileType", "Download: Type fichier:", choices = c("csv", "txt","png")),
+
+                       # Base de données - Requêt ####
+                       wellPanel(
+                         tags$h4("Base de données - Requête", style = "font-weight: bold;"),
+                         textInput("fct", label = "Fonction générique exécutée",value = ""),
+                         selectInput("DT", label = HTML(paste0("Banque de données", div(helpText("Indiquer la banque de données"), class = "pull-below"))),
+                                     choices = c("SMOD", "BDCU", "MEDECHO")),
+                         selectInput("task", label = HTML(paste0("Requête", div(helpText("Indiquer la requêt à exécuter"), class = "pull-below"))),
+                                     choices = NULL),
+                         style = "background-color: #e1f1f7;"),
+
+
+                       wellPanel(
+                         tags$h4("Paramètres de la fonction", style = "font-weight: bold;"),
+                         # Connexion ####
+                         dropdownButton(
+                           inputId = "mydropdown_connexion",
+                           label = "Connexion",
+                           icon = icon("plug"),
+                           status = "primary",
+                           circle = FALSE,
+                           wellPanel(
+                             #h4("Connexion"),
+                             textInput("sql_user", label = HTML(paste0("Identifiant", div(helpText("Indiquer votre identifiant teradata (ms0xx)"), class = "pull-below"))), value = "ms069a"),
+                             passwordInput("sql_pwd", label = HTML(paste0("Mot de passe", div(helpText("Indiquer votre mot de passe teradata"), class="pull-below"))), value = "Kong2051"),
+                             style = "background-color: #e1f1f7;")),
+                         tags$br(),
+                         # Cohorte ####
+                         dropdownButton(
+                           inputId = "mydropdown_cohort",
+                           label = "Cohorte",
+                           icon = icon("users"),
+                           status = "primary",
+                           circle = FALSE,
+                           wellPanel(
+                             #h4("Cohorte"),
+                             helpText("* Si cohorte = NULL (il n'y a pas de cohorte prédéfinie) : extraction d'acte pour tous ceux ayant eu une date d'acte à l'intérieure de la période d'étude.",tags$br(),
+                                      "* Si cohorte = cohorte (il y a une cohorte prédéfinie): extraction d'acte pour les individus de la cohorte prédéfinie ayant eu une date d'acte à l'intérieure de la période d'étude.",tags$br(),
+                                      "* Si CRÉATION D'UNE COHORTE ✅ :", tags$br() ,
+                                      "Étape 1 - création d'une cohorte en utilisant l'algorithme SQL_reperage_cond_med.", tags$br(),
+                                      "Étape 2 - extraction d'acte pour les individus de la cohorte crée ayant une date d'acte à l'intérieure de la période de l'étude.", tags$br(),
+                                      "* Si vous avez une cohorte prédéfinie ou une cohorte crée, vous devez mentionner si vous voulez selectionner tous les individus de la cohorte ayant eu ou non un acte
+                                          à l'intérieure de la période d'étude 'Cas retenus'✅ .",tags$br(), tags$br()),
+
+                             selectInput("cohort", label = HTML(paste0("Cohorte prédéfinie", div(helpText("Indiquer si vous avez une cohorte prédéfinie (défaut=NULL)"), class = "pull-below"))),
+                                         choices=c("NULL", "cohort")),
+                             uiOutput("fileInput"),
+                             checkboxInput("creation_cohort", label = HTML(paste0("<b>CRÉATION D'UNE COHORTE</b>", div(helpText("Selectionner pour afficher les paramétres pour la création d'une cohorte.",tags$br(),
+                                                                                                                                "La création de la cohorte est effectuée avec l'algorithme de la fonction : SQL_reperage_cond_med"), class = "pull-below"))),
+                                           value=FALSE),
+                             uiOutput("creation_cohort_select"),
+                             checkboxInput("keep_all", label = HTML(paste0("<b>Cas retenus</b>", div(helpText("Selection des Cas retenus (défaut=selectionner seulement les personnes avec un acte).",tags$br(),
+                                                                                                              "Si 'Cas retenue'✅ : selectionner toutes les personnes de la cohorte prédéfinie ou crée"), class = "pull-below"))),
+                                           value=FALSE),
+                             style = "background-color: #e1f1f7;")),
+                         tags$br(),
+                         # Période de l'étude ####
+                         dropdownButton(
+                           inputId = "mydropdown_periode_etude",
+                           label = "Période de l'étude",
+                           icon = icon("calendar"),
+                           status = "primary",
+                           circle = FALSE,
+                           wellPanel(
+                             #tags$h4("Période de l'étude", style = "font-weight: bold;"),
+                             textInput("debut_periode", label = HTML(paste0("Début de la période à l'étude", div(helpText("Indiquer la date de début de l'étude (AAAA-MM-JJ)"), class = "pull-below"))),
+                                       value="2020-01-01"),
+                             textInput("fin_periode", label = HTML(paste0("Fin de la période à l'étude", div(helpText("Indiquer la date de fin de l'étude (AAAA-MM-JJ)"), class = "pull-below"))),
+                                       value="2020-12-31"),
+                             style = "background-color: #e1f1f7;")),
+                         tags$br(),
+                         # Paramètres spécifiques de requête ####
+                         dropdownButton(
+                           inputId = "mydropdown_param_requete",
+                           label = "Paramètres spécifiques de requête",
+                           icon = icon("list"),
+                           status = "primary",
+                           circle = FALSE,
+                           wellPanel(
+                             #tags$h4("Paramètres spécifiques de requête", style = "font-weight: bold;"),
+                             uiOutput("DTInput"),
+                             style = "background-color: #e1f1f7;")),
+                         tags$br(),
+                         # Caractéristiques bénéficiaire ####
+                         dropdownButton(
+                           inputId = "mydropdown_carac_benef",
+                           label = "Caractéristiques bénéficiaire",
+                           icon = icon("venus-mars"),
+                           status = "primary",
+                           circle = FALSE,
+                           wellPanel(
+                             #h4("Caractéristiques bénéficiaire"),
+                             selectInput("benef_adr", label = HTML(paste0("Adresse du bénéficiaire", div(helpText("Indiquer la méthode d'identification de l'adresse du bénéficiaire (défaut=dernière_adresse).",tags$br(),
+                                                                                                                  "Si Adresse du bénéficiaire = date_fixe, Indiquer une date (AAAA-MM-JJ) dans 'Date adresse'"), class = "pull-below"))),
+                                         choices = c("date_fixe","dernière_adresse","première_adresse","long_adresse","date_acte"),selected = "dernière_adresse"),
+                             textInput("date_adr", label = HTML(paste0("Date adresse", div(helpText("Indiquer une date (AAAA-MM-JJ) pour identifier l'adresse du bénéficiaire"), class = "pull-below"))),
+                                       value="NULL"),
+                             textInput("date_age", label = HTML(paste0("Date âge", div(helpText("Si 'Cas retenus' est selectionné ✅ indiquer la date (AAAA-MM-JJ) pour le calcul de l’âge des personnes sans acte au cours de la période à l’étude (l’âge de bénéficiaires qui ont eu un acte à l’intérieur de la période de l’étude est calculé à la date de l’acte)"), class = "pull-below"))),
+                                       value="NULL"),
+                             style = "background-color: #e1f1f7;")),
+                         tags$br(),
+                         # Paramètres optionnels ####
+                         dropdownButton(
+                           inputId = "mydropdown_param_optionel",
+                           label = "Paramètres optionnels",
+                           icon = icon("gear"),
+                           status = "primary",
+                           circle = FALSE,
+                           wellPanel(
+                             #h4("Paramètres optionnels"),
+                             checkboxInput("verbose", label = HTML(paste0("verbose", div(helpText("Par défault verbose=TRUE, un message de progression est affiché sous l'onglet résultats: Message de progression et warnings:"), class = "pull-below"))),
+                                           value=TRUE),
+                             checkboxInput("Code_sql", label = HTML(paste0("Paramétres d'affichage du script sql", div(helpText("Selectionner ✅ pour afficher les paramétres d'affichage de script sql"), class = "pull-below"))),
+                                           value=FALSE),
+                             uiOutput("Code_sql_select"),
+                             selectInput("fileType", label=HTML(paste0("Format du fichier",div(helpText("Indiquer le format du fichier à télécharger"),class = "pull-below"))), choices = c("csv", "txt","png")),
+                             style = "background-color: #e1f1f7;")),
+
+                         style = "background-color: #e1f1f7;"),
+                       #####
                        actionButton("Executer", "Exécuter la requête",style = "background-color: green;color: white;"),
                        actionButton("reset", "Réinitialiser les champs"),
                      ),
@@ -70,10 +157,10 @@ RequeteGeneriqueBDCA_shiny<-function(){
                                    tabPanel("Résultats", style='width: 1000px; height: 1000px',
                                             h4("Résultats de la requête"),
                                             h5("Code sql:"),
-                                            p("Afficher le code sql exécuté pour effectuer la requête demandée.", style = "font-family: 'times'; font-si16pt"),
+                                            p("Afficher le script sql exécuté pour effectuer la requête demandée.", style = "font-family: 'times'; font-si16pt"),
                                             aceEditor(outputId = "ace",
                                                       selectionId = "selection",
-                                                      placeholder = "Afficher le code sql de la requête ..."),
+                                                      placeholder = "Afficher le script sql de la requête ..."),
                                             h5("Message de progression et warnings:"),
                                             verbatimTextOutput("result"),
                                             uiOutput("DT_final_ui"),
@@ -82,10 +169,10 @@ RequeteGeneriqueBDCA_shiny<-function(){
                                             h4("vignette de la fonction"),
                                             conditionalPanel(
                                               condition = "input.DT == 'SMOD'",
-                                              includeHTML("vignettes/user_I_SMOD_SERV_MD_CM_AG.html")),
+                                              includeHTML(system.file("vignettes/user_I_SMOD_SERV_MD_CM_AG.html", package = "RequeteGeneriqueBDCA"))),
                                             conditionalPanel(
                                               condition = "input.DT == 'BDCU'",
-                                              includeHTML("vignettes/user_V_EPISO_SOIN_DURG_CM_AG.html"))
+                                              includeHTML(system.file("vignettes/user_V_EPISO_SOIN_DURG_CM_AG.html", package = "RequeteGeneriqueBDCA")))
                                    )
                        )
                      )
@@ -96,32 +183,35 @@ RequeteGeneriqueBDCA_shiny<-function(){
                    sidebarLayout(
                      sidebarPanel(
                        textInput("fct_tab2", label = h3("Fonction générique exécutée"),value = "SQL_reperage_cond_med"),
-                       textInput("sql_user_tab2", "Identifiant", value = "ms069a"),
-                       helpText("Veuillez indiquer votre ms0xx"),
-                       passwordInput("sql_pwd_tab2", "Mot de passe", value = "Kong2050"),
-                       helpText("Veuillez rentrer votre mot de passe teradata"),
-                       textInput("Dx_table_tab2", label = "Dx_table",value="list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), '%'), CIM10 = paste0('J', 41:44, '%')))"),
-                       helpText("Si vous voulez créer une cohorte,veuillez indiquer les Dx cim9 et/ou cim10\n
-                           Voici un exemple: list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), '%'), CIM10 = paste0('J', 41:44, '%')))"),
-                       textInput("debut_cohort_tab2", label = "debut_cohort","2020-01-01"),
-                       helpText("Si vous voulez créer une cohorte,veuillez indiquer la date de début de la période"),
-                       textInput("fin_cohort_tab2", label = "fin_cohort","2021-01-01"),
-                       helpText("Si vous voulez créer une cohorte,veuillez indiquer la date de fin de la période"),
-                       textInput("CIM_tab2", label ="CIM",value = paste(c("CIM9","CIM10"),collapse = ",")),
-                       helpText("Si vous voulez créer une cohorte,veuillez indiquer le type de Dx cim9, cim10 ou les deux"),
-                       checkboxInput("by_Dx_tab2", "by_Dx", value = FALSE),
-                       helpText("Si vous voulez créer une cohorte,veuillez indiquer si vous voulez différencier entre les conditions médicales définies dans Dx_table"),
-                       selectInput("date_dx_var_tab2", "date_dx_var",choices = c("admis","depar"),selected="admis"),
-                       helpText("Si vous voulez créer une cohorte,veuillez choisir entre la date d’admission ou la date de départ comme date d’incidence dans les vues suivantes :
-                           V_DIAGN_SEJ_HOSP_CM, V_SEJ_SERV_HOSP_CM, V_EPISO_SOIN_DURG_CM"),
-                       numericInput("n1_tab2", label = "n1", value = 30),
-                       numericInput("n2_tab2", label = "n2", value = 730),
-                       helpText("Si vous voulez créer une cohorte,veuillez indiquer le nombre de jours entre lesquels deux diagnostics doit se situer pour que le deuxième Dx confirme le premier."),
-                       numericInput("nDx_tab2", label ="nDx", value = 0),
-                       helpText("Si vous voulez créer une cohorte,veuillez choisir le nombre de diagnostic qui permet de confirmer le premier Dx"),
-                       textInput("code_stat_decis_tab2", label = "code_stat_decis",value = paste(c("PAY","PPY"),collapse = ",")),
-                       helpText("Veuillez indiquer si vous voulez les actes payéa et/ou prépayés"),
-                       selectInput("fileType_tab2", "Download: Type fichier:", choices = c("csv", "txt")),
+                       textInput("sql_user_tab2", label = HTML(paste0("Identifiant", div(helpText("Indiquer votre identifiant teradata (ms0xx)"), class = "pull-below"))),
+                                 value = "ms069a"),
+                       passwordInput("sql_pwd_tab2", label = HTML(paste0("Mot de passe", div(helpText("Indiquer votre mot de passe teradata"), class="pull-below"))),
+                                     value = "Kong2051"),
+                       textInput("Dx_table_tab2", label = HTML(paste0("Liste des diagnostics", div(helpText("Indiquer la liste des diagnostics de la condition médicale à utiliser pour la création de la cohorte.",tags$br(),
+                                                                                                            "Par exemple : list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), '%'), CIM10 = paste0('J', 41:44, '%')))"), class = "pull-below"))),
+                                 value = "list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), '%'), CIM10 = paste0('J', 41:44, '%')))"),
+                       textInput("CIM_tab2", label = HTML(paste0("Classification des diagnostics", div(helpText("Indiquer la classification des diagnostics à utiliser (CIM9, CIM10 ou les deux)"), class = "pull-below"))),
+                                 value = paste(c("CIM9","CIM10"),collapse = ",")),
+
+                       textInput("debut_cohort_tab2", label = HTML(paste0("Date début de la cohorte", div(helpText("Indiquer le début de la période pour la cohorte (AAAA-MM-JJ)"), class = "pull-below"))),
+                                 value="2020-01-01"),
+                       textInput("fin_cohort_tab2", label = HTML(paste0("Date fin de la cohorte", div(helpText("Indiquer la finde la période pour la cohorte (AAAA-MM-JJ)"), class = "pull-below"))),
+                                 value="2020-12-31"),
+                       checkboxInput("by_Dx_tab2", label = HTML(paste0("Stratification de la cohorte", div(helpText("Indiquer si la cohorte doit être stratifiée ou non selon les conditions médicales définies dans la liste des diagnostics"), class = "pull-below"))),
+                                     value=FALSE),
+                       selectInput("date_dx_var_tab2", label = HTML(paste0("Date d'admission ou de départ", div(helpText("Indiquer si on doit utiliser la date d’admission ou de départ comme date d’incidence lors des hospitalisations ou des visites à l’urgence"), class = "pull-below"))),
+                                   choices = c("admis","depar"),selected="admis"),
+                       h4("PARAMÈTRES DE L’ALGORITHME"),
+                       helpText("Indiquer les paramètres de l’algorithme soit : le nombre de jours (n1) entre 2 diagnostics, la période de temps (n2) à considérer pour confirmer le premier diagnostic et le nombre minimum d’occurrences du diagnostic pour confirmer la condition (nDx).",
+                                "(Valeurs par défaut n1= 30 jours, n2= 730 jours et nDx=1)"),
+                       numericInput("n1_tab2", label = HTML(paste0("n1 (nombre de jours)", div(helpText("Indiquer le nombre de jours entre lesquels deux diagnostics doit se situer pour que le deuxième Dx confirme le premier"), class = "pull-below"))),
+                                    value = 30),
+                       numericInput("n2_tab2", label = HTML(paste0("n2 (période de temps) ", div(helpText("Indiquer le nombre de jours entre lesquels deux diagnostics doit se situer pour que le deuxième Dx confirme le premier"), class = "pull-below"))),
+                                    value = 730),
+                       numericInput("nDx_tab2", label = HTML(paste0("nDx (nombre de diagnostics)", div(helpText("Choisir le nombre de diagnostic qui permet de confirmer le premier Dx"), class = "pull-below"))),
+                                    value = 0),
+
+                       selectInput("fileType_tab2", label=HTML(paste0("Format du fichier",div(helpText("Indiquer le format du fichier à télécharger"),class = "pull-below"))), choices = c("csv", "txt")),
                        actionButton("Executer_tab2", "Exécuter la requête",style = "background-color: green;color: white;"),
                        actionButton("reset_tab2", "Réinitialiser les champs")),
                      mainPanel(
@@ -133,8 +223,8 @@ RequeteGeneriqueBDCA_shiny<-function(){
                                             uiOutput("DT_final_ui_tab2")),
                                    tabPanel("Vignettes", style='width: 1000px; height: 1000px',
                                             h4("vignette de la fonction"),
-                                            includeHTML("vignettes/SQL_reperage_cond_med.html"))
-
+                                            includeHTML(system.file("vignettes/SQL_reperage_cond_med.html", package = "RequeteGeneriqueBDCA"))
+                                   )
                        )
                      )
                    )
@@ -144,21 +234,33 @@ RequeteGeneriqueBDCA_shiny<-function(){
                    sidebarLayout(
                      sidebarPanel(
                        textInput("fct_tab3", label = h3("Fonction générique exécutée"),value = "standardisation"),
-                       textInput("donnees","donnees",value = "donnees"),
-                       fileInput("DT_tab3", "Veuillez choisir votre cohorte d'intérêt"),
-                       textInput("regroupement","regroupement"),
-                       textInput("regroupement_reference","regroupement_reference",value="NULL"),
-                       textInput("age","age",value="age_patient"),
-                       textInput("age_cat_mins","age_cat_mins","0,50,70,80"),
-                       textInput("sexe","sexe","sex"),
-                       textInput("autres_vars","autres_vars","NULL"),
-                       textInput("indicateur","indicateur","deces"),
-                       textInput("valeur","valeur",value = "1_Oui"),
-                       textInput("ref_externe","ref_externe",value = c(FALSE,TRUE)),
-                       textInput("ref_externe_annee","ref_externe_annee",value = NULL),
-                       textInput("ref_externe_age_cat_mins","ref_externe_age_cat_mins",value = NULL),
-                       selectInput("methode","methode",choices = c("direct","indirect")),
-                       textInput("multiplicateur","multiplicateur",value=100),
+                       textInput("donnees", label = HTML(paste0("donnees", div(helpText(""), class = "pull-below"))),
+                                 value = "donnees"),
+                       fileInput("DT_tab3", "Choisir votre cohorte d'intérêt"),
+                       textInput("regroupement", label = HTML(paste0("regroupement", div(helpText(""), class = "pull-below"))),
+                                 value = ""),
+                       textInput("regroupement_reference", label = HTML(paste0("regroupement_reference", div(helpText(""), class = "pull-below"))),
+                                 value = "NULL"),
+                       textInput("age", label = HTML(paste0("age", div(helpText(""), class = "pull-below"))),
+                                 value = "age_patient"),
+                       textInput("age_cat_mins", label = HTML(paste0("age_cat_mins", div(helpText(""), class = "pull-below"))),
+                                 value ="0,50,70,80"),
+                       textInput("sexe", label = HTML(paste0("sexe", div(helpText(""), class = "pull-below"))),
+                                 value ="sex"),
+                       textInput("autres_vars", label = HTML(paste0("autres_vars", div(helpText(""), class = "pull-below"))),
+                                 value ="NULL"),
+                       textInput("indicateur", label = HTML(paste0("indicateur", div(helpText(""), class = "pull-below"))),
+                                 value ="deces"),
+                       selectInput("ref_externe", label = HTML(paste0("ref_externe", div(helpText(""), class = "pull-below"))),
+                                   choices = c(FALSE,TRUE)),
+                       textInput("ref_externe_annee", label = HTML(paste0("ref_externe_annee", div(helpText(""), class = "pull-below"))),
+                                 value =NULL),
+                       textInput("ref_externe_age_cat_mins", label = HTML(paste0("ref_externe_age_cat_mins", div(helpText(""), class = "pull-below"))),
+                                 value =NULL),
+                       selectInput("methode", label = HTML(paste0("methode", div(helpText(""), class = "pull-below"))),
+                                   choices = c("direct","indirect")),
+                       numericInput("multiplicateur", label = HTML(paste0("multiplicateur", div(helpText(""), class = "pull-below"))),
+                                    value =100),
                        selectInput("fileType_tab3", "Download: Type fichier:", choices = c("csv", "txt")),
                        actionButton("Executer_tab3", "Exécuter la requête",style = "background-color: green;color: white;"),
                        actionButton("reset_tab3", "Réinitialiser les champs")),
@@ -183,19 +285,22 @@ RequeteGeneriqueBDCA_shiny<-function(){
                    sidebarLayout(
                      sidebarPanel(
                        textInput("fct_tab4", label = h3("Fonction générique exécutée"),value = "combine_periodes"),
-                       textInput("dt","Table de données",value = "Data"),
-                       fileInput("file_tab4", "Veuillez choisir votre cohorte d'intérêt"),
-                       textInput("id","Identifiant du bénéficiaire",value="ID"),
-                       helpText("Nom de la colonne indiquant l'identifiant du bénéficiaire"),
-                       textInput("debut","Début de la période",value="DatAdm"),
-                       helpText("Nom de la colonne indiquant le début de la période"),
-                       textInput("fin","fin de la période",value="DatDep"),
-                       helpText("Nom de la colonne indiquant le fin de la période"),
-                       numericInput("njours","Nombre de jours",value=1),
-                       helpText("Nombre de jours max entre le début et la fin précédente pour effectuer une combinaison"),
-                       textInput("par_cols","Autres cols à considérer",value = "NULL"),
-                       helpText("Nom des autres colonnes qui doivent être incluses dans l'analyse. Par exemple des codes de médicaments. Par défaut `NULL`"),
-                       checkboxInput("Code_sql_tab4", "Paramétres d'affichage du script", value = FALSE),
+                       textInput("dt", label = HTML(paste0("Table de données", div(helpText("Cohorte d'intérêt. Ne pas changer le nom 'Data'"), class = "pull-below"))),
+                                 value = "Data"),
+                       fileInput("file_tab4", label = HTML(paste0("Choisir votre cohorte d'intérêt", div(helpText("Importer la cohorte d'intérêt"), class = "pull-below")))),
+                       textInput("id", label = HTML(paste0("Identifiant du bénéficiaire", div(helpText("Indiquer le nom de la colonne de l'identifiant du bénéficiaire"), class = "pull-below"))),
+                                 value = "ID"),
+                       textInput("debut", label = HTML(paste0("Début de la période", div(helpText("Indiquer le nom de la colonne de la date de début de la période"), class = "pull-below"))),
+                                 value = "DatAdm"),
+                       textInput("fin", label = HTML(paste0("Fin de la période", div(helpText("Indiquer le nom de la colonne de la date de fin de la période"), class = "pull-below"))),
+                                 value = "DatDep"),
+                       numericInput("njours", label = HTML(paste0("Nombre de jours", div(helpText("Indiquer le nombre de jours max entre le début et la fin précédente pour effectuer une combinaison"), class = "pull-below"))),
+                                    value = 1),
+                       textInput("par_cols", label = HTML(paste0("Autres cols à considérer", div(helpText("Indiquer le nom des autres colonnes qui doivent être incluses dans l'analyse. Par défaut `NULL`.
+                                                                                                        Exemple: DIN, DENOM"), class = "pull-below"))),
+                                 value = "NULL"),
+                       checkboxInput("Code_sql_tab4", label = HTML(paste0("Paramétres d'affichage du script", div(helpText("Selectionner pour changer les paramétres d'affichage de script"), class = "pull-below"))),
+                                     value=FALSE),
                        uiOutput("Code_sql_select_tab4"),
 
                        selectInput("fileType_tab4", "Download: Type fichier:", choices = c("csv", "txt")),
@@ -214,8 +319,8 @@ RequeteGeneriqueBDCA_shiny<-function(){
                                             verbatimTextOutput("result_tab4"),
                                             uiOutput("DT_final_ui_tab4")),
                                    tabPanel("Vignettes", style='width: 1000px; height: 1000px',
-                                            h4("vignette de la fonction")#,
-                                            #includeHTML("vignettes/"))
+                                            h4("vignette de la fonction"),
+                                            includeHTML(system.file("vignettes/combiner_periodes.html", package = "RequeteGeneriqueBDCA"))
                                    )
                        )
                      )
@@ -233,46 +338,84 @@ RequeteGeneriqueBDCA_shiny<-function(){
 
     # Extraction Donnees ####
     ## renderUI: ####
+
     ### Fonction exécutée####
     observeEvent(input$DT, {
       if (input$DT == "SMOD") {
         updateTextInput(session, "fct", value = "user_I_SMOD_SERV_MD_CM_AG")
       } else if (input$DT == "BDCU") {
         updateTextInput(session, "fct", value = "user_V_EPISO_SOIN_DURG_CM_AG")
-      } else {
+      } else if (input$DT == "MEDECHO") {
+        updateTextInput(session, "fct", value = "user_MEDECHO_DIAGN_SEJ_HOSP_CM")
+      }
+      else {
         updateTextInput(session, "fct", value = "")
       }
     })
-    ### Choix de vue de données et Task ####
+    ### Param spécifique aux vued de données et Task ####
     output$DTInput <- renderUI({
       if (input$DT == "SMOD"){
         tagList(
-          textInput("CodeActe", label = "CodeActe","07122,07237,07800,07089,0780"),
-          helpText("Veuillez indiquer les codes d'acte d'intérêt"),
-          selectInput("omni_spec", "omni_spec",choices = c("all","omni","spec")),
-          helpText("Veuillez indiquer si vous voulez les actes facturés par les omni et/ou les spec"),
-          selectInput("catg_etab", "catg_etab",choices = c("all","ambulatoire")),
-          helpText("Veuillez indiquer si vous voulez les actes facturés selon l'établissement de soins"),
-          textInput("code_stat_decis", label = "code_stat_decis",value = paste(c("PAY","PPY"),collapse = ",")),
-          helpText("Veuillez indiquer si vous voulez les actes payéa et/ou prépayés")
-        )
-      } else if (input$DT=="BDCU"){
-        tagList(
-          selectInput("date_dx_var", "date_dx_var",choices = c("admis","depar"),selected="admis"),
-          helpText("Si vous voulez créer une cohorte,veuillez choisir entre la date d’admission ou la date de départ comme date d’incidence dans les vues suivantes :
-                V_DIAGN_SEJ_HOSP_CM, V_SEJ_SERV_HOSP_CM, V_EPISO_SOIN_DURG_CM")
+          textInput(inputId = "CodeActe", label = HTML(paste0("Codes d'acte SMOD",
+                                                              div(helpText("Indiquer les codes d'acte SMOD d'intérêt.",tags$br(),
+                                                                           "Exemple: 07122,07237,07800,07089"),
+                                                                  class = "pull-below"))),value = "07122,07237,07800,07089,0780"),
+          selectInput(inputId = "omni_spec", label = HTML(paste0("Spécialité du médecin", div(helpText("Indiquer la spécialité du médecin (défaut=all)"), class = "pull-below"))),
+                      choices = c("all","omni","spec")),
+          selectInput(inputId = "catg_etab", label = HTML(paste0("Catégorie du lieu", div(helpText("Indiquer la catégorie de lieu ou l’acte a été réalisé (défaut=all)"), class = "pull-below"))),
+                      choices = c("all","ambulatoire")),
+          textInput(inputId = "code_stat_decis", label = HTML(paste0("Statut de paiement de l'acte", div(helpText("Indiquer le statut de paiement de l'acte (défaut=payé 'PAY', prépayé 'PPY')"), class = "pull-below"))),
+                    value = paste(c("PAY","PPY"),collapse = ","))
         )
       }
+      else if (input$DT == "MEDECHO") {
+        if (input$task == "extraction_MEDECHO_DIAGN_SEJ"){
+        tagList(
+          selectInput("date_dx_var", label = HTML(paste0("Date d'admission ou de départ", div(helpText("Indiquer si on doit utiliser la date d’admission ou de départ comme date d’incidence lors des visites à l’urgence"), class = "pull-below"))),
+                      choices = c("admis","depar"),selected="admis"),
+          textInput("diagn", label = HTML(paste0("Liste des diagnostics", div(helpText("Indiquer la liste des diagnostics de la condition médicale à utiliser pour la création de la cohorte.",tags$br(),
+                                                                                          "Par exemple : list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), '%'), CIM10 = paste0('J', 41:44, '%')))"), class = "pull-below")))),
+          textInput("typ_diagn", label = HTML(paste0("Type de diagnostic", div(helpText("Indiquer le type de diagnostic du séjour hospitalier (défaut=A,P,S,D)"), class = "pull-below"))),
+                    value = paste(c("A","P","S","D"),collapse = ","))
+          )
+        }
+        else if (input$task == "extraction_MEDECHO_SEJ_SERV") {
+        tagList(
+          selectInput("date_dx_var", label = HTML(paste0("Date d'admission ou de départ", div(helpText("Indiquer si on doit utiliser la date d’admission ou de départ comme date d’incidence lors des visites à l’urgence"), class = "pull-below"))),
+                      choices = c("admis","depar"),selected="admis"),
+          textInput("diagn", label = HTML(paste0("Liste des diagnostics", div(helpText("Indiquer la liste des diagnostics de la condition médicale à utiliser pour la création de la cohorte.",tags$br(),
+                                                                                          "Par exemple : list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), '%'), CIM10 = paste0('J', 41:44, '%')))"), class = "pull-below"))))
+        )
+      }
+        else if (input$task == "extraction_MEDECHO_SEJ_HOSP"){
+        tagList(
+          selectInput("date_dx_var", label = HTML(paste0("Date d'admission ou de départ", div(helpText("Indiquer si on doit utiliser la date d’admission ou de départ comme date d’incidence lors des visites à l’urgence"), class = "pull-below"))),
+                      choices = c("admis","depar"),selected="admis")
+        )
+        }
+      }
+      else if (input$DT=="BDCU"){
+        if(input$task == "extraction_BDCU_EPISO_SOIN_DURG"){
+        tagList(
+          selectInput("date_dx_var", label = HTML(paste0("Date d'admission ou de départ", div(helpText("Indiquer si on doit utiliser la date d’admission ou de départ comme date d’incidence lors des visites à l’urgence"), class = "pull-below"))),
+                      choices = c("admis","depar"),selected="admis"),
+          textInput("diagn", label = HTML(paste0("Liste des diagnostics", div(helpText("Indiquer la liste des diagnostics de la condition médicale à utiliser pour la création de la cohorte.",tags$br(),
+                                                                                       "Par exemple : list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), '%'), CIM10 = paste0('J', 41:44, '%')))"), class = "pull-below"))))
+        )
+        }
+        }
+      else {
+        tagList()
+      }
     })
-
 
     observeEvent(input$DT, {
       if (input$DT == "SMOD") {
         updateSelectInput(session, "task", choices = c("extraction_SMOD", "projet_facturation_acte"))
       } else if (input$DT == "BDCU") {
-        updateSelectInput(session, "task", choices = c("extraction_BDCU"))
-      } else {
-        updateSelectInput(session, "task", choices = c("MEDECHO"))
+        updateSelectInput(session, "task", choices = c("extraction_BDCU_EPISO_SOIN_DURG","extraction_BDCU_OCCU_CIVIE_DURG","extraction_BDCU_CNSUL_DURG"))
+      } else if (input$DT == "MEDECHO") {
+        updateSelectInput(session, "task", choices = c("extraction_MEDECHO_SEJ_HOSP","extraction_MEDECHO_DIAGN_SEJ","extraction_MEDECHO_SEJ_SERV"))
       }
     })
     ### Param creation de cohorte ####
@@ -324,25 +467,29 @@ RequeteGeneriqueBDCA_shiny<-function(){
     output$creation_cohort_select <- renderUI({
       if (input$creation_cohort) {
         tagList(
-          textInput("Dx_table", label = "Dx_table",value="NULL"),
-          helpText("Si vous voulez créer une cohorte,veuillez indiquer les Dx cim9 et/ou cim10\n
-                   Voici un exemple: list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), '%'), CIM10 = paste0('J', 41:44, '%')))"),
-          textInput("debut_cohort", label = "debut_cohort"),
-          helpText("Si vous voulez créer une cohorte,veuillez indiquer la date de début de la période"),
-          textInput("fin_cohort", label = "fin_cohort"),
-          helpText("Si vous voulez créer une cohorte,veuillez indiquer la date de fin de la période"),
-          textInput("CIM", label ="CIM",value = paste(c("CIM9","CIM10"),collapse = ",")),
-          helpText("Si vous voulez créer une cohorte,veuillez indiquer le type de Dx cim9, cim10 ou les deux"),
-          checkboxInput("by_Dx", "by_Dx", value = FALSE),
-          helpText("Si vous voulez créer une cohorte,veuillez indiquer si vous voulez différencier entre les conditions médicales définies dans Dx_table"),
-          selectInput("date_dx_var", "date_dx_var",choices = c("admis","depar"),selected="admis"),
-          helpText("Si vous voulez créer une cohorte,veuillez choisir entre la date d’admission ou la date de départ comme date d’incidence dans les vues suivantes :
-                V_DIAGN_SEJ_HOSP_CM, V_SEJ_SERV_HOSP_CM, V_EPISO_SOIN_DURG_CM"),
-          numericInput("n1", label = "n1", value = 30),
-          numericInput("n2", label = "n2", value = 730),
-          helpText("Si vous voulez créer une cohorte,veuillez indiquer le nombre de jours entre lesquels deux diagnostics doit se situer pour que le deuxième Dx confirme le premier."),
-          numericInput("nDx", label ="nDx", value = 0),
-          helpText("Si vous voulez créer une cohorte,veuillez choisir le nombre de diagnostic qui permet de confirmer le premier Dx")
+          textInput("Dx_table", label = HTML(paste0("Liste des diagnostics", div(helpText("Indiquer la liste des diagnostics de la condition médicale à utiliser pour la création de la cohorte.",tags$br(),
+                                                                                          "Par exemple : list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), '%'), CIM10 = paste0('J', 41:44, '%')))"), class = "pull-below"))),
+                    value = "NULL"),
+          textInput("CIM", label = HTML(paste0("Classification des diagnostics", div(helpText("Indiquer la classification des diagnostics à utiliser (CIM9, CIM10 ou les deux)"), class = "pull-below"))),
+                    value = paste(c("CIM9","CIM10"),collapse = ",")),
+
+          textInput("debut_cohort", label = HTML(paste0("Date début de la cohorte", div(helpText("Indiquer le début de la période pour la cohorte (AAAA-MM-JJ)"), class = "pull-below"))),
+                    value="2020-01-01"),
+          textInput("fin_cohort", label = HTML(paste0("Date fin de la cohorte", div(helpText("Indiquer la finde la période pour la cohorte (AAAA-MM-JJ)"), class = "pull-below"))),
+                    value="2020-12-31"),
+          checkboxInput("by_Dx_tab2", label = HTML(paste0("Stratification de la cohorte", div(helpText("Indiquer si la cohorte doit être stratifiée ou non selon les conditions médicales définies dans la liste des diagnostics"), class = "pull-below"))),
+                        value=FALSE),
+          selectInput("date_dx_var", label = HTML(paste0("Date d'admission ou de départ", div(helpText("Indiquer si on doit utiliser la date d’admission ou de départ comme date d’incidence lors des hospitalisations ou des visites à l’urgence"), class = "pull-below"))),
+                      choices = c("admis","depar"),selected="admis"),
+          h4("PARAMÈTRES DE L’ALGORITHME"),
+          helpText("Indiquer les paramètres de l’algorithme soit : le nombre de jours (n1) entre 2 diagnostics, la période de temps (n2) à considérer pour confirmer le premier diagnostic et le nombre minimum d’occurrences du diagnostic pour confirmer la condition (nDx).",
+                   "(Valeurs par défaut n1= 30 jours, n2= 730 jours et nDx=1)"),
+          numericInput("n1", label = HTML(paste0("n1 (nombre de jours)", div(helpText("Indiquer le nombre de jours entre lesquels deux diagnostics doit se situer pour que le deuxième Dx confirme le premier"), class = "pull-below"))),
+                       value = 30),
+          numericInput("n2", label = HTML(paste0("n2 (période de temps) ", div(helpText("Indiquer le nombre de jours entre lesquels deux diagnostics doit se situer pour que le deuxième Dx confirme le premier"), class = "pull-below"))),
+                       value = 730),
+          numericInput("nDx", label = HTML(paste0("nDx (nombre de diagnostics)", div(helpText("Choisir le nombre de diagnostic qui permet de confirmer le premier Dx"), class = "pull-below"))),
+                       value = 0),
 
         )
       }
@@ -364,11 +511,10 @@ RequeteGeneriqueBDCA_shiny<-function(){
 
     output$Code_sql_select <- renderUI({
       if (input$Code_sql) {
-        tagList(selectInput("mode", "Mode d'affichage du code générique: ", choices = getAceModes(), selected = mode()),
-                helpText("Par défaut, le code est affiché en mode sql sous l'onglet 'Code sql:'. Il est possible de choisir d'autres modes"),
-                selectInput("theme", "Thème d'affichage du code générique: ", choices = getAceThemes(), selected = theme()),
-                helpText("Par défaut, le code est affiché avec le thème 'sqlserver'. Il est possible de choisir d'autres thèmes")
-
+        tagList(selectInput("mode", label = HTML(paste0("Mode d'affichage du code générique: ", div(helpText("Par défaut, le code est affiché en mode sql sous l'onglet 'Code sql:'. Il est possible de choisir d'autres modes"), class = "pull-below"))),
+                            choices = getAceModes(), selected = mode()),
+                selectInput("theme", label = HTML(paste0("Thème d'affichage du code générique: ", div(helpText("Par défaut, le code est affiché avec le thème 'sqlserver'. Il est possible de choisir d'autres thèmes"), class = "pull-below"))),
+                            choices = getAceThemes(), selected = theme())
         )
       }
     })
@@ -379,24 +525,26 @@ RequeteGeneriqueBDCA_shiny<-function(){
       setwd(input$setwd)
     })
 
+
     # Résultats: Extraction Données ####
     observeEvent(input$Executer, {
+
       # Test des arguments ####
       if(input$keep_all==TRUE){
         if(input$date_age=="NULL"){
-          showNotification("L'exécution de la requête a été intérompue: L'argument 'date_age' est vide. Veuillez indiquer la date à laquelle l'âge des bénéficiaires n'ayant pas eu d'acte doit être calculé", duration = 0, type="warning")
+          showNotification("L'exécution de la requête est intérompue: L'argument 'date_age' est vide. Veuillez indiquer la date à laquelle l'âge des bénéficiaires n'ayant pas eu d'acte doit être calculé", duration = 0, type="warning")
           #stop("L'exécution de la requête a été intérompue: L'argument 'date_age' est vide. Veuillez indiquer la date à laquelle l'âge des bénéficiaires n'ayant pas eu d'acte doit être calculé")
         }
       }
       if(input$cohort=="cohort"){
         if(is.null(input$file)){
-          showNotification("L'exécution de la requête a été intérompue: L'argument 'file' est vide. Veuillez selectionner un fichier pour votre cohorte d'intérêt", duration = 0, type="warning")
+          showNotification("L'exécution de la requête est intérompue: L'argument 'file' est vide. Veuillez selectionner un fichier pour votre cohorte d'intérêt", duration = 0, type="warning")
           #stop("L'exécution de la requête a été intérompue: L'argument 'file' est vide. Veuillez selectionner un fichier pour votre cohorte d'intérêt")
         }
       }
       if(input$benef_adr=="date_fixe"){
         if(input$date_adr=="NULL"){
-          showNotification(paste("L'exécution de la requête a été intérompue: L'argument 'date_adr' est vide. Veuillez indiquer la date à laquelle l'adresse des bénéficiaires doit être ciblée"), duration = 0, type="warning")
+          showNotification(paste("L'exécution de la requête est intérompue: L'argument 'date_adr' est vide. Veuillez indiquer la date à laquelle l'adresse des bénéficiaires doit être ciblée"), duration = 0, type="warning")
           #stop("L'exécution de la requête a été intérompue: L'argument 'date_adr' est vide. Veuillez indiquer la date à laquelle l'adresse des bénéficiaires doit être ciblée")
         }
       }
@@ -499,19 +647,28 @@ RequeteGeneriqueBDCA_shiny<-function(){
 
           # afficher le message de progression ####
           output$result <- renderPrint({
-            withProgress(message = "La requête est en exécution. Veuillez-svp patienter...", value = 0, {
-              #incProgress(0.1)
-              n<-10
-              for (i in 1:9) {
-                Sys.sleep(0.5)
-                incProgress(1/n, detail = paste("Doing part", i*10,"%"))
-              }
+            if ((input$keep_all == TRUE && input$date_age == "NULL") ||
+                (input$cohort == "cohort" && is.null(input$file)) ||
+                (input$benef_adr == "date_fixe" && input$date_adr == "NULL")) {
               result<-result()
               if (length(warnings$data) > 0) {
                 print(paste("Warnings: ", warnings$data))
               }
-            })
+            }else{
+              withProgress(message = "La requête est en exécution. Veuillez-svp patienter....", value = 0, {
+                n<-10
+                for (i in 1:9) {
+                  Sys.sleep(0.5)
+                  incProgress(1/n, detail = paste("Doing part", i*10,"%"))
+                }
+                result<-result()
+                if (length(warnings$data) > 0) {
+                  print(paste("Warnings: ", warnings$data))
+                }
+              })
+            }
           })
+
           # Définir les noms tableaux / figs à affichés ####
           output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs", # we can use a tabsetPanel instide navbarPage
                                                      tabPanel("DT_final",
@@ -524,7 +681,7 @@ RequeteGeneriqueBDCA_shiny<-function(){
           observeEvent(input$Executer, {
             output$downloadData <- downloadHandler(
               filename = function() {
-                paste("DT_final-", Sys.Date(), ".", input$fileType, sep = "")
+                paste("DT_final_", format(Sys.Date(), "%Y%m%d"), ".", input$fileType, sep = "")
               },
               content = function(file) {
                 if (input$fileType == "csv") {
@@ -594,7 +751,8 @@ RequeteGeneriqueBDCA_shiny<-function(){
 
           })
           # afficher le code sql ####
-          init <- eventReactive(input$Executer,{
+
+          init<- eventReactive(input$Executer,{
             if (input$task =="projet_facturation_acte") {
               CodeActe <- unlist(str_split(input$CodeActe, ","))
               code_stat_decis <- unlist(str_split(input$code_stat_decis, ","))
@@ -634,18 +792,26 @@ RequeteGeneriqueBDCA_shiny<-function(){
 
           # afficher le message de progression ####
           output$result <- renderPrint({
-            withProgress(message = "La requête est en exécution. Veuillez-svp patienter...", value = 0, {
-              #incProgress(0.1)
-              n<-10
-              for (i in 1:9) {
-                Sys.sleep(0.5)
-                incProgress(1/n, detail = paste("Doing part", i*10,"%"))
-              }
+            if ((input$keep_all == TRUE && input$date_age == "NULL") ||
+                (input$cohort == "cohort" && is.null(input$file)) ||
+                (input$benef_adr == "date_fixe" && input$date_adr == "NULL")) {
               result<-result()
               if (length(warnings$data) > 0) {
                 print(paste("Warnings: ", warnings$data))
               }
-            })
+            }else{
+              withProgress(message = "La requête est en exécution. Veuillez-svp patienter....", value = 0, {
+                n<-10
+                for (i in 1:9) {
+                  Sys.sleep(0.5)
+                  incProgress(1/n, detail = paste("Doing part", i*10,"%"))
+                }
+                result<-result()
+                if (length(warnings$data) > 0) {
+                  print(paste("Warnings: ", warnings$data))
+                }
+              })
+            }
           })
 
           # Définir les noms tableaux / figs à affichés ####
@@ -737,7 +903,7 @@ RequeteGeneriqueBDCA_shiny<-function(){
         }
       }
       else if(input$DT=="BDCU"){
-        if (input$task == "extraction_BDCU") {
+        if (input$task == "extraction_BDCU_EPISO_SOIN_DURG") {
           warnings <- reactiveValues(data = character(0))
           result <- eventReactive(input$Executer, {
             conn <- RequeteGeneriqueBDCA::SQL_connexion(noquote(input$sql_user),noquote(input$sql_pwd))
@@ -755,6 +921,11 @@ RequeteGeneriqueBDCA_shiny<-function(){
             } else {
               eval(parse(text = Dx_table()))
             }
+            diagn<-if (input$diagn == "NULL") {
+              NULL
+            } else {
+              eval(parse(text = input$diagn))
+            }
             setwd <- if (setwd() == "NULL") NULL else setwd()
 
             DT_final<-withCallingHandlers(
@@ -767,6 +938,7 @@ RequeteGeneriqueBDCA_shiny<-function(){
                 benef_adr=input$benef_adr,
                 date_adr=input$date_adr,
                 date_age = input$date_age,
+                diagn=diagn,
 
                 Dx_table = Dx_table,
                 debut_cohort = debut_cohort(),
@@ -788,18 +960,18 @@ RequeteGeneriqueBDCA_shiny<-function(){
           })
           # afficher le code sql ####
           init <- eventReactive(input$Executer,{
-            if (input$task == "extraction_BDCU") {
-              Dx_table<-if (Dx_table() == "NULL") {
+            if (input$task == "extraction_BDCU_EPISO_SOIN_DURG") {
+              diagn<-if (input$diagn == "NULL") {
                 NULL
               } else {
-                eval(parse(text = Dx_table()))
+                eval(parse(text = input$diagn))
               }
               return(query_V_EPISO_SOIN_DURG_CM_AG (query=input$task,
                                                     debut=input$debut_periode,
                                                     fin=input$fin_periode,
                                                     debut_cohort=input$debut_cohort,
                                                     fin_cohort=input$fin_cohort,
-                                                    diagn=Dx_table,
+                                                    diagn=diagn,
                                                     date_dx_var=input$date_dx_var,
                                                     benef_adr=input$benef_adr,
                                                     date_adr=input$date_adr))
@@ -822,18 +994,26 @@ RequeteGeneriqueBDCA_shiny<-function(){
 
           # afficher le message de progression ####
           output$result <- renderPrint({
-            withProgress(message = "La requête est en exécution. Veuillez-svp patienter...", value = 0, {
-              #incProgress(0.1)
-              n<-10
-              for (i in 1:9) {
-                Sys.sleep(0.5)
-                incProgress(1/n, detail = paste("Doing part", i*10,"%"))
-              }
+            if ((input$keep_all == TRUE && input$date_age == "NULL") ||
+                (input$cohort == "cohort" && is.null(input$file)) ||
+                (input$benef_adr == "date_fixe" && input$date_adr == "NULL")) {
               result<-result()
               if (length(warnings$data) > 0) {
                 print(paste("Warnings: ", warnings$data))
               }
-            })
+            }else{
+              withProgress(message = "La requête est en exécution. Veuillez-svp patienter....", value = 0, {
+                n<-10
+                for (i in 1:9) {
+                  Sys.sleep(0.5)
+                  incProgress(1/n, detail = paste("Doing part", i*10,"%"))
+                }
+                result<-result()
+                if (length(warnings$data) > 0) {
+                  print(paste("Warnings: ", warnings$data))
+                }
+              })
+            }
           })
           # Définir les noms tableaux / figs à affichés ####
           output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs", # we can use a tabsetPanel instide navbarPage
@@ -847,7 +1027,263 @@ RequeteGeneriqueBDCA_shiny<-function(){
           observeEvent(input$Executer, {
             output$downloadData <- downloadHandler(
               filename = function() {
-                paste("DT_final-", Sys.Date(), ".", input$fileType, sep = "")
+                paste("DT_final_", format(Sys.Date(), "%Y%m%d"), ".", input$fileType, sep = "")
+              },
+              content = function(file) {
+                if (input$fileType == "csv") {
+                  write.csv(result(), file, row.names = FALSE)
+                } else {
+                  write.table(result(), file, sep = ";", dec = ".",quote=FALSE,row.names = FALSE, col.names = TRUE)
+                }
+              }
+            )
+          })
+
+        }
+        else if (input$task == "extraction_BDCU_OCCU_CIVIE_DURG") {
+          warnings <- reactiveValues(data = character(0))
+          result <- eventReactive(input$Executer, {
+            conn <- RequeteGeneriqueBDCA::SQL_connexion(noquote(input$sql_user),noquote(input$sql_pwd))
+            cohort <- if (input$cohort == "NULL") {
+              NULL
+            } else {
+              tmp <- data.table::fread(input$file$datapath)
+              tmp<-tmp[[1]]
+              cohort<-tmp
+              assign("cohort", cohort, envir = .GlobalEnv)
+            }
+            CIM <- unlist(str_split(CIM(), ","))
+            Dx_table<-if (Dx_table() == "NULL") {
+              NULL
+            } else {
+              eval(parse(text = Dx_table()))
+            }
+
+
+            DT_final<-withCallingHandlers(
+              RequeteGeneriqueBDCA::user_V_EPISO_SOIN_DURG_CM_AG(
+                task = input$task,
+                conn = conn,
+                cohort = cohort,
+                debut_periode = input$debut_periode,
+                fin_periode = input$fin_periode,
+                benef_adr=input$benef_adr,
+                date_adr=input$date_adr,
+                date_age = input$date_age,
+                diagn=NULL,
+
+                Dx_table = Dx_table,
+                debut_cohort = debut_cohort(),
+                fin_cohort = fin_cohort(),
+                CIM = CIM,
+                by_Dx = by_Dx(),
+                date_dx_var = date_dx_var(),
+                n1 = n1(),
+                n2 = n2(),
+                nDx = nDx(),
+                keep_all = input$keep_all,
+                verbose = input$verbose,
+                setwd=setwd
+              ),
+
+              warning = function(w) {
+                warnings$data <- c(warnings$data, w$message)})
+
+          })
+          # afficher le code sql ####
+          init <- eventReactive(input$Executer,{
+            if (input$task == "extraction_BDCU_OCCU_CIVIE_DURG") {
+
+              return(query_V_EPISO_SOIN_DURG_CM_AG (query=input$task,
+                                                    debut=input$debut_periode,
+                                                    fin=input$fin_periode,
+                                                    debut_cohort=input$debut_cohort,
+                                                    fin_cohort=input$fin_cohort,
+                                                    diagn=NULL,
+                                                    date_dx_var=input$date_dx_var,
+                                                    benef_adr=input$benef_adr,
+                                                    date_adr=input$date_adr))
+            }
+            else{
+              return("Afficher le code sql de la requête ...")
+            }
+          })
+          observe({ cat(input$ace, "\n")})
+          observe({cat(input$ace_selection, "\n")})
+          observe({
+            updateAceEditor(
+              session,
+              "ace",
+              value = init(),
+              theme = theme(),
+              mode = mode(),
+            )
+          })
+
+          # afficher le message de progression ####
+          output$result <- renderPrint({
+            if ((input$keep_all == TRUE && input$date_age == "NULL") ||
+                (input$cohort == "cohort" && is.null(input$file)) ||
+                (input$benef_adr == "date_fixe" && input$date_adr == "NULL")) {
+              result<-result()
+              if (length(warnings$data) > 0) {
+                print(paste("Warnings: ", warnings$data))
+              }
+            }else{
+              withProgress(message = "La requête est en exécution. Veuillez-svp patienter....", value = 0, {
+                n<-10
+                for (i in 1:9) {
+                  Sys.sleep(0.5)
+                  incProgress(1/n, detail = paste("Doing part", i*10,"%"))
+                }
+                result<-result()
+                if (length(warnings$data) > 0) {
+                  print(paste("Warnings: ", warnings$data))
+                }
+              })
+            }
+          })
+          # Définir les noms tableaux / figs à affichés ####
+          output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs", # we can use a tabsetPanel instide navbarPage
+                                                     tabPanel("DT_final",
+                                                              downloadButton("downloadData", "Download"),
+                                                              dataTableOutput("DT_final")
+                                                     ))})
+          # Afficher la cohorte ####
+          output$DT_final <- renderDataTable(result()) #DT::renderDT()
+          # Download BD ####
+          observeEvent(input$Executer, {
+            output$downloadData <- downloadHandler(
+              filename = function() {
+                paste("DT_final_", format(Sys.Date(), "%Y%m%d"), ".", input$fileType, sep = "")
+              },
+              content = function(file) {
+                if (input$fileType == "csv") {
+                  write.csv(result(), file, row.names = FALSE)
+                } else {
+                  write.table(result(), file, sep = ";", dec = ".",quote=FALSE,row.names = FALSE, col.names = TRUE)
+                }
+              }
+            )
+          })
+
+        }
+        else if (input$task == "extraction_BDCU_CNSUL_DURG") {
+          warnings <- reactiveValues(data = character(0))
+          result <- eventReactive(input$Executer, {
+            conn <- RequeteGeneriqueBDCA::SQL_connexion(noquote(input$sql_user),noquote(input$sql_pwd))
+            cohort <- if (input$cohort == "NULL") {
+              NULL
+            } else {
+              tmp <- data.table::fread(input$file$datapath)
+              tmp<-tmp[[1]]
+              cohort<-tmp
+              assign("cohort", cohort, envir = .GlobalEnv)
+            }
+            CIM <- unlist(str_split(CIM(), ","))
+            Dx_table<-if (Dx_table() == "NULL") {
+              NULL
+            } else {
+              eval(parse(text = Dx_table()))
+            }
+
+
+            DT_final<-withCallingHandlers(
+              RequeteGeneriqueBDCA::user_V_EPISO_SOIN_DURG_CM_AG(
+                task = input$task,
+                conn = conn,
+                cohort = cohort,
+                debut_periode = input$debut_periode,
+                fin_periode = input$fin_periode,
+                benef_adr=input$benef_adr,
+                date_adr=input$date_adr,
+                date_age = input$date_age,
+                diagn=NULL,
+
+                Dx_table = Dx_table,
+                debut_cohort = debut_cohort(),
+                fin_cohort = fin_cohort(),
+                CIM = CIM,
+                by_Dx = by_Dx(),
+                date_dx_var = date_dx_var(),
+                n1 = n1(),
+                n2 = n2(),
+                nDx = nDx(),
+                keep_all = input$keep_all,
+                verbose = input$verbose,
+                setwd=setwd
+              ),
+
+              warning = function(w) {
+                warnings$data <- c(warnings$data, w$message)})
+
+          })
+          # afficher le code sql ####
+          init <- eventReactive(input$Executer,{
+            if (input$task == "extraction_BDCU_CNSUL_DURG") {
+
+              return(query_V_EPISO_SOIN_DURG_CM_AG (query=input$task,
+                                                    debut=input$debut_periode,
+                                                    fin=input$fin_periode,
+                                                    debut_cohort=input$debut_cohort,
+                                                    fin_cohort=input$fin_cohort,
+                                                    diagn=NULL,
+                                                    date_dx_var=input$date_dx_var,
+                                                    benef_adr=input$benef_adr,
+                                                    date_adr=input$date_adr))
+            }
+            else{
+              return("Afficher le code sql de la requête ...")
+            }
+          })
+          observe({ cat(input$ace, "\n")})
+          observe({cat(input$ace_selection, "\n")})
+          observe({
+            updateAceEditor(
+              session,
+              "ace",
+              value = init(),
+              theme = theme(),
+              mode = mode(),
+            )
+          })
+
+          # afficher le message de progression ####
+          output$result <- renderPrint({
+            if ((input$keep_all == TRUE && input$date_age == "NULL") ||
+                (input$cohort == "cohort" && is.null(input$file)) ||
+                (input$benef_adr == "date_fixe" && input$date_adr == "NULL")) {
+              result<-result()
+              if (length(warnings$data) > 0) {
+                print(paste("Warnings: ", warnings$data))
+              }
+            }else{
+              withProgress(message = "La requête est en exécution. Veuillez-svp patienter....", value = 0, {
+                n<-10
+                for (i in 1:9) {
+                  Sys.sleep(0.5)
+                  incProgress(1/n, detail = paste("Doing part", i*10,"%"))
+                }
+                result<-result()
+                if (length(warnings$data) > 0) {
+                  print(paste("Warnings: ", warnings$data))
+                }
+              })
+            }
+          })
+          # Définir les noms tableaux / figs à affichés ####
+          output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs", # we can use a tabsetPanel instide navbarPage
+                                                     tabPanel("DT_final",
+                                                              downloadButton("downloadData", "Download"),
+                                                              dataTableOutput("DT_final")
+                                                     ))})
+          # Afficher la cohorte ####
+          output$DT_final <- renderDataTable(result()) #DT::renderDT()
+          # Download BD ####
+          observeEvent(input$Executer, {
+            output$downloadData <- downloadHandler(
+              filename = function() {
+                paste("DT_final_", format(Sys.Date(), "%Y%m%d"), ".", input$fileType, sep = "")
               },
               content = function(file) {
                 if (input$fileType == "csv") {
@@ -861,12 +1297,431 @@ RequeteGeneriqueBDCA_shiny<-function(){
 
         }
       }
+      else if(input$DT=="MEDECHO"){
+        if(input$task=="extraction_MEDECHO_SEJ_HOSP"){
+          warnings <- reactiveValues(data = character(0))
+          result <- eventReactive(input$Executer, {
+            conn <- RequeteGeneriqueBDCA::SQL_connexion(noquote(input$sql_user),noquote(input$sql_pwd))
+            cohort <- if (input$cohort == "NULL") {
+              NULL
+            } else {
+              tmp <- data.table::fread(input$file$datapath)
+              tmp<-tmp[[1]]
+              cohort<-tmp
+              assign("cohort", cohort, envir = .GlobalEnv)
+            }
+            CIM <- unlist(str_split(CIM(), ","))
+            Dx_table<-if (Dx_table() == "NULL") {
+              NULL
+            } else {
+              eval(parse(text = Dx_table()))
+            }
+            setwd <- if (setwd() == "NULL") NULL else setwd()
+            #typ_diagn <- unlist(str_split(typ_diagn(), ","))
+
+            DT_final<-withCallingHandlers(
+              RequeteGeneriqueBDCA::user_MEDECHO_DIAGN_SEJ_HOSP_CM(
+                task = input$task,
+                conn = conn,
+                cohort = cohort,
+                debut_periode = input$debut_periode,
+                fin_periode = input$fin_periode,
+                benef_adr=input$benef_adr,
+                date_adr=input$date_adr,
+                date_age = input$date_age,
+                typ_diagn=NULL,
+
+                Dx_table = Dx_table,
+                debut_cohort = debut_cohort(),
+                fin_cohort = fin_cohort(),
+                CIM = CIM,
+                by_Dx = by_Dx(),
+                date_dx_var = date_dx_var(),
+                n1 = n1(),
+                n2 = n2(),
+                nDx = nDx(),
+                keep_all = input$keep_all,
+                verbose = input$verbose,
+                setwd=setwd
+              ),
+
+              warning = function(w) {
+                warnings$data <- c(warnings$data, w$message)})
+
+          })
+          # afficher le code sql ####
+          init <- eventReactive(input$Executer,{
+            if (input$task == "extraction_MEDECHO_SEJ_HOSP") {
+              Dx_table<-if (Dx_table() == "NULL") {
+                NULL
+              } else {
+                eval(parse(text = Dx_table()))
+              }
+
+              return(query_V_SEJ_HOSP_CM(query=input$task,
+                                         debut_periode=input$debut_periode,
+                                         fin_periode=input$fin_periode,
+                                         date_dx_var=input$date_dx_var,
+                                         benef_adr=input$benef_adr,
+                                         date_adr=input$date_adr))
+            }
+            else{
+              return("Afficher le code sql de la requête ...")
+            }
+          })
+          observe({ cat(input$ace, "\n")})
+          observe({cat(input$ace_selection, "\n")})
+          observe({
+            updateAceEditor(
+              session,
+              "ace",
+              value = init(),
+              theme = theme(),
+              mode = mode(),
+            )
+          })
+
+          # afficher le message de progression ####
+          output$result <- renderPrint({
+            if ((input$keep_all == TRUE && input$date_age == "NULL") ||
+                (input$cohort == "cohort" && is.null(input$file)) ||
+                (input$benef_adr == "date_fixe" && input$date_adr == "NULL")) {
+              result<-result()
+              if (length(warnings$data) > 0) {
+                print(paste("Warnings: ", warnings$data))
+              }
+            }else{
+              withProgress(message = "La requête est en exécution. Veuillez-svp patienter....", value = 0, {
+                n<-10
+                for (i in 1:9) {
+                  Sys.sleep(0.5)
+                  incProgress(1/n, detail = paste("Doing part", i*10,"%"))
+                }
+                result<-result()
+                if (length(warnings$data) > 0) {
+                  print(paste("Warnings: ", warnings$data))
+                }
+              })
+            }
+          })
+          # Définir les noms tableaux / figs à affichés ####
+          output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs", # we can use a tabsetPanel instide navbarPage
+                                                     tabPanel("DT_final",
+                                                              downloadButton("downloadData", "Download"),
+                                                              dataTableOutput("DT_final")
+                                                     ))})
+          # Afficher la cohorte ####
+          output$DT_final <- renderDataTable(result()) #DT::renderDT()
+          # Download BD ####
+          observeEvent(input$Executer, {
+            output$downloadData <- downloadHandler(
+              filename = function() {
+                paste("DT_final_", format(Sys.Date(), "%Y%m%d"), ".", input$fileType, sep = "")
+              },
+              content = function(file) {
+                if (input$fileType == "csv") {
+                  write.csv(result(), file, row.names = FALSE)
+                } else {
+                  write.table(result(), file, sep = ";", dec = ".",quote=FALSE,row.names = FALSE, col.names = TRUE)
+                }
+              }
+            )
+          })
+
+
+        }
+        else if (input$task=="extraction_MEDECHO_DIAGN_SEJ"){
+          warnings <- reactiveValues(data = character(0))
+          result <- eventReactive(input$Executer, {
+            conn <- RequeteGeneriqueBDCA::SQL_connexion(noquote(input$sql_user),noquote(input$sql_pwd))
+            cohort <- if (input$cohort == "NULL") {
+              NULL
+            } else {
+              tmp <- data.table::fread(input$file$datapath)
+              tmp<-tmp[[1]]
+              cohort<-tmp
+              assign("cohort", cohort, envir = .GlobalEnv)
+            }
+            CIM <- unlist(str_split(CIM(), ","))
+            diagn<-if (input$diagn == "NULL") {
+              NULL
+            } else {
+              eval(parse(text = input$diagn))
+            }
+            Dx_table<-if (Dx_table() == "NULL") {
+              NULL
+            } else {
+              eval(parse(text = Dx_table()))
+            }
+
+            setwd <- if (setwd() == "NULL") NULL else setwd()
+            typ_diagn <- unlist(str_split(input$typ_diagn, ","))
+
+            DT_final<-withCallingHandlers(
+              RequeteGeneriqueBDCA::user_MEDECHO_DIAGN_SEJ_HOSP_CM(
+                task = input$task,
+                conn = conn,
+                cohort = cohort,
+                debut_periode = input$debut_periode,
+                fin_periode = input$fin_periode,
+                benef_adr=input$benef_adr,
+                date_adr=input$date_adr,
+                date_age = input$date_age,
+                diagn=diagn,
+                typ_diagn=typ_diagn,
+
+                Dx_table = Dx_table,
+                debut_cohort = debut_cohort(),
+                fin_cohort = fin_cohort(),
+                CIM = CIM,
+                by_Dx = by_Dx(),
+                date_dx_var = date_dx_var(),
+                n1 = n1(),
+                n2 = n2(),
+                nDx = nDx(),
+                keep_all = input$keep_all,
+                verbose = input$verbose,
+                setwd=setwd
+              ),
+
+              warning = function(w) {
+                warnings$data <- c(warnings$data, w$message)})
+
+          })
+          # afficher le code sql ####
+          init <- eventReactive(input$Executer,{
+            if (input$task == "extraction_MEDECHO_DIAGN_SEJ") {
+              diagn<-if (input$diagn == "NULL") {
+                NULL
+              } else {
+                eval(parse(text = input$diagn))
+              }
+              typ_diagn <- unlist(str_split(input$typ_diagn, ","))
+
+              return(query_V_DIAGN_SEJ_HOSP_CM_AG(query=input$task,
+                                         debut_periode=input$debut_periode,
+                                         fin_periode=input$fin_periode,
+                                         diagn =diagn,
+                                         date_dx_var=input$date_dx_var,
+                                         typ_diagn=typ_diagn))
+              }
+            else{
+              return("Afficher le code sql de la requête ...")
+            }
+          })
+          observe({ cat(input$ace, "\n")})
+          observe({cat(input$ace_selection, "\n")})
+          observe({
+            updateAceEditor(
+              session,
+              "ace",
+              value = init(),
+              theme = theme(),
+              mode = mode(),
+            )
+          })
+
+          # afficher le message de progression ####
+          output$result <- renderPrint({
+            if ((input$keep_all == TRUE && input$date_age == "NULL") ||
+                (input$cohort == "cohort" && is.null(input$file)) ||
+                (input$benef_adr == "date_fixe" && input$date_adr == "NULL")) {
+              result<-result()
+              if (length(warnings$data) > 0) {
+                print(paste("Warnings: ", warnings$data))
+              }
+            }else{
+              withProgress(message = "La requête est en exécution. Veuillez-svp patienter....", value = 0, {
+                n<-10
+                for (i in 1:9) {
+                  Sys.sleep(0.5)
+                  incProgress(1/n, detail = paste("Doing part", i*10,"%"))
+                }
+                result<-result()
+                if (length(warnings$data) > 0) {
+                  print(paste("Warnings: ", warnings$data))
+                }
+              })
+            }
+          })
+          # Définir les noms tableaux / figs à affichés ####
+          output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs", # we can use a tabsetPanel instide navbarPage
+                                                     tabPanel("DT_final",
+                                                              downloadButton("downloadData", "Download"),
+                                                              dataTableOutput("DT_final")
+                                                     ))})
+          # Afficher la cohorte ####
+          output$DT_final <- renderDataTable(result()) #DT::renderDT()
+          # Download BD ####
+          observeEvent(input$Executer, {
+            output$downloadData <- downloadHandler(
+              filename = function() {
+                paste("DT_final_", format(Sys.Date(), "%Y%m%d"), ".", input$fileType, sep = "")
+              },
+              content = function(file) {
+                if (input$fileType == "csv") {
+                  write.csv(result(), file, row.names = FALSE)
+                } else {
+                  write.table(result(), file, sep = ";", dec = ".",quote=FALSE,row.names = FALSE, col.names = TRUE)
+                }
+              }
+            )
+          })
+
+
+
+        }
+        else if (input$task=="extraction_MEDECHO_SEJ_SERV"){
+          warnings <- reactiveValues(data = character(0))
+          result <- eventReactive(input$Executer, {
+
+            conn <- RequeteGeneriqueBDCA::SQL_connexion(noquote(input$sql_user),noquote(input$sql_pwd))
+            cohort <- if (input$cohort == "NULL") {
+              NULL
+            } else {
+              tmp <- data.table::fread(input$file$datapath)
+              tmp<-tmp[[1]]
+              cohort<-tmp
+              assign("cohort", cohort, envir = .GlobalEnv)
+            }
+            CIM <- unlist(str_split(CIM(), ","))
+            Dx_table<-if (Dx_table() == "NULL") {
+              NULL
+            } else {
+              eval(parse(text = Dx_table()))
+            }
+            diagn<-if (input$diagn == "NULL") {
+              NULL
+            } else {
+              eval(parse(text = input$diagn))
+            }
+            setwd <- if (setwd() == "NULL") NULL else setwd()
+
+
+            DT_final<-withCallingHandlers(
+              RequeteGeneriqueBDCA::user_MEDECHO_DIAGN_SEJ_HOSP_CM(
+                task = input$task,
+                conn = conn,
+                cohort = cohort,
+                debut_periode = input$debut_periode,
+                fin_periode = input$fin_periode,
+                benef_adr=input$benef_adr,
+                date_adr=input$date_adr,
+                date_age = input$date_age,
+                diagn=diagn,
+                typ_diagn=NULL,
+
+                Dx_table = Dx_table,
+                debut_cohort = debut_cohort(),
+                fin_cohort = fin_cohort(),
+                CIM = CIM,
+                by_Dx = by_Dx(),
+                date_dx_var = date_dx_var(),
+                n1 = n1(),
+                n2 = n2(),
+                nDx = nDx(),
+                keep_all = input$keep_all,
+                verbose = input$verbose,
+                setwd=setwd
+              ),
+
+              warning = function(w) {
+                warnings$data <- c(warnings$data, w$message)})
+
+          })
+          # afficher le code sql ####
+          init <- eventReactive(input$Executer,{
+            if (input$task == "extraction_MEDECHO_SEJ_SERV") {
+              diagn<-if (input$diagn == "NULL") {
+                NULL
+              } else {
+                eval(parse(text = input$diagn))
+              }
+
+
+              return(query_V_SEJ_SERV_HOSP_CM_AG(query=input$task,
+                                                 debut_periode=input$debut_periode,
+                                                 fin_periode=input$fin_periode,
+                                                 diagn =diagn,
+                                                 date_dx_var=input$date_dx_var))
+            }
+            else{
+              return("Afficher le code sql de la requête ...")
+            }
+          })
+          observe({ cat(input$ace, "\n")})
+          observe({cat(input$ace_selection, "\n")})
+          observe({
+            updateAceEditor(
+              session,
+              "ace",
+              value = init(),
+              theme = theme(),
+              mode = mode(),
+            )
+          })
+
+          # afficher le message de progression ####
+          output$result <- renderPrint({
+            if ((input$keep_all == TRUE && input$date_age == "NULL") ||
+                (input$cohort == "cohort" && is.null(input$file)) ||
+                (input$benef_adr == "date_fixe" && input$date_adr == "NULL")) {
+              result<-result()
+              if (length(warnings$data) > 0) {
+                print(paste("Warnings: ", warnings$data))
+              }
+            }else{
+              withProgress(message = "La requête est en exécution. Veuillez-svp patienter....", value = 0, {
+                n<-10
+                for (i in 1:9) {
+                  Sys.sleep(0.5)
+                  incProgress(1/n, detail = paste("Doing part", i*10,"%"))
+                }
+                result<-result()
+                if (length(warnings$data) > 0) {
+                  print(paste("Warnings: ", warnings$data))
+                }
+              })
+            }
+          })
+          # Définir les noms tableaux / figs à affichés ####
+          output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs", # we can use a tabsetPanel instide navbarPage
+                                                     tabPanel("DT_final",
+                                                              downloadButton("downloadData", "Download"),
+                                                              dataTableOutput("DT_final")
+                                                     ))})
+          # Afficher la cohorte ####
+          output$DT_final <- renderDataTable(result()) #DT::renderDT()
+          # Download BD ####
+          observeEvent(input$Executer, {
+            output$downloadData <- downloadHandler(
+              filename = function() {
+                paste("DT_final_", format(Sys.Date(), "%Y%m%d"), ".", input$fileType, sep = "")
+              },
+              content = function(file) {
+                if (input$fileType == "csv") {
+                  write.csv(result(), file, row.names = FALSE)
+                } else {
+                  write.table(result(), file, sep = ";", dec = ".",quote=FALSE,row.names = FALSE, col.names = TRUE)
+                }
+              }
+            )
+          })
+
+
+
+
+        }
+      }
     })
     #####
     '#####
      #####'
     # Creation cohorte ####
     # Résultat: Création cohort ####
+    textInput("code_stat_decis_tab2", label = HTML(paste0("code_stat_decis", div(helpText("Indiquer si vous voulez des actes payés et/ou prépayés"), class = "pull-below"))),
+              value = paste(c("PAY","PPY"),collapse = ","))
+
     observeEvent(input$Executer_tab2, {
       warnings <- reactiveValues(data = character(0))
       result_tab2 <- eventReactive(input$Executer_tab2, {
@@ -952,7 +1807,7 @@ RequeteGeneriqueBDCA_shiny<-function(){
         )
       }, deleteFile = FALSE)
     })
-
+    #####
     '#####
      #####'
     # combine périodes / episodes soins ####
@@ -970,20 +1825,20 @@ RequeteGeneriqueBDCA_shiny<-function(){
 
     output$Code_sql_select_tab4 <- renderUI({
       if (input$Code_sql_tab4) {
-        tagList(selectInput("mode_tab4", "Mode d'affichage du code générique: ", choices = getAceModes(), selected = tmp()),
-                helpText("Par défaut, le code est affiché en mode r sous l'onglet 'script:'. Il est possible de choisir d'autres modes"),
-                selectInput("theme_tab4", "Thème d'affichage du code générique: ", choices = getAceThemes(), selected = tmp1()),
-                helpText("Par défaut, le code est affiché avec le thème 'cobalt'. Il est possible de choisir d'autres thèmes")
-
+        tagList(selectInput("mode_tab4", label = HTML(paste0("Mode d'affichage du code générique: ", div(helpText("Par défaut, le code est affiché en mode r sous l'onglet 'script:'. Il est possible de choisir d'autres modes"), class = "pull-below"))),
+                            choices = getAceModes(), selected = tmp()),
+                selectInput("theme_tab4", label = HTML(paste0("Thème d'affichage du code générique: ", div(helpText("Par défaut, le code est affiché avec le thème 'cobalt'. Il est possible de choisir d'autres thèmes"), class = "pull-below"))),
+                            choices = getAceThemes(), selected = tmp1())
         )
       }
     })
     # Résultats: combine périodes / epi soins ####
     observeEvent(input$Executer_tab4, {
+      # Test des arguments ####
       if(is.null(input$file_tab4)){
-        showNotification("L'exécution de la requête a été intérompue: L'argument 'file' est vide. Veuillez-svp selectionner un fichier pour votre cohorte d'intérêt", duration = 0, type="warning")
+        showNotification("L'exécution de la requête est intérompue: L'argument 'file' est vide. Veuillez-svp selectionner un fichier pour votre cohorte d'intérêt", duration = 0, type="warning")
       }
-
+      #####
       warnings <- reactiveValues(data = character(0))
       result_tab4 <- eventReactive(input$Executer_tab4, {
 
@@ -1016,7 +1871,7 @@ RequeteGeneriqueBDCA_shiny<-function(){
             warnings$data <- c(warnings$data, w$message)})
 
       })
-      # afficher le code sql ####
+      # afficher du script R ####
       init <- eventReactive(input$Executer_tab4,{
         if (input$dt == "Data") {
           return('
@@ -1101,7 +1956,10 @@ RequeteGeneriqueBDCA_shiny<-function(){
       # afficher le message de progression ####
       output$result_tab4 <- renderPrint({
         if(is.null(input$file_tab4)){
-          NULL
+          result_tab4<-result_tab4()
+          if (length(warnings$data) > 0) {
+            print(paste("Warnings: ", warnings$data))
+          }
         } else {
           withProgress(
             message = "La requête est en exécution. Veuillez-svp patienter...",
@@ -1147,7 +2005,12 @@ RequeteGeneriqueBDCA_shiny<-function(){
       })
 
     })
+
+
+
+
     # rénésialisation des champs ####
+    # Extraction données ####
     observeEvent(input$reset, {
       updateAceEditor(session, "ace", value = "")
       output$result <- renderPrint({NULL})
@@ -1155,11 +2018,14 @@ RequeteGeneriqueBDCA_shiny<-function(){
       output$DT_final_ui1 <- renderUI({NULL})
       output$DT_final <- renderDataTable({NULL})
     })
+    # Creation cohorte ####
     observeEvent(input$reset_tab2, {
       output$result_tab2 <- renderPrint({NULL})
       output$DT_final_ui_tab2 <- renderUI({NULL})
       output$cohort_final <- renderDataTable({NULL})
     })
+    # Standardisation ####
+    # Combine période ####
     observeEvent(input$reset_tab4, {
       updateAceEditor(session, "ace_tab4", value = "")
       output$result_tab4 <- renderPrint({NULL})
@@ -1169,11 +2035,14 @@ RequeteGeneriqueBDCA_shiny<-function(){
 
   })
 
+
   # Run App ####
   shinyApp(ui = ui, server = server)
 
 
 }
+
+
 
 
 

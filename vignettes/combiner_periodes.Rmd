@@ -1,0 +1,231 @@
+---
+title: "combiner_periodes"
+#subtitle: ""
+author: "Auteurs: Guillaume Boucher et Ahmed Ghachem"
+date: "Date de création: 28 février 2023"
+# output:
+#   rmarkdown::html_vignette:
+output:
+  rmarkdown::html_vignette:
+    css: styles.css
+    number_sections: true
+    toc: true
+params: 
+  output_dir: "vignettes"
+vignette: >
+  %\VignetteIndexEntry{combiner_periodes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  eval = FALSE
+)
+```
+# Installation de la librairie R *RequeteGeneriqueBDCA*
+
+## Fichier nécessaire
+
+Télécharger le fichier `RequeteGeneriqueBDCA.x.y.tar.gz` à partir de Microsoft Teams.<br>
+[INESSS - Documentation BDCA > Documents > Outils > Librairie R INESSS > RequeteGeneriqueBDCA_x.y.z.tar.gz](https://msss365.sharepoint.com/:f:/r/teams/INESSS-DocumentationBDCA/Shared%20Documents/Outils/Librairie%20R%20INESSS?csf=1&web=1&e=j5SylU).
+
+Ouvrir RStudio.
+
+Dans la console, écrire le code suivant :
+```{r, eval=FALSE}
+remotes::install_local("C:\\msXXX\\Desktop\\RequeteGeneriqueBDCA_x.y.z.tar.gz")
+```
+Prendre note que les «`\`» sont doubles.
+
+Si la librairie `remotes` n'est pas installée, écrire dans la console le code suivant : `install.packages("remotes")`.
+
+Avant d'installer une librairie, il est préférable de ne pas l'avoir *appelé* auparavant.
+
+Il est déconseillé de mettre à jour les librairies utilisées par *RequeteGeneriqueBDCA*.
+
+L'installation se termine lorsqu'on peut lire dans la console : *DONE (RequeteGeneriqueBDCA)*.
+
+
+## Activer la librairie
+      
+Après avoir installé la librairie *RequeteGeneriqueBDCA*, il suffit de l'activer pour avoir accès aux fonctions :
+```{r, eval=FALSE}
+library(RequeteGeneriqueBDCA)
+```
+
+---
+
+# combiner_periodes
+
+La fonction `combiner_periodes` est destinée aux utilisateurs. Elle permet: <br/>
+
+1) de combiner et fusionner des périodes qui se chevauchent dans le temps. <br/>
+
+## La fonction
+
+```{r, eval=FALSE}
+
+combiner_periodes(dt,
+                  id,
+                  debut, 
+                  fin, 
+                  par_cols = NULL, 
+                  njours = 1)
+```
+
+## Définition des arguments
+
+### dt
+Table de données.
+```{r}
+dt = DT
+```
+
+### id
+Nom de la colonne indiquant l'identifiant de l'individu.
+```{r}
+id="ID"
+```
+
+### debut
+Nom de la colonne indiquant le début de la période / épisode de soins.
+```{r}
+debut="DatAdm"
+```
+
+### fin
+Nom de la colonne indiquant la fin de la période / épisode de soins.
+```{r}
+fin="DatDep"
+```
+
+### par_cols
+Nom des autres colonnes qui doivent être incluses dans l'analyse. Par exemple des codes de médicaments. Par défaut `NULL`.
+```{r}
+par_cols=c("DIN","DENOM") # NULL
+```
+
+### njours
+Nombre de jours max entre le début et la fin précédente pour effectuer une combinaison.
+```{r}
+njours=1
+```
+
+## Usage de la fonction
+```{r}
+DT <- data.table(
+  ID = c(rep(1, 3), rep(2, 2)),
+  DIN = c(rep(555, 3), rep(999, 2)),
+  DENOM = c(rep(159, 3), rep(357, 2)),
+  DatAdm = as.Date(c("2022-03-01","2022-03-15","2022-03-19",
+                     "2022-06-01", "2022-06-15")),
+  DatDep = as.Date(c("2022-03-25","2022-03-17","2022-03-30",
+                     "2022-06-15", "2022-06-19"))
+)
+DT_final<-combiner_periodes(
+dt=DT,
+id = "ID",
+debut = "DatAdm",
+fin = "DatDep",
+njours = 1,
+par_cols = NULL #c("DIN", "DENOM")
+)
+```
+
+# Table Résultante
+Une table de données avec 3 variables ou 4 variable si `par_cols` n'est pas nulle.
+
+- **ID ** : Numéro du bénéficiaire <br/>
+- **DatAdm ** :	Date de début de l'épisode de soins	<br/>
+- **DatDep ** :	Date de fin de l'épisode de soins	<br/>
+
+# Algorithme
+
+## Étape 1 : Trier en ordre croissant les périodes <br/>
+
+## Étape 2 : Combiner les périodes qui se chevauchent: <br/>
+* calculer le nombre de jours entre début{i} et fin{i-1} <br/>
+* vérifier si une combinaison des périodes doit être faite <br/>
+* attribuer 0 aux mêmes périodes et 1 quand il y a changement de période <br/>
+* numéroter les périodes de 1 à N <br/>
+* combiner les mêmes périodes en conservant la date min et max <br/>
+
+## Étape 3 : Vérifier si on doit refaire lalgorithme <br/>
+* si oui, réexécuter l'Étape 2 <br/>
+
+# Synthaxe 
+```{r}
+combiner_periodes <- function(dt, id, debut, fin, par_cols = NULL, njours = 1) {
+
+  # Convertir data.table au besoin
+  if (!is.data.table(dt)) {
+    dt <- as.data.table(dt)
+  }
+
+  # Sélectionner et renommer les colonnes nécessaires
+  if (is.null(par_cols)) {
+    dt <- dt[, c(id, debut, fin), with = FALSE]
+  } else {
+    dt <- dt[, c(id, par_cols, debut, fin), with = FALSE]
+  }
+  setnames(dt, c(id, debut, fin), c("id", "debut", "fin"))
+
+  # Trier en ordre croissant les périodes
+  if (is.null(par_cols)) {
+    setorder(dt, id, debut, fin)
+  } else {
+    setorderv(dt, c("id", par_cols, "debut", "fin"))
+  }
+
+  # Combiner les périodes qui se chevauchent
+  if (is.null(par_cols)) {
+    dt[, diff := as.integer(debut - shift(fin)), .(id)]  # nombre de jours entre début{i} et fin{i-1}
+    idx <- rmNA(dt[, .I[diff <= njours]])  # vérifier si une combinaison des périodes doit être faite
+    while (length(idx)) {
+      dt[is.na(diff), diff := 0L]
+      dt[, per := 0L][diff > 1, per := 1L]  # 0=même période, 1=changement de période
+      dt[, per := cumsum(per) + 1L, .(id)]  # numéroter les périodes de 1 à N
+      dt <- dt[  # combiner les mêmes périodes en conservant le min et le max
+        , .(debut = min(debut),
+            fin = max(fin)),
+        .(id, per)
+      ][, per := NULL]  # supprimer la colonne
+
+      # Vérifier si on doit refaire l'algorithme
+      dt[, diff := as.integer(debut - shift(fin)), .(id)]  # nombre de jours entre début{i} et fin{i-1}
+      idx <- rmNA(dt[, .I[diff <= njours]])  # vérifier si une combinaison des périodes doit être faite
+    }
+  } else {
+    dt[, diff := as.integer(debut - shift(fin)), by = c("id", par_cols)]  # nombre de jours entre début{i} et fin{i-1}
+    idx <- rmNA(dt[, .I[diff <= njours]])  # vérifier si une combinaison des périodes doit être faite
+    while (length(idx)) {  # appliquer l'algorithme à chaque fois qu'il y a au moins un diff <= njours
+      dt[is.na(diff), diff := 0L]
+      dt[, per := 0L][diff > 1, per := 1L]  # 0=même période, 1=changement de période
+      dt[, per := cumsum(per) + 1L, by = c("id", par_cols)]  # numéroter les périodes de 1 à N
+      dt <- dt[  # combiner les mêmes périodes en conservant le min et le max
+        , .(debut = min(debut),
+            fin = max(fin)),
+        by = c("id", par_cols, "per")
+      ][, per := NULL]  # supprimer la colonne
+
+      # Vérifier si on doit refaire l'algorithme
+      dt[, diff := as.integer(debut - shift(fin)), by = c("id", par_cols)]  # nombre de jours entre début{i} et fin{i-1}
+      idx <- rmNA(dt[, .I[diff <= njours]])  # vérifier si une combinaison des périodes doit être faite
+    }
+  }
+
+  # Arranger la table finale
+  dt[, diff := NULL]
+  setnames(dt, c("id", "debut", "fin"), c(id, debut, fin))
+
+  return(dt)
+
+}
+
+```
+
+
+

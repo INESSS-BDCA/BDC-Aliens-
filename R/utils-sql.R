@@ -48,3 +48,21 @@ indent <- function(niv = 1) {
 qu <- function(x) {
   return(paste(paste0("'",x,"'"), collapse = ", "))
 }
+
+
+#' Utils
+#'
+#' supprimer les NA
+#'
+#' @param x data table
+#' @keywords internal
+#' @encoding UTF-8
+#' @return data table
+#' @export
+rmNA <- function(x) {
+  if (anyNA(x)) {
+    return(x[!is.na(x)])
+  } else {
+    return(x)
+  }
+}

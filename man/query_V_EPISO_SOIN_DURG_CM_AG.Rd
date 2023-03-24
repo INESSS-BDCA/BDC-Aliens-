@@ -3,7 +3,7 @@
 \encoding{UTF-8}
 \name{query_V_EPISO_SOIN_DURG_CM_AG}
 \alias{query_V_EPISO_SOIN_DURG_CM_AG}
-\title{Code SQL: Extraction de diagnostics dans BDCU}
+\title{Code SQL: Extraction de variables pertinentes  dans BDCU}
 \usage{
 query_V_EPISO_SOIN_DURG_CM_AG(
   query,
@@ -18,6 +18,12 @@ query_V_EPISO_SOIN_DURG_CM_AG(
 )
 }
 \arguments{
+\item{query}{indique si on veut effectuer une extraction brute des vaiables pertinentes dans BDCU \code{V_EPISO_SOIN_DURG_CM}, \code{V_OCCU_CIVIE_DURG_CM}, \code{V_CNSUL_DURG_CM}.}
+
+\item{debut_periode}{Date de début de la période d'étude au format \code{"AAAA-MM-JJ"}.}
+
+\item{fin_periode}{Date de fin de la période d'étude au format \code{"AAAA-MM-JJ"}.}
+
 \item{debut_cohort}{Date de début de la période d'étude.}
 
 \item{fin_cohort}{Date de fin de la période d'étude.}
@@ -25,11 +31,15 @@ query_V_EPISO_SOIN_DURG_CM_AG(
 \item{diagn}{\code{vector} indiquant les codes de diagnostics \emph{CIM9} et/ou \emph{CIM10} à extraire.}
 
 \item{date_dx_var}{\code{'admis'} ou \code{'depar'}. Indique si on utilise la date d'admission ou la date de départ comme date indexe pour l'étude.}
+
+\item{benef_adr}{permet de définir la méthode d’identification de l’adresse de bénéficiaire. Peut prendre la valeur \code{c("date_fixe","dernière_adresse","première_adresse","long_adresse")}}
+
+\item{date_adr}{si \verb{benef_adr=“date_fixe”}, date_adr permet de choisir une date fixe pour identifier l’adresse de bénéficiaire.}
 }
 \value{
 chaîne de caractères, code SQL.
 }
 \description{
-Générateur de code SQL pour l'extraction de diagnostics de la vue \code{V_EPISO_SOIN_DURG_CM}.
+Générateur de code SQL pour l'extraction de variables pertinentes de les vue \code{V_EPISO_SOIN_DURG_CM}, \code{V_OCCU_CIVIE_DURG_CM}, \code{V_CNSUL_DURG_CM}.
 }
 \keyword{internal}

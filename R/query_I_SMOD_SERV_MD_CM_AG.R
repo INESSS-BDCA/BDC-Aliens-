@@ -16,8 +16,9 @@
 #' `spec` (extraction des actes facturés par les spec: SMOD_COD_SPEC IS NOT NULL) ou `all` (pas de spécification).
 #' @param catg_etab peut prendre la valeur `ambulatoire` (pour les actes facturés en ambulatoire) ou `all` (pas de spécification).
 #' @param code_stat_decis peut prendre la valeur `c('PAY','PPY')`, `PAY`, ou `PPY`
-#' @param benef_adr permet de définir la méthode d’identification de l’adresse de bénéficiaire. Peut prendre la valeur `c("date_fixe","dernière_adresse","première_adresse","long_adresse")`
+#' @param benef_adr permet de définir la méthode d’identification de l’adresse de bénéficiaire. Peut prendre la valeur `c("date_fixe","dernière_adresse","première_adresse","long_adresse","date_acte")`
 #' @param date_adr si `benef_adr=“date_fixe”`, date_adr permet de choisir une date fixe pour identifier l’adresse de bénéficiaire.
+
 #' @return chaîne de caractères, code SQL.
 #' @keywords internal
 #' @encoding UTF-8
@@ -40,45 +41,6 @@
 
 query_I_SMOD_SERV_MD_CM_AG <- function(query,debut_periode, fin_periode, debut_cohort,fin_cohort,diagn,CodeActe,omni_spec,catg_etab,code_stat_decis,benef_adr,date_adr) {
   switch (query,
-#           "extraction_SMOD"={
-#             return(paste0(
-#               "SELECT
-#
-#             -- Sources des variables :
-#             -- Nom de vue : Prod.I_SMOD_SERV_MD_CM (SMOD)
-#
-#             BD_SMOD.SMOD_NO_INDIV_BEN_BANLS AS ID, --Identifiant du bénéficiaire banalisé \n
-#             case when EXTRACT(MONTH FROM SMOD_DAT_SERV) between 4 and 12 THEN EXTRACT(YEAR FROM SMOD_DAT_SERV) \n
-#             ELSE EXTRACT(YEAR FROM SMOD_DAT_SERV)-1 end AS AnFinan, --Année financière \n
-#             Extract (YEAR From BD_SMOD.SMOD_DAT_SERV) AS AnCivil,  --Année civile \n
-#             BD_SMOD.SMOD_DAT_SERV AS DateActe,  --Date Acte \n
-#             BD_SMOD.SMOD_COD_ACTE AS CodeActe,  --Code Acte \n
-#             BD_SMOD.SMOD_MNT_PAIMT AS CoutActe,  --Coût Acte
-#             BD_SMOD.SMOD_COD_DIAGN_PRIMR AS DxActe,  --Premier diagnostic porté par le professionnel \n \n
-#
-#             BD_SMOD.DISP_NO_SEQ_DISP_BANLS AS NumDispSp,  --Numéro du dispensateur \n
-#             BD_SMOD.SMOD_COD_ROLE, --Code des rôles selon l'entente \n
-#             BD_SMOD.SMOD_COD_SPEC AS SMOD_COD_SPEC, --Spécialité du dispensateur (SMOD) \n
-#             BD_SMOD.DISP_NO_SEQ_DISP_REFNT_BANLS AS NumDispRef,  --Numéro du médecin référent \n
-#
-#             BD_SMOD.SMOD_COD_ENTEN AS SMOD_COD_ENTEN,  --Code de l'entente \n
-#             BD_SMOD.SMOD_NO_ETAB_USUEL AS Num_ETAB_USUEL,  --Ancien numéro de l'établissement \n
-#             BD_SMOD.ETAB_COD_SECT_ACTIV_ETAB AS ETAB_COD_SECT_ACTIV_ETAB  --secteur d'activité \n
-#
-#             FROM Prod.I_SMOD_SERV_MD_CM AS BD_SMOD \n
-#             WHERE BD_SMOD.SMOD_DAT_SERV BETWEEN '",debut_periode,"' AND '",fin_periode,"'\n",
-#               query_I_SMOD_SERV_MD_CM.where_SMOD_COD_STA_DECIS (code_stat_decis), "\n",
-#               query_I_SMOD_SERV_MD_CM.where_SMOD_COD_ACTE (CodeActe),"\n",
-#               query_I_SMOD_SERV_MD_CM.diagn(diagn),"\n",
-#               "/*Cette exclusion est toujours importante à considérer, car les actes qui représentent des forfaits ne correspondent pas à des consultations, \n
-#             mais, plutôt à des suppléments monétaires associés à une demande de facturation */ \n
-#             AND BD_SMOD.SMOD_COD_ACTE NOT IN (
-# 									SELECT DISTINCT NMOD_COD_ACTE
-# 									FROM Prod.V_RPERT_COD_ACTE
-# 									WHERE NMOD_COD_GRP_ACTE IN (170, 180, 181, 182, 183, 187, 195, 196, 197, 198, 199, 854))
-#
-#             ORDER BY 1,2,3,4;"))
-#           },
           "extraction_SMOD"={
             return(paste0(
               "
@@ -163,14 +125,10 @@ Découpage géographique du bénéficiaire : codes RSS et RLS
 /*Plusieurs méthode pour sélectionner l'adresse du bénéficiaire durant la période sélectionnée:
 1) cibler la première adresse de la période
 2) cibler l'adresse dans laquelle le BEN a résidé le plus longtemps durant la période
-3) cibler l'adresse à une date fixe (p. ex. 31 mars, 1 juillet, mi-année)*/
+3) cibler l'adresse à une date fixe (p. ex. 31 mars, 1 juillet, mi-année)*/\n",
+query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM(benef_adr,debut_periode,fin_periode,date_adr),
 
-LEFT JOIN (\n",
-              query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM(benef_adr,debut_periode,fin_periode,date_adr),
-              ") AS BD_Adr
-ON BD_SMOD.SMOD_NO_INDIV_BEN_BANLS=BD_Adr.BENF_NO_INDIV_BEN_BANLS
-
-/* On ajoute ici les NOMS des codes RSS et RLS du bénéficiaire : ceci serait optionnel si la requête est trop lourde */
+"/* On ajoute ici les NOMS des codes RSS et RLS du bénéficiaire : ceci serait optionnel si la requête est trop lourde */
 
 LEFT JOIN (
 SELECT
@@ -354,7 +312,8 @@ query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM<- function(benef_adr,debut_periode,f
          "date_fixe" = {
            return(paste0(
              indent(),
-             "SELECT
+             "LEFT JOIN (
+              SELECT
               BENF_NO_INDIV_BEN_BANLS,
               BENF_DD_ADR_BEN,
               BENF_DF_ADR_BEN,
@@ -364,13 +323,16 @@ query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM<- function(benef_adr,debut_periode,f
               FROM Prod.I_BENF_ADR_CM
               WHERE BENF_IND_ADR_HQ IN ('N') AND BENF_COD_TYP_ADR IN ('R')
               AND (BENF_DD_ADR_BEN<='",fin_periode,"' AND BENF_DF_ADR_BEN>='",debut_periode,"')
-              AND '",date_adr,"' between BENF_DD_ADR_BEN AND BENF_DF_ADR_BEN"
+              AND '",date_adr,"' between BENF_DD_ADR_BEN AND BENF_DF_ADR_BEN)
+              AS BD_Adr
+             ON BD_SMOD.SMOD_NO_INDIV_BEN_BANLS=BD_Adr.BENF_NO_INDIV_BEN_BANLS"
            ))
          },
          "dernière_adresse" = {
            return(paste0(
              indent(),
-             "SELECT
+             "LEFT JOIN (
+              SELECT
               BENF_NO_INDIV_BEN_BANLS,
               BENF_DD_ADR_BEN,
               BENF_DF_ADR_BEN,
@@ -381,13 +343,16 @@ query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM<- function(benef_adr,debut_periode,f
               WHERE BENF_IND_ADR_HQ IN ('N') AND BENF_COD_TYP_ADR IN ('R')
               AND (BENF_DD_ADR_BEN<='",fin_periode,"' AND BENF_DF_ADR_BEN>='",debut_periode,"')
               QUALIFY Row_Number()Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN DESC)=1 --dernière adresse
-               \n"
+               \n)
+              AS BD_Adr
+             ON BD_SMOD.SMOD_NO_INDIV_BEN_BANLS=BD_Adr.BENF_NO_INDIV_BEN_BANLS"
            ))
          },
          "première_adresse" = {
            return(paste0(
              indent(),
-             "SELECT
+             "LEFT JOIN (
+              SELECT
               BENF_NO_INDIV_BEN_BANLS,
               BENF_DD_ADR_BEN,
               BENF_DF_ADR_BEN,
@@ -416,13 +381,17 @@ query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM<- function(benef_adr,debut_periode,f
               QUALIFY Row_Number()Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN DESC)=1*/ --option 2 dernière adresse
               QUALIFY Row_Number()Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN ASC)=1 --option 3 première adresse
               /*)AS A
-              WHERE A.row_num=1 */ \n"
+              WHERE A.row_num=1 */
+             )
+              AS BD_Adr
+             ON BD_SMOD.SMOD_NO_INDIV_BEN_BANLS=BD_Adr.BENF_NO_INDIV_BEN_BANLS \n"
            ))
          },
          "long_adresse" = {
            return(paste0(
              indent(),
-             "SELECT
+             "LEFT JOIN (
+              SELECT
               BENF_NO_INDIV_BEN_BANLS,
               BENF_DD_ADR_BEN,
               BENF_DF_ADR_BEN,
@@ -448,8 +417,37 @@ query_I_SMOD_SERV_MD_CM.where_I_BENF_ADR_CM<- function(benef_adr,debut_periode,f
               WHERE BENF_IND_ADR_HQ IN ('N') AND BENF_COD_TYP_ADR IN ('R')
               AND (BENF_DD_ADR_BEN<='",fin_periode,"' AND BENF_DF_ADR_BEN>='",debut_periode,"')
               )AS A
-               WHERE A.row_num=1\n"
+               WHERE A.row_num=1
+             )
+              AS BD_Adr
+             ON BD_SMOD.SMOD_NO_INDIV_BEN_BANLS=BD_Adr.BENF_NO_INDIV_BEN_BANLS \n"
+           ))
+         },
+         "date_acte" = {
+           return(paste0(
+             indent(),
+             "LEFT JOIN (
+              SELECT
+              BENF_NO_INDIV_BEN_BANLS,
+              BENF_DD_ADR_BEN,
+              BENF_DF_ADR_BEN,
+              LGEO_COD_RSS,
+              LGEO_COD_TERRI_RLS
+
+              FROM Prod.I_BENF_ADR_CM
+              WHERE BENF_IND_ADR_HQ IN ('N') AND BENF_COD_TYP_ADR IN ('R')
+              AND (BENF_DD_ADR_BEN<='",fin_periode,"' AND BENF_DF_ADR_BEN>='",debut_periode,"')
+              )
+              AS BD_Adr
+             ON BD_SMOD.SMOD_NO_INDIV_BEN_BANLS=BD_Adr.BENF_NO_INDIV_BEN_BANLS
+             AND BD_SMOD.SMOD_DAT_SERV between BD_Adr.BENF_DD_ADR_BEN AND BD_Adr.BENF_DF_ADR_BEN \n"
            ))
          }
   )
 }
+
+
+
+
+
+

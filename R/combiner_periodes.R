@@ -38,16 +38,6 @@
 
 
 combiner_periodes <- function(dt, id, debut, fin, par_cols = NULL, njours = 1) {
-  ############################# #
-  # Serait inclut dans le package inesss
-  rmNA <- function(x) {
-    if (anyNA(x)) {
-      return(x[!is.na(x)])
-    } else {
-      return(x)
-    }
-  }
-  ############################ #
 
   # Convertir data.table au besoin
   if (!is.data.table(dt)) {

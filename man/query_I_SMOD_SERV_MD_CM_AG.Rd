@@ -43,7 +43,7 @@ query_I_SMOD_SERV_MD_CM_AG(
 
 \item{code_stat_decis}{peut prendre la valeur \code{c('PAY','PPY')}, \code{PAY}, ou \code{PPY}}
 
-\item{benef_adr}{permet de définir la méthode d’identification de l’adresse de bénéficiaire. Peut prendre la valeur \code{c("date_fixe","dernière_adresse","première_adresse","long_adresse")}}
+\item{benef_adr}{permet de définir la méthode d’identification de l’adresse de bénéficiaire. Peut prendre la valeur \code{c("date_fixe","dernière_adresse","première_adresse","long_adresse","date_acte")}}
 
 \item{date_adr}{si \verb{benef_adr=“date_fixe”}, date_adr permet de choisir une date fixe pour identifier l’adresse de bénéficiaire.}
 }

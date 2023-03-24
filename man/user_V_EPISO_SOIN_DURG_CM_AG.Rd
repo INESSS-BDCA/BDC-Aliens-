@@ -14,6 +14,7 @@ user_V_EPISO_SOIN_DURG_CM_AG(
   benef_adr,
   date_adr,
   date_age,
+  diagn,
   Dx_table,
   debut_cohort,
   fin_cohort,
@@ -33,11 +34,17 @@ user_V_EPISO_SOIN_DURG_CM_AG(
 
 \item{cohort}{\code{vecteur} indiquant les numéros d'identification des bénéficiaires définisant la cohorte de l'étude.}
 
-\item{debut_periode}{Date de début de la période d'étude.}
+\item{debut_periode}{Date de début de la période d'étude au format \code{"AAAA-MM-JJ"}.}
 
-\item{fin_periode}{Date de fin de la période d'étude.}
+\item{fin_periode}{Date de fin de la période d'étude au format \code{"AAAA-MM-JJ"}.}
+
+\item{benef_adr}{permet de définir la méthode d’identification de l’adresse de bénéficiaire. Peut prendre la valeur \code{c("date_fixe","dernière_adresse","première_adresse","long_adresse")}}
+
+\item{date_adr}{si \verb{benef_adr=“date_fixe”}, date_adr permet de choisir une date fixe pour identifier l’adresse de bénéficiaire.}
 
 \item{date_age}{\code{"AAAA-MM-JJ"} indique la date à laquelle l'âge des bénéficaires est calculé.}
+
+\item{diagn}{\code{vector} indiquant les codes de diagnostics \emph{CIM9} et/ou \emph{CIM10} à extraire.}
 
 \item{Dx_table}{\code{list} contenant les codes à analyser ou le nom d'une table qui est inclue dans la librairie.}
 
@@ -81,7 +88,7 @@ La fonction \code{user_V_EPISO_SOIN_DURG_CM_AG} utilise plusieurs autres fonctio
 \dontrun{
 
 DT_final<-user_V_EPISO_SOIN_DURG_CM_AG(
-                      task=c("extraction_BDCU"),
+                      task=c("extraction_BDCU_EPISO_SOIN_DURG"),
                       conn=SQL_connexion("ms069a"),
                       cohort = c(NULL, cohort),
                       debut_periode = "2020-01-01",
@@ -89,6 +96,8 @@ DT_final<-user_V_EPISO_SOIN_DURG_CM_AG(
                       benef_adr="dernière_adresse",
                       date_adr="2020-07-01",
                       date_age="2020-07-01",
+                      diagn=NULL,
+
                       Dx_table = list(Prolapsus = list(CIM9 = c('5995','6180','6181','6183'),CIM10 = c('N810','N811','N812','N813'))),
                       debut_cohort="1998-12-31",
                       fin_cohort="2020-12-31",
@@ -97,9 +106,11 @@ DT_final<-user_V_EPISO_SOIN_DURG_CM_AG(
                       date_dx_var = "admis",
                       n1 = 30, n2 = 730,
                       nDx=0 ,
-                      setwd="V:/GI/Projets/4.Projets_en_cours/..."
+
+                      keep_all=FALSE,
                       verbose = TRUE,
-                      keep_all=FALSE)
+                      setwd="V:/GI/Projets/4.Projets_en_cours/..."
+                      )
 
 }
 }

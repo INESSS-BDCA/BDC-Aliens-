@@ -1,0 +1,19 @@
+---
+title: "user_MEDECHO_DIAGN_SEJ_HOSP_CM"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{user_MEDECHO_DIAGN_SEJ_HOSP_CM}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(RequeteGeneriqueBDCA)
+```

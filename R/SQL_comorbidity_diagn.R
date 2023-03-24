@@ -46,14 +46,20 @@
 #'               CIM10 = c(paste0("I", c(18:21, 23:25)),
 #'                         paste0("K0", c(5:9)), paste0("K", 10:15)))
 SQL_comorbidity_diagn <- function(
-    conn = SQL_connexion(), cohort, debut_cohort, fin_cohort,
-    Dx_table = 'Combine_Dx_CCI_INSPQ18', CIM = c('CIM9', 'CIM10'),
+    conn = SQL_connexion(),
+    cohort,
+    debut_cohort,
+    fin_cohort,
+    Dx_table = 'Combine_Dx_CCI_INSPQ18',
+    CIM = c('CIM9', 'CIM10'),
     dt_source = c('V_DIAGN_SEJ_HOSP_CM', 'V_SEJ_SERV_HOSP_CM',
                   'V_EPISO_SOIN_DURG_CM', 'I_SMOD_SERV_MD_CM'),
     dt_desc = list(V_DIAGN_SEJ_HOSP_CM = 'MEDECHO', V_SEJ_SERV_HOSP_CM = 'MEDECHO',
                    V_EPISO_SOIN_DURG_CM = 'BDCU', I_SMOD_SERV_MD_CM = 'SMOD'),
-    date_dx_var = "depar", typ_diagn = c('A', 'P', 'S'),
-    exclu_diagn = NULL, verbose = TRUE,
+    date_dx_var = "depar",
+    typ_diagn = c('A', 'P', 'S'),
+    exclu_diagn = NULL,
+    verbose = TRUE,
     code_stat_decis=c('PAY','PPY')
 ) {
 
@@ -62,7 +68,7 @@ SQL_comorbidity_diagn <- function(
     stop("Erreur de connexion.")
   } else {
 
-    Dx_table <- inesss:::SQL_comorbidity_diagn.select_Dx_table(Dx_table)
+    Dx_table <- RequeteGeneriqueBDCA:::SQL_comorbidity_diagn.select_Dx_table(Dx_table)
     # Exclusion des diagnostiques
     if (!is.null(exclu_diagn)) {
       Dx_table <- Dx_table[!names(Dx_table) %in% exclu_diagn]
@@ -107,10 +113,15 @@ SQL_comorbidity_diagn <- function(
         for (dia in names(Dx_table_V_DIAGN_SEJ)) {
           t1 <- Sys.time()
           DT[[i]] <- SQL_comorbidity_diagn.V_DIAGN_SEJ_HOSP_CM(
-            conn = conn, ids = cohort, diagn = Dx_table_V_DIAGN_SEJ[[dia]],
-            debut_cohort = debut_cohort, fin_cohort = fin_cohort,
-            diag_desc = dia, sourc_desc = dt_desc[[sour]],
-            date_dx_var = date_dx_var, typ_diagn = typ_diagn
+            conn = conn,
+            ids = cohort,
+            diagn = Dx_table_V_DIAGN_SEJ[[dia]],
+            debut_cohort = debut_cohort,
+            fin_cohort = fin_cohort,
+            diag_desc = dia,
+            sourc_desc = dt_desc[[sour]],
+            date_dx_var = date_dx_var,
+            typ_diagn = typ_diagn
           )
           t2 <- Sys.time()
           i <- i + 1L
@@ -195,15 +206,15 @@ SQL_comorbidity_diagn.select_Dx_table <- function(Dx_table) {
   if (is.list(Dx_table)) {
     return(Dx_table)
   } else if (Dx_table == "Combine_Dx_CCI_INSPQ18") {
-    return(inesss::Combine_Dx_CCI_INSPQ18)
+    return(RequeteGeneriqueBDCA::Combine_Dx_CCI_INSPQ18)
   } else if (Dx_table == "Charlson_Dx_CCI_INSPQ18") {
-    return(inesss::Charlson_Dx_CCI_INSPQ18)
+    return(RequeteGeneriqueBDCA::Charlson_Dx_CCI_INSPQ18)
   } else if (Dx_table == "Elixhauser_Dx_CCI_INSPQ18") {
-    return(inesss::Elixhauser_Dx_CCI_INSPQ18)
+    return(RequeteGeneriqueBDCA::Elixhauser_Dx_CCI_INSPQ18)
   } else if (Dx_table == "Charlson_Dx_UManitoba16") {
-    return(inesss::Charlson_Dx_UManitoba16)
+    return(RequeteGeneriqueBDCA::Charlson_Dx_UManitoba16)
   } else if (Dx_table == "Charlson_Dx_CCI_INSPQ_Manitoba") {
-    return(inesss::Charlson_Dx_CCI_INSPQ_Manitoba)
+    return(RequeteGeneriqueBDCA::Charlson_Dx_CCI_INSPQ_Manitoba)
   } else {
     stop("SQL_comorbidity_diagn.select_Dx_table(): Dx_table ne contient pas une valeur permise.")
   }
@@ -237,8 +248,10 @@ SQL_comorbidity_diagn.V_DIAGN_SEJ_HOSP_CM <- function(
 
     # Extraction des diagn selon l'année
     DT[[i]] <- as.data.table(odbc::dbGetQuery(
-      conn = conn, statement = query_V_DIAGN_SEJ_HOSP_CM(
-        debut_cohort = deb, fin_cohort = fi,
+      conn = conn, statement = query_V_DIAGN_SEJ_HOSP_CM_AG(
+        query="extraction_Dx",
+        debut_cohort = deb,
+        fin_cohort = fi,
         diagn = diagn,
         date_dx_var = date_dx_var,
         typ_diagn = typ_diagn
@@ -291,9 +304,12 @@ SQL_comorbidity_diagn.V_SEJ_SERV_HOSP_CM <- function(
     }
     # Extraction des diagn selon l'année
     DT[[i]] <- as.data.table(odbc::dbGetQuery(
-      conn = conn, statement = query_V_SEJ_SERV_HOSP_CM(
-        debut_cohort = deb, fin_cohort = fi,
-        diagn = diagn, date_dx_var = date_dx_var
+      conn = conn, statement = query_V_SEJ_SERV_HOSP_CM_AG(
+        query="extraction_Dx",
+        debut_cohort = deb,
+        fin_cohort = fi,
+        diagn = diagn,
+        date_dx_var = date_dx_var
       )
     ))
     if (!is.null(ids)) {

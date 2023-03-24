@@ -7,6 +7,8 @@
 \usage{
 query_V_DIAGN_SEJ_HOSP_CM_AG(
   query,
+  debut_periode,
+  fin_periode,
   debut_cohort,
   fin_cohort,
   diagn,

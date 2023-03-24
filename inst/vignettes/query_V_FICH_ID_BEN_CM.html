@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Auteurs: Ahmed Ghachem (développeur)" />
+
+
+<title>query_V_FICH_ID_BEN_CM</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">query_V_FICH_ID_BEN_CM</h1>
+<h4 class="author">Auteurs: Ahmed Ghachem (développeur)</h4>
+<h4 class="date">Date de création: 16 décembre 2022</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#installation-de-la-librairie-r-requetegeneriquebdca"><span class="toc-section-number">1</span> Installation de la librairie R
+<em>RequeteGeneriqueBDCA</em></a>
+<ul>
+<li><a href="#fichier-nécessaire"><span class="toc-section-number">1.1</span> Fichier nécessaire</a></li>
+<li><a href="#activer-la-librairie"><span class="toc-section-number">1.2</span> Activer la librairie</a></li>
+</ul></li>
+<li><a href="#query_v_fich_id_ben_cm"><span class="toc-section-number">2</span> query_V_FICH_ID_BEN_CM</a>
+<ul>
+<li><a href="#la-fonction"><span class="toc-section-number">2.1</span>
+La fonction</a></li>
+<li><a href="#usage-de-la-fonction"><span class="toc-section-number">2.2</span> Usage de la fonction</a></li>
+<li><a href="#définition-des-arguments"><span class="toc-section-number">2.3</span> Définition des arguments</a>
+<ul>
+<li><a href="#debut-fin"><span class="toc-section-number">2.3.1</span>
+debut &amp; fin</a></li>
+<li><a href="#date_age"><span class="toc-section-number">2.3.2</span>
+date_age</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#table-résultante"><span class="toc-section-number">3</span> Table Résultante</a>
+<ul>
+<li><a href="#variables"><span class="toc-section-number">3.1</span>
+Variables</a></li>
+</ul></li>
+<li><a href="#discription-de-la-syntaxe-sql"><span class="toc-section-number">4</span> Discription de la syntaxe SQL</a>
+<ul>
+<li><a href="#vues-utilisées"><span class="toc-section-number">4.1</span> Vues utilisées</a></li>
+<li><a href="#syntaxe-sql"><span class="toc-section-number">4.2</span>
+Syntaxe SQL</a></li>
+</ul></li>
+</ul>
+</div>
+
+<div id="installation-de-la-librairie-r-requetegeneriquebdca" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Installation de la
+librairie R <em>RequeteGeneriqueBDCA</em></h1>
+<div id="fichier-nécessaire" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Fichier
+nécessaire</h2>
+<p>Télécharger le fichier <code>RequeteGeneriqueBDCA.x.y.tar.gz</code> à
+partir de Microsoft Teams.<br> <a href="https://msss365.sharepoint.com/:f:/r/teams/INESSS-DocumentationBDCA/Shared%20Documents/Outils/Librairie%20R%20INESSS?csf=1&amp;web=1&amp;e=j5SylU">INESSS
+- Documentation BDCA &gt; Documents &gt; Outils &gt; Librairie R INESSS
+&gt; RequeteGeneriqueBDCA_x.y.z.tar.gz</a>.</p>
+<p>Ouvrir RStudio.</p>
+<p>Dans la console, écrire le code suivant :</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_local</span>(<span class="st">&quot;C:</span><span class="sc">\\</span><span class="st">msXXX</span><span class="sc">\\</span><span class="st">Desktop</span><span class="sc">\\</span><span class="st">RequeteGeneriqueBDCA_x.y.z.tar.gz&quot;</span>)</span></code></pre></div>
+<p>Prendre note que les «<code>\</code>» sont doubles.</p>
+<p>Si la librairie <code>remotes</code> n’est pas installée, écrire dans
+la console le code suivant :
+<code>install.packages(&quot;remotes&quot;)</code>.</p>
+<p>Avant d’installer une librairie, il est préférable de ne pas l’avoir
+<em>appelé</em> auparavant.</p>
+<p>Il est déconseillé de mettre à jour les librairies utilisées par
+<em>RequeteGeneriqueBDCA</em>.</p>
+<p>L’installation se termine lorsqu’on peut lire dans la console :
+<em>DONE (RequeteGeneriqueBDCA)</em>.</p>
+</div>
+<div id="activer-la-librairie" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> Activer la
+librairie</h2>
+<p>Après avoir installé la librairie <em>RequeteGeneriqueBDCA</em>, il
+suffit de l’activer pour avoir accès aux fonctions :</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RequeteGeneriqueBDCA)</span></code></pre></div>
+<hr />
+</div>
+</div>
+<div id="query_v_fich_id_ben_cm" class="section level1" number="2">
+<h1><span class="header-section-number">2</span>
+query_V_FICH_ID_BEN_CM</h1>
+<p>La fonction <code>query_V_FICH_ID_BEN_CM</code> est une
+<code>parent_function</code> qui retourne une syntaxe sql pour extraire
+les caractéristiques des bénéficiaires à partir de la vue
+<code>V_FICH_ID_BEN_CM</code>. Elle est appellée par la fonction <a href="SQL_CodeActe.html">SQL_CodeActe</a>.</p>
+<div id="la-fonction" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> La fonction</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">query_V_FICH_ID_BEN_CM</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  debut,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  fin,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  date_age </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+</div>
+<div id="usage-de-la-fonction" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Usage de la
+fonction</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>odbc<span class="sc">::</span><span class="fu">dbGetQuery</span>(<span class="at">conn=</span><span class="fu">SQL_connexion</span>(),</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="at">statement=</span><span class="fu">query_V_FICH_ID_BEN_CM</span>(</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  debut,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  fin,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  date_age </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+</div>
+<div id="définition-des-arguments" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Définition des
+arguments</h2>
+<div id="debut-fin" class="section level3" number="2.3.1">
+<h3><span class="header-section-number">2.3.1</span> debut &amp;
+fin</h3>
+<p>Permet d’indiquer le début et la fin de la période d’étude au format
+<code>AAAA-MM-JJ</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>debut <span class="ot">=</span> <span class="st">&quot;2020-01-01&quot;</span>, fin <span class="ot">=</span> <span class="st">&quot;2020-12-31&quot;</span></span></code></pre></div>
+</div>
+<div id="date_age" class="section level3" number="2.3.2">
+<h3><span class="header-section-number">2.3.2</span> date_age</h3>
+<p>Permet d’indiquer une date <code>&quot;AAAA-MM-JJ&quot;</code> à laquelle l’âge
+des bénéficaires est calculé.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>date_age<span class="ot">=</span><span class="st">&quot;2022-03-01&quot;</span></span></code></pre></div>
+<hr />
+</div>
+</div>
+</div>
+<div id="table-résultante" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Table Résultante</h1>
+<div id="variables" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Variables</h2>
+<ul>
+<li><strong>ID</strong> : Numéro d’identification du bénéficiaire.
+<br /></li>
+<li><strong>Sexe</strong> : Sexe du bénéficiaire. <br /></li>
+<li><strong>DatNais</strong> : Date de naissance du bénéficiaire au
+format <em>AAAA-MM-JJ</em>. <br /></li>
+<li><strong>datdeces</strong> : Date de décès du bénéficiaire au format
+<em>AAAA-MM-JJ</em>. <br /></li>
+<li><strong>Age</strong> : Age du bénéficiaire calculé jusqu’à la date
+de l’acte. <br /></li>
+<li><strong>RSS_Benf</strong> : Régions sociosanitaires (RSS) du
+bénéficiaire. <br /></li>
+<li><strong>RLS_Benef</strong> : Réseaux locaux de services (RLS) du
+bénéficiaire. <br /></li>
+<li><strong>NomRSS_Benef</strong> : Nom régions sociosanitaires (RSS) du
+bénéficiaire. <br /></li>
+<li><strong>NomRLS_Benef</strong> : Nom réseaux locaux de services (RLS)
+du bénéficiaire. <br /></li>
+</ul>
+<hr />
+</div>
+</div>
+<div id="discription-de-la-syntaxe-sql" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Discription de la
+syntaxe SQL</h1>
+<div id="vues-utilisées" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Vues utilisées</h2>
+<ul>
+<li>PROD.V_FICH_ID_BEN_CM</li>
+<li>Prod.I_BENF_ADR_CM</li>
+<li>DONNE_INESSS.tGI_RLS_RTS</li>
+</ul>
+</div>
+<div id="syntaxe-sql" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Syntaxe SQL</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>SELECT</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>B.BENF_NO_INDIV_BEN_BANLS AS ID,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>B.BENF_COD_SEXE AS Sexe,  <span class="sc">--</span>Sexe du bénéficiaire</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>B.BENF_DAT_NAISS AS DatNais,  <span class="sc">--</span>Date de naissance</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>B.BENF_DAT_DECES AS DatDeces, <span class="sc">--</span>Date de décès</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">CAST</span>(((<span class="fu">CAST</span>(<span class="st">&#39;&quot;,date_age,&quot;&#39;</span> AS DATE FORMAT <span class="st">&#39;yyyy-mm-dd&#39;</span>)) <span class="sc">-</span> B.BENF_DAT_NAISS) <span class="sc">/</span> <span class="fl">365.25</span> AS BIGINT) AS Age,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">*</span> On fait le recodage du code RSS pour le code RLS <span class="dv">1610</span>, les variables avec les <span class="fu">NOMS</span> (RSS) sont correctes  <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>CASE WHEN BD_Adr.LGEO_COD_RSS<span class="ot">=</span><span class="dv">16</span> AND BD_Adr.LGEO_COD_TERRI_RLS <span class="fu">IN</span> (<span class="st">&#39;1610&#39;</span>) THEN <span class="dv">15</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>ELSE BD_Adr.LGEO_COD_RSS END AS RSS_Benf,</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>BD_NomReg_Ben.NomRSS_Benef,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">*</span> On ajoute un codes RLS fonctionnel pour les régions sans RLS on fait le recodgae de code RLS <span class="dv">1610</span>, les variables avec les <span class="fu">NOMS</span> (RLS) sont correctes <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>CASE</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>WHEN BD_Adr.LGEO_COD_RSS<span class="ot">=</span><span class="dv">10</span> THEN <span class="st">&#39;1001&#39;</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>WHEN BD_Adr.LGEO_COD_RSS<span class="ot">=</span><span class="dv">17</span> THEN <span class="st">&#39;1701&#39;</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>WHEN BD_Adr.LGEO_COD_RSS<span class="ot">=</span><span class="dv">18</span> THEN <span class="st">&#39;1801&#39;</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>WHEN BD_Adr.LGEO_COD_TERRI_RLS <span class="fu">IN</span> (<span class="st">&#39;1610&#39;</span>) THEN <span class="st">&#39;0511&#39;</span> ELSE BD_Adr.LGEO_COD_TERRI_RLS END AS RLS_Benef,</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>BD_NomReg_Ben.NomRLS_Benef</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>FROM PROD.V_FICH_ID_BEN_CM AS B</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">**********************************************************</span></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>  Découpage géographique du bénéficiaire <span class="sc">:</span> codes RSS et RLS</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="sc">**</span><span class="er">*********************************************************/</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="er">/*</span> On sélectionne la dernière adresse du bénéficiaire durant la période sélectionnée.</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>Autres méthodes <span class="sc">:</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="er">)</span> cibler la première adresse de la période</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span><span class="er">)</span> cibler ladresse dans laquelle le BEN a résidé le plus longtemps durant la période</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span><span class="er">)</span> cibler ladresse à une date <span class="fu">fixe</span> (p. ex. <span class="dv">31</span> mars, <span class="dv">01</span> juillet, mi<span class="sc">-</span>année)<span class="sc">*</span><span class="er">/</span></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>  LEFT <span class="fu">JOIN</span> (</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>    SELECT</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>    BENF_NO_INDIV_BEN_BANLS,</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>    BENF_DD_ADR_BEN,</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>    BENF_DF_ADR_BEN,</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>    LGEO_COD_RSS,</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a>    LGEO_COD_TERRI_RLS</span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a>    FROM Prod.I_BENF_ADR_CM</span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a>    WHERE BENF_IND_ADR_HQ <span class="fu">IN</span> (<span class="st">&#39;N&#39;</span>) AND BENF_COD_TYP_ADR <span class="fu">IN</span> (<span class="st">&#39;R&#39;</span>)</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>    <span class="fu">AND</span> (BENF_DD_ADR_BEN<span class="sc">&lt;=</span><span class="st">&#39;&quot;,fin,&quot;&#39;</span> AND BENF_DF_ADR_BEN<span class="sc">&gt;=</span><span class="st">&#39;&quot;,debut,&quot;&#39;</span>)</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>    QUALIFY <span class="fu">Row_Number</span>()<span class="fu">Over</span> (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN DESC)<span class="ot">=</span><span class="dv">1</span></span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>  ) AS BD_Adr</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>ON B.BENF_NO_INDIV_BEN_BANLS<span class="ot">=</span>BD_Adr.BENF_NO_INDIV_BEN_BANLS</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">*</span> On ajoute ici les NOMS des codes RSS et RLS du bénéficiaire <span class="sc">:</span> ceci serait optionnel si la requête est trop lourde <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>  LEFT <span class="fu">JOIN</span> (</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>    SELECT</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>    CodRLS,</span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>    NomRLS AS NomRLS_Benef,</span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>    NomRSS AS NomRSS_Benef</span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>    FROM DONNE_INESSS.tGI_RLS_RTS) AS BD_NomReg_Ben</span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>ON BD_Adr.LGEO_COD_TERRI_RLS<span class="ot">=</span>BD_NomReg_Ben.CodRLS</span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>ORDER BY <span class="dv">1</span></span></code></pre></div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

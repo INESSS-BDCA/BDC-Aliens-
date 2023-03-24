@@ -12,7 +12,7 @@ output:
     number_sections: true
     toc: true
 params: 
-  output_dir: "C:/Users/MS069/Desktop/Ahmed/INESSS-BDCA/vignettes"
+  output_dir: "vignettes"
 vignette: >
   %\VignetteIndexEntry{user_V_EPISO_SOIN_DURG_CM_AG}
   %\VignetteEngine{knitr::rmarkdown}
@@ -64,8 +64,9 @@ library(RequeteGeneriqueBDCA)
 
 La fonction `user_V_EPISO_SOIN_DURG_CM_AG` est destinée aux utilisateurs. Elle permet: <br/>
 
-1) d'extraire les variables pertinantes de la base de données BDCU, jumlées avec d'autres bases de données pour rajouter les caractéristiques du bénéficiaire et de l'établissement de soins. <br/>
-
+1) d'extraire les variables pertinentes de la base de données BDCU `V_EPISO_SOIN_DURG_CM`, jumlées avec d'autres bases de données pour rajouter les caractéristiques du bénéficiaire et de l'établissement de soins. <br/>
+2) d'extraire les variables pertinentes de la base de données BDCU `V_OCCU_CIVIE_DURG_CM`. <br/>
+3) d'extraire les variables pertinentes de la base de données BDCU `V_CNSUL_DURG_CM`. <br/>
 
 La fonction `user_V_EPISO_SOIN_DURG_CM_AG` est une `child_function` qui permet d'exécuter les requêtes SQL générées par les `parent_function` suivantes:<br/>
 [SQL_reperage_cond_med](SQL_reperage_cond_med.html)<br/>
@@ -74,11 +75,10 @@ La fonction `user_V_EPISO_SOIN_DURG_CM_AG` est une `child_function` qui permet d
 
 Si la cohorte n'est pas fournie par le professionnel scientifique, et on veut créer une cohorte en utilisant les Dx cim-9 et/ou cim-10:<br/>
 
-si `task="extraction_BDCU"`:
 la fonction `user_V_EPISO_SOIN_DURG_CM_AG` exécute trois étapes principales: <br/>
 1) la création de la cohorte de l'étude en utilisant les Dx cim-9 et/ou cim-10 via la fonction `SQL_reperage_cond_med`<br/> 
-2) l'extraction des actes pour cette cohorte via la fonction `query_V_EPISO_SOIN_DURG_CM_AG`<br/>
-3) l'ajout des caractéristiques de benéficiaire, de dispensateur, ainsi que de l'établissement de soins.<br/> 
+2) l'extraction des variables pertinentes pour cette cohorte via la fonction `query_V_EPISO_SOIN_DURG_CM_AG`<br/>
+3) l'ajout des caractéristiques de benéficiaire, ainsi que de l'établissement de soins.<br/> 
 
 Si la cohorte n'est pas fournie par le professionnel scientifique, et on ne veut pas créer une cohorte en utilisant les Dx cim-9 et/ou cim-10: <br/>
 l'étape 1 est ignorée et les étapes 2 et 3 sont exécutées en fonction de la nature de l'argument `task` <br/> 
@@ -95,6 +95,8 @@ user_V_EPISO_SOIN_DURG_CM_AG(task,
                           benef_adr,
                           date_adr, # à spécifier lorsque benef_adr="date_fixe"
                           date_age, # à spécifier lorsque keep_all=TRUE
+                          diagn, # liste de Dx pour la task: extraction_BDCU_EPISO_SOIN_DURG 
+                          
                           Dx_table, # si la cohorte n'est pas fournie par le professionnel scientifique et nous ne voulons pas créer une nouvelle cohorte (Dx_table=NULL)
                           debut_cohort,
                           fin_cohort,
@@ -103,66 +105,78 @@ user_V_EPISO_SOIN_DURG_CM_AG(task,
                           date_dx_var,
                           n1,n2,
                           nDx,
-                          setwd,
                           keep_all=FALSE,
-                          verbose=TRUE)
+                          
+                          verbose=TRUE,
+                          setwd)
 ```
 
 ## Définition des arguments
-### conn
+### Connexion 
 La fonction `SQL_connexion` permet à R de se connecter à Teradata. Simplenent inscrire l'identifant et le programme demandera le mot de passe lors de son exécution :
 ```{r}
 conn = SQL_connexion("msXXX")
 ```
 
-### cohorte
+### cohorte 
 Vecteur indiquant les numéros d'identification des bénéficiaires définisant la cohorte de l'étude.
 ```{r}
 cohort<-cohort$BENF_NO_INDIV_BEN_BANLS
 ```
 
-### debut_periode & fin_periode
+### Période de l'étude 
 Date de début et de fin de la période d'étude au format AAAA-MM-JJ.
 ```{r}
 debut_periode = "2020-01-01" 
 fin_periode = "2020-12-31"
 ```
 
-### benef_adr
+
+
+### Paramètres spécifiques de la requête
+### Liste des diagnostics 
+`list` contenant les codes diagnostics CIM9 et CIM10.
+```{r}
+diagn = list(
+  diabete = list(
+    CIM9 = c("2500%", "2501%", "2502%"),
+    CIM10 = c("E100%", "E101%", "E109%", "E110%", "E111%", "E119%", "E130%",
+              "E131%", "E139%", "E140%", "E141%", "E149%")),
+  diabete_complication = list(
+    CIM9 = paste0(2503:2509, "%"),
+    CIM10 = paste0("E", c(102:108, 112:118, 132:138, 142:148), "%")
+  )
+)
+```
+
+
+
+
+
+
+### Caractéristiques du bénéficiaires
+#### Adresse du bénéficiaire 
 Permet de définir la méthode d'identification de l'adresse de bénéficiaire.
 ```{r}
 benef_adr=c("date_fixe","dernière_adresse","première_adresse","long_adresse")
 
-# code sql:
-# si benef_adr="date_fixe": AND '",date_adr,"' between BENF_DD_ADR_BEN AND BENF_DF_ADR_BEN
-# si benef_adr="dernière_adresse": QUALIFY Row_Number()Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN DESC)=1
-# si benef_adr="première_adresse": QUALIFY Row_Number()Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN ASC)=1 
-# si benef_adr="long_adresse":
-# CASE
-# WHEN (BENF_DD_ADR_BEN <= '",debut,"' AND BENF_DF_ADR_BEN >= '",fin,"') THEN DATE '",fin,"' - DATE '",debut,"' + 1
-# WHEN (BENF_DD_ADR_BEN >= '",debut,"' AND BENF_DF_ADR_BEN >= '",fin,"') THEN DATE '",fin,"' - BENF_DD_ADR_BEN
-# WHEN (BENF_DD_ADR_BEN <= '",debut,"' AND BENF_DF_ADR_BEN <= '",fin,"') THEN BENF_DF_ADR_BEN - DATE '",debut,"'
-# WHEN (BENF_DD_ADR_BEN >= '",debut,"' AND BENF_DF_ADR_BEN <= '",fin,"') THEN BENF_DF_ADR_BEN - BENF_DD_ADR_BEN
-# ELSE 0
-# END AS days_count,
-# ROW_NUMBER() OVER (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY days_count DESC) AS row_num
-# WHERE A.row_num=1
-
 ```
 
-### date_adr
+#### Date adresse
 Si `benef_adr`="date_fixe", `date_adr` permet de choisir une date fixe pour identifier l'adresse de bénéficiaire. 
 ```{r}
 date_adr="2020-07-01"
 ```
 
-### date_age 
+#### Date âge 
 Permet d'indiquer une date `"AAAA-MM-JJ"` à laquelle l'âge des bénéficaires qui n'ont pas eu d'acte est calculé. L'âge de bénéficiaires qui ont eu un acte à l'intérieur de la période de l'étude est calculé à la date de l'acte.  
 ```{r}
 date_age="2020-03-01"
 ```
 
-### Dx_table
+
+### PARAMÈTRES POUR LA CRÉATION DE LA COHORTE AVEC `SQL_reperage_cond_med`
+#### Liste des diagnostics 
 `list` contenant les codes diagnostics CIM9 et CIM10.
 ```{r}
 Dx_table = list(
@@ -177,14 +191,7 @@ Dx_table = list(
 )
 ```
 
-### debut_cohort & fin_cohort
-Date de début et de fin de la création d'une cohort au format AAAA-MM-JJ.
-```{r}
-debut_cohort = "2018-01-01" 
-fin_cohort = "2020-12-31"
-```
-
-### CIM
+#### Classification des diagnostics 
 Permet de choisir le type de code diagnostic : CIM9, CIM10 ou les deux.
 ```{r}
 CIM = c("CIM9", "CIM10")  # par défaut : CIM9 et CIM10
@@ -192,7 +199,14 @@ CIM = "CIM9"  # CIM9 seulement
 CIM = "CIM10"  # CIM10 seulement
 ```
 
-### by_Dx
+#### Date début et fin de la cohorte 
+Date de début et de fin de la création d'une cohort au format AAAA-MM-JJ.
+```{r}
+debut_cohort = "2018-01-01" 
+fin_cohort = "2020-12-31"
+```
+
+#### Stratification de la cohorte 
 Vrai (`TRUE`) ou FAUX (`FALSE`).  
 
 À partir de `DX_table` créé précédemment, si `TRUE`, on aurait au maximum deux lignes par individu où la colonne `DIAGN` indiquerait `diabete` ou `diabete_complication`.  
@@ -202,7 +216,7 @@ by_Dx = TRUE  # par défaut
 by_Dx = FALSE
 ```
 
-### date_dx_var
+#### Date d'admission ou de départ 
 Permet de choisir entre la date d'admission ou la date de départ comme date d'incidence dans les vues suivantes :
 
 * V_DIAGN_SEJ_HOSP_CM
@@ -214,13 +228,10 @@ date_dx_var = "admis"  # par défaut
 date_dx_var = "depar"
 ```
 
-### nDx
-Permet de choisir le nombre de diagnostic qui permet de confirmer le premier.
-```{r}
-nDX=1 # par défaut
-```
+### Paramètres de l'algorithme de création de cohorte
+Permet d'indiquer les paramètres de l’algorithme soit : le nombre de jours (n1) entre 2 diagnostics, la période de temps (n2) à considérer pour confirmer le premier diagnostic et le nombre minimum d’occurrences du diagnostic pour confirmer la condition (nDx). (Valeurs par défaut n1= 30 jours, n2= 730 jours et nDx=1)<br/>
 
-### n1 & n2
+#### Nombre de jours (n1 & n2)
 Permet de créer l'intervalle `[n1, n2]`. Le nombre de jours entre deux diagnostics doit se situer dans cet intervalle pour que le deuxième diagnostic confirme le premier.
 ```{r}
 n1 = 30 
@@ -228,16 +239,24 @@ n2 = 730
 ```
 
 
+#### Nombre d'occurence (nDx) 
+Permet de choisir le nombre de diagnostic qui permet de confirmer le premier.
+```{r}
+nDX=1 # par défaut
+```
+
+### Cas retenus
+#### keep_all
+`TRUE` ou `FALSE`. Par défaut `FALSE`, soit filter les observations ayant eu un DX et un code d'acte. Si `TRUE` garder toutes les observations, soit ceux qui ont eu un DX et qui ont eu ou pas un code d'acte. Si `cohort` est fournit, keep_all `TRUE` garde toutes les observations demandées par `cohort`. Si keep_all `FALSE` filtrer les observations demandées par `cohort`qui ont eu un code d'acte.
+
+---
+
 ### setwd 
 Permet d'indiquer le chemin vers le dossier dans lequel les résultats de la fonction seront sauvegardés. Si `setwd`="NULL", les résultats seront seulement affichés dans l'environnement du Rstudio.  
 ```{r}
 setwd="V:/GI/Projets/4.Projets_en_cours/Nom_dossier"
 ```
 
-### keep_all
-`TRUE` ou `FALSE`. Par défaut `FALSE`, soit filter les observations ayant eu un DX et un code d'acte. Si `TRUE` garder toutes les observations, soit ceux qui ont eu un DX et qui ont eu ou pas un code d'acte. Si `cohort` est fournit, keep_all `TRUE` garde toutes les observations demandées par `cohort`. Si keep_all `FALSE` filtrer les observations demandées par `cohort`qui ont eu un code d'acte.
-
----
 ### verbose
 `TRUE` ou `FALSE`. Message de progression affiché dans la console.
 
@@ -262,61 +281,40 @@ fin de création de la cohorte.
 - Temps d'exécution (0.2 secs)
 
 
+
+
 ## Usage de la fonction
 ```{r}
 DT_final<-user_V_EPISO_SOIN_DURG_CM_AG(
-  task=c("extraction_SMOD","extraction_SMOD_combin","Projet_Factuartion_Acte"), 
-# choisissez une des trois options
+  task=c("extraction_BDCU_EPISO_SOIN_DURG","extraction_BDCU_OCCU_CIVIE_DURG","extraction_BDCU_CNSUL_DURG"), 
   conn=SQL_connexion("ms069a"), 
-# indiquez votre ms.. ramq. À l'exécusion de la fonction une fenêtre s'affichera pour vous demander votre mot de passe teradata
   cohort = NULL, 
-# 1) cohort=cohort, permet d'extraire des actes pour une cohorte prédéfinie. cohort est un vecteur avec les Ids. ** Le vecteur doit absolument être nomé cohort **. 
-# 2) cohort=NULL et Dx_table=NULL, permet d'extraire tous les bénéf ayant eu des actes à l'intérieur de la période d'étude 
   debut_periode = "2020-01-01",
   fin_periode = "2020-12-31",
   benef_adr="dernière_adresse",
-# à définir pour les task extraction_SMOD_combin et Projet_Factuartion_Acte
-# 1) benef_adr="date_fixe", permet de cibler l'adresse de bénéf à une date fixe
-# 2) benef_adr="première_adresse", permet de cibler la première adresse de bénéf pour la periode d'étude
-# 3) benef_adr="dernière_adresse", permet de cibler la dernière adresse de bénéf pour la periode d'étude
-# 4) benef_adr="long_adresse", permet de cibler l'adresse oû le bénéf à demeurer le plus longtemps
   date_adr="2021-07-01",
-# à définir lorsque benef_adr="date_fixe"
   date_age="2020-07-01",
-# à définir lorsque keep_all="TRUE"
-# ceci permet de calculer l'âge des bénéf qui sont inclus dans la cohorte prédéfinie, mais qu'ils n'ont pas eu d'acte pendant la periode de l'étude
-  verbose = TRUE,
-# permet d'afficher un message de progression dans la console 
-  keep_all=FALSE,
-# keep_all=FALSE, permet de selectionner seulement les ids de la cohorte ayant eu un acte pendant la période de l'étude
-# keep_all=TRUE, permet de selectionner tous les ids de la cohorte ayant eu ou pas un acte pendant la période de l'étude
-  setwd="C:/Users/MS069/Desktop/Ahmed/BDCU_cohorte",
-# permet d'indiquer le chemin du dossier dans lequel les résultats vont être sauvegardés 
+  diagn=NULL,
 
-# Les arguments ci-dessous sont de la fonction SQL_reperage_cond_med. À préciser si on veut créer une cohorte en utilisant les Dx cim-9 et/ou cim-10.   
   Dx_table=NULL,
-# list contenant les codes diagnostics CIM9 et CIM10.
-# exemple: Dx_table = list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), '%'), CIM10 = paste0('J', 41:44, '%'))),
   debut_cohort = "2018-01-01",
   fin_cohort = "2020-12-31",
   CIM =  c("CIM9", "CIM10"),
-# Permet de choisir le type de code diagnostic : CIM9, CIM10 ou les deux.
   by_Dx = FALSE,
-# à partir de DX_table créé précédemment, si TRUE, on aurait au maximum deux lignes par individu où la colonne DIAGN indiquerait diabete ou diabete_complication.
-# Si FALSE, on a au maximum une ligne par individu et la colonne DIAGN est absente, car les codes de diabete et diabete_complication sont considérés comme un seul élément d’analyse dans l’algorithme.
   date_dx_var = "admis",
-# Permet de choisir entre la date d’admission ou la date de départ comme date d’incidence dans les vues suivantes : V_DIAGN_SEJ_HOSP_CM, V_SEJ_SERV_HOSP_CM, V_EPISO_SOIN_DURG_CM
   n1 = 30, n2 = 730,
-# Permet de créer l’intervalle [n1, n2]. Le nombre de jours entre deux diagnostics doit se situer dans cet intervalle pour que le deuxième diagnostic confirme le premier.
-  nDx = 0
-# Permet de choisir le nombre de diagnostic qui permet de confirmer le premier.
+  nDx = 0,
+  
+  keep_all=FALSE,
+  verbose = TRUE,
+  setwd="C:/Users/MS069/Desktop/Ahmed/BDCU_cohorte" #NULL
 )
 ```
 
-# Table Résultante
 
-## `task="extraction_SMOD"`
- Extraction des variables pertinantes de SMOD combinées avec les caractéristiques du bénéf et de l'établissement. Une base de données avec 39 variables.
+# Table Résultante
+## `task="extraction_BDCU_EPISO_SOIN_DURG"`
+ Extraction des variables pertinentes de BDCU: V_EPISO_SOIN_DURG_CM combinées avec les caractéristiques du bénéf et de l'établissement. Une base de données avec 33 variables.
 - **ID ** : Numéro du bénéficiaire <br/>
 - **SURG_NO_EPISO_SOIN_DURG ** :	Numéro d'épisode de soins - Départements d'urgence	<br/>
 - **SURG_AN_PER_TEMPS ** :	Année période temps	<br/>
@@ -350,6 +348,30 @@ DT_final<-user_V_EPISO_SOIN_DURG_CM_AG(
 - **RSS_ETAB ** : Régions sociosanitaires (RSS) de l'établissement <br/>
 - **NOM_RSS_Etab ** : Nom régions sociosanitaires (RSS) de l'établissement <br/>
 - **NOM_ETAB ** : Nom de l'établissement <br/>
+
+## `task="extraction_BDCU_OCCU_CIVIE_DURG"`
+ Extraction des variables pertinentes de BDCU: V_OCCU_CIVIE_DURG_CM. Une base de données avec 8 variables.
+- **ID ** : Numéro du bénéficiaire <br/>
+- **SURG_NO_EPISO_SOIN_DURG** :	Numéro d'épisode de soins - Départements d'urgence <br/>
+- **SURG_NO_SEQ_OCCU_CIVIE_DURG** :	Numéro de séquence de l'occupation de civière <br/>
+- **SURG_DHD_OCCU_CIVIE_DURG** :	Date et heure de début d'occupation de civière <br/>
+- **DD_Occup_civ** :	Date de début d'occupation de civière <br/>
+- **SURG_DHF_OCCU_CIVIE_DURG** :	Date et heure de fin d'occupation de civière <br/>
+- **DF_Occup_civ** :	Date de fin d'occupation de civière <br/>
+- **SURG_CATG_CIVIE_DURG** :	Catégorie de civière en département d'urgence <br/>
+
+## `task="extraction_BDCU_CNSUL_DURG"`
+ Extraction des variables pertinentes de BDCU: V_CNSUL_DURG_CM. Une base de données avec 9 variables.
+- **ID ** : Numéro du bénéficiaire <br/>
+- **SURG_NO_EPISO_SOIN_DURG** :	Numéro d'épisode de soins - Départements d'urgence <br/>
+- **SURG_NO_SEQ_CNSUL_DURG** :	Numéro de séquence de consultation <br/>
+- **SURG_COD_SPEC_CNSUL_DURG** :	Code de spécialité de consultation d'urgence <br/>
+- **SURG_COD_ETA_CNSUL_DURG** :	Code spécifiant l'état de la consultation <br/>
+- **SURG_DH_DEM_CNSUL_DURG** :	Date et heure de la demande de consultation <br/>
+- **DD_DEM_CNSUL** :	Date de la demande de consultation <br/>
+- **SURG_DH_REAL_CNSUL_DURG** :	Date et heure de réalisation de consultation <br/
+- **DD_REAL_CNSUL** :	Date de réalisation de consultation<br/>>
+
 
 # Discription de la syntaxe SQL
 Veuillez-svp consulter les vignettes `parent_function` suivantes:<br/>
