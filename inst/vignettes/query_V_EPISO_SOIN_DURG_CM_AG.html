@@ -369,28 +369,19 @@ fin_cohort</a></li>
 </ul></li>
 <li><a href="#table-résultante"><span class="toc-section-number">3</span> Table Résultante</a>
 <ul>
-<li><a href="#variables"><span class="toc-section-number">3.1</span>
-Variables</a>
-<ul>
-<li><a href="#extraction-des-variables-pertinantes-de-bdcu-combinées-avec-dautres-vues-de-données"><span class="toc-section-number">3.1.1</span> Extraction des variables
-pertinantes de BDCU combinées avec d’autres vues de données:</a></li>
-</ul></li>
+<li><a href="#taskextraction_bdcu_episo_soin_durg"><span class="toc-section-number">3.1</span>
+<code>task=&quot;extraction_BDCU_EPISO_SOIN_DURG&quot;</code></a></li>
+<li><a href="#taskextraction_bdcu_cnsul_durg"><span class="toc-section-number">3.2</span>
+<code>task=&quot;extraction_BDCU_CNSUL_DURG&quot;</code></a></li>
 </ul></li>
 <li><a href="#discription-de-la-syntaxe-sql"><span class="toc-section-number">4</span> Discription de la syntaxe SQL</a>
 <ul>
-<li><a href="#vues-utilisées"><span class="toc-section-number">4.1</span> Vues utilisées</a>
-<ul>
-<li><a href="#extraction-des-variables-pertinantes-de-bdcu-combinées-avec-dautres-vues-de-données-1"><span class="toc-section-number">4.1.1</span> Extraction des variables
-pertinantes de BDCU combinées avec d’autres vues de données:</a></li>
-<li><a href="#extraction-des-diagnostics"><span class="toc-section-number">4.1.2</span> Extraction des
-diagnostics:</a></li>
-</ul></li>
-<li><a href="#syntaxe-sql"><span class="toc-section-number">4.2</span>
-Syntaxe SQL</a>
-<ul>
-<li><a href="#extraction-des-variables-pertinantes-de-smod"><span class="toc-section-number">4.2.1</span> Extraction des variables
-pertinantes de SMOD:</a></li>
-</ul></li>
+<li><a href="#taskextraction_bdcu_episo_soin_durg-1"><span class="toc-section-number">4.1</span>
+<code>task=&quot;extraction_BDCU_EPISO_SOIN_DURG&quot;</code></a></li>
+<li><a href="#taskextraction_bdcu_occu_civie_durg"><span class="toc-section-number">4.2</span>
+<code>task=&quot;extraction_BDCU_OCCU_CIVIE_DURG&quot;</code></a></li>
+<li><a href="#taskextraction_bdcu_cnsul_durg-1"><span class="toc-section-number">4.3</span>
+<code>task=&quot;extraction_BDCU_CNSUL_DURG&quot;</code></a></li>
 </ul></li>
 </ul>
 </div>
@@ -433,15 +424,20 @@ suffit de l’activer pour avoir accès aux fonctions :</p>
 query_V_EPISO_SOIN_DURG_CM_AG</h1>
 <p>La fonction <code>query_V_EPISO_SOIN_DURG_CM_AG</code> est une
 <code>parent_function</code> qui retourne une syntaxe sql pour: <br /> 1)
-extraire les variables pertinentes de BDCU combinées avec d’autres vues
-de données <br /> 2) extraire les diagnostics pour la création d’une
-cohorte <br /></p>
+extraire les variables pertinentes de BDCU
+<code>V_EPISO_SOIN_DURG_CM</code> combinées avec d’autres bases de
+données pour rajouter les caractéristiques du bénéficiaire et de
+l’établissement de soins. <br /> 2) extraire les variables pertinentes de
+la base de données BDCU <code>V_OCCU_CIVIE_DURG_CM</code>. <br /> 3)
+extraire les variables pertinentes de la base de données BDCU
+<code>V_CNSUL_DURG_CM</code>. <br /> 4) extraire les diagnostics pour la
+création d’une cohorte <br /></p>
 <p>Elle est utilisée par: <br /> - la fonction <a href="user_V_EPISO_SOIN_DURG_CM_AG.html">user_V_EPISO_SOIN_DURG_CM_AG</a>
 <br /> - la fonction <a href="SQL_reperage_cond_med.html">SQL_reperage_cond_med</a> <br /> -
 …</p>
 <div id="la-fonction" class="section level2" number="2.1">
 <h2><span class="header-section-number">2.1</span> La fonction</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">query_I_SMOD_SERV_MD_CM_AG</span>(query,</span>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">query_V_EPISO_SOIN_DURG_CM_AG</span>(query,</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                           debut_periode, </span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                           fin_periode, </span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                           diagn,</span>
@@ -456,9 +452,8 @@ cohorte <br /></p>
 arguments</h2>
 <div id="query" class="section level3" number="2.2.1">
 <h3><span class="header-section-number">2.2.1</span> query</h3>
-<p>Indiquant la requête qu’on veut exécuter.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>query<span class="ot">=</span><span class="st">&quot;extraction_BDCU&quot;</span> <span class="co"># extraire les variables pertinentes de BDCU combinées avec d&#39;autres vues de données pour rajouter les caractéristiques de bénéficiaire, dispensateur et l&#39;établissement du soins. </span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>query<span class="ot">=</span><span class="st">&quot;extraction_Dx&quot;</span> <span class="co"># extraire les diagnostics pour la création d&#39;une cohort.</span></span></code></pre></div>
+<p>Indiquant la requête à exécuter.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>query<span class="ot">=</span><span class="fu">c</span>(<span class="st">&quot;extraction_BDCU_EPISO_SOIN_DURG&quot;</span>,<span class="st">&quot;extraction_BDCU_OCCU_CIVIE_DURG&quot;</span>,<span class="st">&quot;extraction_BDCU_CNSUL_DURG&quot;</span>,<span class="st">&quot;extraction_Dx&quot;</span>) </span></code></pre></div>
 </div>
 <div id="debut_periode-fin_periode" class="section level3" number="2.2.2">
 <h3><span class="header-section-number">2.2.2</span> debut_periode &amp;
@@ -471,7 +466,16 @@ fin_periode</h3>
 <h3><span class="header-section-number">2.2.3</span> diagn</h3>
 <p>Un vecteur indiquant les codes de diagnostics <em>CIM9</em> et/ou
 <em>CIM10</em> à extraire dont l’objectif est de créer une cohorte.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>diagn<span class="ot">=</span><span class="fu">c</span>(<span class="st">&#39;5995%&#39;</span>,<span class="st">&#39;6180%&#39;</span>,<span class="st">&#39;6181%&#39;</span>,<span class="st">&#39;6183%&#39;</span>,<span class="st">&#39;6184%&#39;</span>,<span class="st">&#39;N810%&#39;</span>,<span class="st">&#39;N811%&#39;</span>,<span class="st">&#39;N812%&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>diagn <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">diabete =</span> <span class="fu">list</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">CIM9 =</span> <span class="fu">c</span>(<span class="st">&quot;2500%&quot;</span>, <span class="st">&quot;2501%&quot;</span>, <span class="st">&quot;2502%&quot;</span>),</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">CIM10 =</span> <span class="fu">c</span>(<span class="st">&quot;E100%&quot;</span>, <span class="st">&quot;E101%&quot;</span>, <span class="st">&quot;E109%&quot;</span>, <span class="st">&quot;E110%&quot;</span>, <span class="st">&quot;E111%&quot;</span>, <span class="st">&quot;E119%&quot;</span>, <span class="st">&quot;E130%&quot;</span>,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>              <span class="st">&quot;E131%&quot;</span>, <span class="st">&quot;E139%&quot;</span>, <span class="st">&quot;E140%&quot;</span>, <span class="st">&quot;E141%&quot;</span>, <span class="st">&quot;E149%&quot;</span>)),</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">diabete_complication =</span> <span class="fu">list</span>(</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">CIM9 =</span> <span class="fu">paste0</span>(<span class="dv">2503</span><span class="sc">:</span><span class="dv">2509</span>, <span class="st">&quot;%&quot;</span>),</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">CIM10 =</span> <span class="fu">paste0</span>(<span class="st">&quot;E&quot;</span>, <span class="fu">c</span>(<span class="dv">102</span><span class="sc">:</span><span class="dv">108</span>, <span class="dv">112</span><span class="sc">:</span><span class="dv">118</span>, <span class="dv">132</span><span class="sc">:</span><span class="dv">138</span>, <span class="dv">142</span><span class="sc">:</span><span class="dv">148</span>), <span class="st">&quot;%&quot;</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div id="date_dx_var" class="section level3" number="2.2.4">
 <h3><span class="header-section-number">2.2.4</span> date_dx_var</h3>
@@ -507,16 +511,12 @@ principalement utilisée par la fonction
 <code>user_V_EPISO_SOIN_DURG_CM_AG</code>. Voir <a href="user_V_EPISO_SOIN_DURG_CM_AG.html">user_V_EPISO_SOIN_DURG_CM_AG</a><br />.
 Elle peut-être également exécutée indépendament des autres
 fonctions.</p>
-<ul>
-<li><strong>Extraction des variables pertinantes de SMOD combinées avec
-d’autres vues de données:</strong></li>
-</ul>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>DT<span class="ot">&lt;-</span>data.table<span class="sc">::</span><span class="fu">as.data.table</span>(odbc<span class="sc">::</span><span class="fu">dbGetQuery</span>(<span class="at">conn=</span><span class="fu">SQL_connexion</span>(),</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="at">statement=</span><span class="fu">query_V_EPISO_SOIN_DURG_CM_AG</span> (</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="at">query=</span><span class="st">&quot;extraction_BDCU&quot;</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="at">query=</span><span class="st">&quot;extraction_BDCU_EPISO_SOIN_DURG&quot;</span>,</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="at">debut_periode=</span><span class="st">&quot;2021-04-01&quot;</span>,</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="at">fin_periode=</span><span class="st">&quot;2022-03-31&quot;</span>,</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="at">diagn =</span> <span class="cn">NULL</span>, <span class="co">#  à préciser si on veut extraire des actes pour des bénéficiaires ayant un ou plusieurs Dx spécifiques </span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="at">diagn =</span> <span class="cn">NULL</span>, <span class="co">#  à préciser si on veut extraire les variables BDCU pour des bénéficiaires ayant un ou plusieurs Dx spécifiques dans V_EPISO_SOIN_DURG_CM </span></span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="at">date_dx_var=</span><span class="fu">c</span>(<span class="st">&#39;admis&#39;</span>, <span class="st">&#39;depar&#39;</span>),</span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="at">benef_adr=</span><span class="st">&quot;dernière_adresse&quot;</span>,</span>
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="at">date_adr=</span><span class="cn">NULL</span>,</span>
@@ -527,12 +527,9 @@ d’autres vues de données:</strong></li>
 </div>
 <div id="table-résultante" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> Table Résultante</h1>
-<div id="variables" class="section level2" number="3.1">
-<h2><span class="header-section-number">3.1</span> Variables</h2>
-<div id="extraction-des-variables-pertinantes-de-bdcu-combinées-avec-dautres-vues-de-données" class="section level3" number="3.1.1">
-<h3><span class="header-section-number">3.1.1</span> Extraction des
-variables pertinantes de BDCU combinées avec d’autres vues de
-données:</h3>
+<div id="taskextraction_bdcu_episo_soin_durg" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span>
+<code>task=&quot;extraction_BDCU_EPISO_SOIN_DURG&quot;</code></h2>
 <ul>
 <li><strong>ID </strong> : Numéro du bénéficiaire <br /></li>
 <li><strong>SURG_NO_EPISO_SOIN_DURG </strong> : Numéro d’épisode de
@@ -593,212 +590,255 @@ de l’établissement <br /></li>
 l’établissement <br /></li>
 <li><strong>NOM_RSS_Etab </strong> : Nom régions sociosanitaires (RSS)
 de l’établissement <br /></li>
-<li><strong>NOM_ETAB </strong> : Nom de l’établissement <br /> ***</li>
+<li><strong>NOM_ETAB </strong> : Nom de l’établissement <br /> ##
+<code>task=&quot;extraction_BDCU_OCCU_CIVIE_DURG&quot;</code> Extraction des
+variables pertinentes de BDCU: V_OCCU_CIVIE_DURG_CM. Une base de données
+avec 8 variables.</li>
+<li><strong>ID </strong> : Numéro du bénéficiaire <br /></li>
+<li><strong>SURG_NO_EPISO_SOIN_DURG</strong> : Numéro d’épisode de soins
+- Départements d’urgence <br /></li>
+<li><strong>SURG_NO_SEQ_OCCU_CIVIE_DURG</strong> : Numéro de séquence de
+l’occupation de civière <br /></li>
+<li><strong>SURG_DHD_OCCU_CIVIE_DURG</strong> : Date et heure de début
+d’occupation de civière <br /></li>
+<li><strong>DD_Occup_civ</strong> : Date de début d’occupation de
+civière <br /></li>
+<li><strong>SURG_DHF_OCCU_CIVIE_DURG</strong> : Date et heure de fin
+d’occupation de civière <br /></li>
+<li><strong>DF_Occup_civ</strong> : Date de fin d’occupation de civière
+<br /></li>
+<li><strong>SURG_CATG_CIVIE_DURG</strong> : Catégorie de civière en
+département d’urgence <br /></li>
 </ul>
 </div>
+<div id="taskextraction_bdcu_cnsul_durg" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span>
+<code>task=&quot;extraction_BDCU_CNSUL_DURG&quot;</code></h2>
+<p>Extraction des variables pertinentes de BDCU: V_CNSUL_DURG_CM. Une
+base de données avec 9 variables. - <strong>ID </strong> : Numéro du
+bénéficiaire <br /> - <strong>SURG_NO_EPISO_SOIN_DURG</strong> : Numéro
+d’épisode de soins - Départements d’urgence <br /> -
+<strong>SURG_NO_SEQ_CNSUL_DURG</strong> : Numéro de séquence de
+consultation <br /> - <strong>SURG_COD_SPEC_CNSUL_DURG</strong> : Code de
+spécialité de consultation d’urgence <br /> -
+<strong>SURG_COD_ETA_CNSUL_DURG</strong> : Code spécifiant l’état de la
+consultation <br /> - <strong>SURG_DH_DEM_CNSUL_DURG</strong> : Date et
+heure de la demande de consultation <br /> -
+<strong>DD_DEM_CNSUL</strong> : Date de la demande de consultation <br />
+- <strong>SURG_DH_REAL_CNSUL_DURG</strong> : Date et heure de
+réalisation de consultation <br /> - <strong>DD_REAL_CNSUL</strong> :
+Date de réalisation de consultation <br /></p>
 </div>
 </div>
 <div id="discription-de-la-syntaxe-sql" class="section level1" number="4">
 <h1><span class="header-section-number">4</span> Discription de la
 syntaxe SQL</h1>
-<div id="vues-utilisées" class="section level2" number="4.1">
-<h2><span class="header-section-number">4.1</span> Vues utilisées</h2>
-<div id="extraction-des-variables-pertinantes-de-bdcu-combinées-avec-dautres-vues-de-données-1" class="section level3" number="4.1.1">
-<h3><span class="header-section-number">4.1.1</span> Extraction des
-variables pertinantes de BDCU combinées avec d’autres vues de
-données:</h3>
-<ul>
-<li>RES_SSS.V_EPISO_SOIN_DURG_CM (BDCU)</li>
-<li>PROD.V_FICH_ID_BEN_CM (FIPA)</li>
-<li>PROD.D_DISP_SPEC_CM (FIP)</li>
-<li>Prod.V_ETAB_USUEL</li>
-<li>Prod.I_BENEF_ADR_CM</li>
-<li>DONNE_INESSS.tGI_RLS_RTS</li>
-<li>Prod.V_ETAB_USUEL_DERN</li>
-<li>RES_SSS.V_NOM_ETAB_DERN_TYP_NOM</li>
-<li>Prod.V_RPERT_COD_ACTE</li>
-<li>Prod.V_DECOU_GEO_POSTL_DERN_CP</li>
-<li>Prod.V_COD_CATG_ETAB_EI</li>
-</ul>
-</div>
-<div id="extraction-des-diagnostics" class="section level3" number="4.1.2">
-<h3><span class="header-section-number">4.1.2</span> Extraction des
-diagnostics:</h3>
-<ul>
-<li>RES_SSS.V_EPISO_SOIN_DURG_CM (BDCU)</li>
-</ul>
-</div>
-</div>
-<div id="syntaxe-sql" class="section level2" number="4.2">
-<h2><span class="header-section-number">4.2</span> Syntaxe SQL</h2>
-<div id="extraction-des-variables-pertinantes-de-smod" class="section level3" number="4.2.1">
-<h3><span class="header-section-number">4.2.1</span> Extraction des
-variables pertinantes de SMOD:</h3>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>SELECT</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="sc">--</span> vue<span class="sc">:</span> RES_SSS.V_EPISO_SOIN_DURG_CM</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_NO_INDIV_BEN_BANLS AS ID,</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">CAST</span>(BD_BDCU.SURG_NO_EPISO_SOIN_DURG AS <span class="fu">CHAR</span>(<span class="dv">18</span>)), <span class="sc">--</span> Attention si vous faites un jumlage avec dautres vues en utilisant cette variable, assurez<span class="sc">-</span>vous que lautre variable soit de type CHAR</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="sc">--</span><span class="fu">CAST</span>(BD_BDCU.SURG_NO_EPISO_SOIN_DURG AS INT) AS Num_SURG_NO_EPISO_SOIN_DURG,<span class="sc">--</span> Numéro dépisode de soins <span class="sc">-</span> Départements durgence</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_AN_PER_TEMPS, <span class="sc">--</span>Année période temps</span>
+<div id="taskextraction_bdcu_episo_soin_durg-1" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span>
+<code>task=&quot;extraction_BDCU_EPISO_SOIN_DURG&quot;</code></h2>
+<div class="sourceCode" id="cb12"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- vue: RES_SSS.V_EPISO_SOIN_DURG_CM</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_NO_INDIV_BEN_BANLS <span class="kw">AS</span> <span class="kw">ID</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">CAST</span>(BD_BDCU.SURG_NO_EPISO_SOIN_DURG <span class="kw">AS</span> <span class="dt">CHAR</span>(<span class="dv">18</span>)), <span class="co">-- Attention si vous faites un jumlage avec dautres vues en utilisant cette variable, assurez-vous que lautre variable soit de type CHAR</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co">--CAST(BD_BDCU.SURG_NO_EPISO_SOIN_DURG AS INT) AS Num_SURG_NO_EPISO_SOIN_DURG,-- Numéro dépisode de soins - Départements durgence</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_AN_PER_TEMPS, <span class="co">--Année période temps</span></span>
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_DHD_EPISO_SOIN_DURG,</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="fu">Cast</span>(BD_BDCU.SURG_DHD_EPISO_SOIN_DURG AS DATE) AS DD_SOIN_DURG, <span class="sc">--</span>Date et heure de début dun épisode de soins</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="fu">Cast</span>(BD_BDCU.SURG_DHD_EPISO_SOIN_DURG <span class="kw">AS</span> <span class="dt">DATE</span>) <span class="kw">AS</span> DD_SOIN_DURG, <span class="co">--Date et heure de début dun épisode de soins</span></span>
 <span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_DH_DEPAR_USAG_DURG,</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="fu">CAST</span>(BD_BDCU.SURG_DH_DEPAR_USAG_DURG AS DATE) AS DF_SOIN_DURG, <span class="sc">--</span>DateHeure de départ dun usager</span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_DH_PREM_TRIAG_DURG, <span class="sc">--</span>Date heure du premier triage durgence</span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_DH_PRIS_CHARG_DURG, <span class="sc">--</span>Date et heure de prise en charge</span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_DH_DEM_ADMIS_DURG, <span class="sc">--</span>Date et heure de la demande dadmission en CH</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_DH_DECES_DURG, <span class="sc">--</span>Date et heure du décès</span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_COD_PRIOR_TRIAG_DURG, <span class="sc">--</span>Code de priorité du premier triage</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_COD_AUTNM_PREM_TRIAG_DURG, <span class="sc">--</span>Code dautonomie après le premier triage</span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_COD_RAIS_VISIT_DURG, <span class="sc">--</span>Code de raison de visite en urgence</span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_CATG_MAJR_DIAGN_DURG, <span class="sc">--</span>Catégorie majeure de diagnostic</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_COD_DIAGN_MDCAL_CLINQ, <span class="sc">--</span>Code de diagnostic médical clinique </span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">*</span><span class="fu">BD_BDCU.query_V_EPISO_SOIN_DURG_CM.date_dx_var</span>(date_dx_var) as DATE_DX, <span class="sc">*</span><span class="er">/</span></span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_NBR_CNSUL_DURG, <span class="sc">--</span>Nombre de consultations en département durgence</span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_COD_MODE_ARRIV_DURG,<span class="sc">--</span>Code du mode darrivée de lusager en urgence</span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_TYP_ORITN_USAG_DEPAR_DURG,<span class="sc">--</span>Type dorientation de lusager à son départ</span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_NO_ETAB_MSSS,<span class="sc">--</span>Numero de letablissement attribue par MSSS</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="fu">CAST</span>(BD_BDCU.SURG_DH_DEPAR_USAG_DURG <span class="kw">AS</span> <span class="dt">DATE</span>) <span class="kw">AS</span> DF_SOIN_DURG, <span class="co">--DateHeure de départ dun usager</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_DH_PREM_TRIAG_DURG, <span class="co">--Date heure du premier triage durgence</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_DH_PRIS_CHARG_DURG, <span class="co">--Date et heure de prise en charge</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_DH_DEM_ADMIS_DURG, <span class="co">--Date et heure de la demande dadmission en CH</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_DH_DECES_DURG, <span class="co">--Date et heure du décès</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_COD_PRIOR_TRIAG_DURG, <span class="co">--Code de priorité du premier triage</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_COD_AUTNM_PREM_TRIAG_DURG, <span class="co">--Code dautonomie après le premier triage</span></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_COD_RAIS_VISIT_DURG, <span class="co">--Code de raison de visite en urgence</span></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_CATG_MAJR_DIAGN_DURG, <span class="co">--Catégorie majeure de diagnostic</span></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_COD_DIAGN_MDCAL_CLINQ, <span class="co">--Code de diagnostic médical clinique </span></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a><span class="co">/*BD_BDCU.query_V_EPISO_SOIN_DURG_CM.date_dx_var(date_dx_var) as DATE_DX, */</span></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_NBR_CNSUL_DURG, <span class="co">--Nombre de consultations en département durgence</span></span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_COD_MODE_ARRIV_DURG,<span class="co">--Code du mode darrivée de lusager en urgence</span></span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_TYP_ORITN_USAG_DEPAR_DURG,<span class="co">--Type dorientation de lusager à son départ</span></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>BD_BDCU.SURG_NO_ETAB_MSSS,<span class="co">--Numero de letablissement attribue par MSSS</span></span>
 <span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a><span class="sc">--</span> vue<span class="sc">:</span> <span class="fu">PROD.V_FICH_ID_BEN_CM</span> (FIPA); Prod.I_BENF_ADR_CM; DONNE_INESSS.tGI_RLS_RTS</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a><span class="co">-- vue: PROD.V_FICH_ID_BEN_CM (FIPA); Prod.I_BENF_ADR_CM; DONNE_INESSS.tGI_RLS_RTS</span></span>
 <span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>BD_Caract_benef.Sexe,</span>
 <span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a>BD_Caract_benef.DatNais,</span>
 <span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a>BD_Caract_benef.DatDeces,</span>
-<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a><span class="sc">--</span>BD_Caract_benef.Age,</span>
+<span id="cb12-30"><a href="#cb12-30" aria-hidden="true" tabindex="-1"></a><span class="co">--BD_Caract_benef.Age,</span></span>
 <span id="cb12-31"><a href="#cb12-31" aria-hidden="true" tabindex="-1"></a>BD_Caract_benef.RSS_Benf,</span>
 <span id="cb12-32"><a href="#cb12-32" aria-hidden="true" tabindex="-1"></a>BD_Caract_benef.RLS_Benef,</span>
 <span id="cb12-33"><a href="#cb12-33" aria-hidden="true" tabindex="-1"></a>BD_Caract_benef.NomRSS_Benef,</span>
 <span id="cb12-34"><a href="#cb12-34" aria-hidden="true" tabindex="-1"></a>BD_Caract_benef.NomRLS_Benef,</span>
 <span id="cb12-35"><a href="#cb12-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a><span class="sc">--</span> vue<span class="sc">:</span> RES_SSS.V_ETAB_CTRE_HOSP_MSSS_DERN; PROD.V_DECOU_GEO_POSTL_DERN_CP; DONNE_INESSS.tGI_NOM_ETAB_HOSP; DONNE_INESSS.tGI_RLS_RTS</span>
-<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>W.LGEO_COD_TERRI_RLS AS RLS_ETAB,</span>
+<span id="cb12-36"><a href="#cb12-36" aria-hidden="true" tabindex="-1"></a><span class="co">-- vue: RES_SSS.V_ETAB_CTRE_HOSP_MSSS_DERN; PROD.V_DECOU_GEO_POSTL_DERN_CP; DONNE_INESSS.tGI_NOM_ETAB_HOSP; DONNE_INESSS.tGI_RLS_RTS</span></span>
+<span id="cb12-37"><a href="#cb12-37" aria-hidden="true" tabindex="-1"></a>W.LGEO_COD_TERRI_RLS <span class="kw">AS</span> RLS_ETAB,</span>
 <span id="cb12-38"><a href="#cb12-38" aria-hidden="true" tabindex="-1"></a>W.NomRLS_Etab,</span>
-<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>W.CODE_RSS AS RSS_ETAB,</span>
-<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>W.NOM_RSS AS NOM_RSS_Etab,</span>
+<span id="cb12-39"><a href="#cb12-39" aria-hidden="true" tabindex="-1"></a>W.CODE_RSS <span class="kw">AS</span> RSS_ETAB,</span>
+<span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>W.NOM_RSS <span class="kw">AS</span> NOM_RSS_Etab,</span>
 <span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>W.NOM_ETAB </span>
 <span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a>FROM RES_SSS.V_EPISO_SOIN_DURG_CM AS BD_BDCU</span>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> RES_SSS.V_EPISO_SOIN_DURG_CM <span class="kw">AS</span> BD_BDCU</span>
 <span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a><span class="sc">---</span>Requête caractéristiques, rss, rls bénéficiaire</span>
-<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>LEFT <span class="fu">JOIN</span> (</span>
-<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a>SELECT</span>
-<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a>ID,</span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a><span class="co">---Requête caractéristiques, rss, rls bénéficiaire</span></span>
+<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> (</span>
+<span id="cb12-48"><a href="#cb12-48" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span></span>
+<span id="cb12-49"><a href="#cb12-49" aria-hidden="true" tabindex="-1"></a><span class="kw">ID</span>,</span>
 <span id="cb12-50"><a href="#cb12-50" aria-hidden="true" tabindex="-1"></a>Sexe,</span>
 <span id="cb12-51"><a href="#cb12-51" aria-hidden="true" tabindex="-1"></a>DatNais,</span>
 <span id="cb12-52"><a href="#cb12-52" aria-hidden="true" tabindex="-1"></a>DatDeces,</span>
-<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a><span class="sc">--</span>Age,</span>
+<span id="cb12-53"><a href="#cb12-53" aria-hidden="true" tabindex="-1"></a><span class="co">--Age,</span></span>
 <span id="cb12-54"><a href="#cb12-54" aria-hidden="true" tabindex="-1"></a>RSS_Benf,</span>
 <span id="cb12-55"><a href="#cb12-55" aria-hidden="true" tabindex="-1"></a>RLS_Benef,</span>
 <span id="cb12-56"><a href="#cb12-56" aria-hidden="true" tabindex="-1"></a>NomRSS_Benef,</span>
 <span id="cb12-57"><a href="#cb12-57" aria-hidden="true" tabindex="-1"></a>NomRLS_Benef</span>
 <span id="cb12-58"><a href="#cb12-58" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a><span class="fu">FROM</span> (</span>
-<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a>SELECT</span>
-<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>B.BENF_NO_INDIV_BEN_BANLS AS ID,</span>
-<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>B.BENF_COD_SEXE AS Sexe,  <span class="sc">--</span>Sexe du bénéficiaire</span>
-<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>B.BENF_DAT_NAISS AS DatNais,  <span class="sc">--</span>Date de naissance</span>
-<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a>B.BENF_DAT_DECES AS DatDeces, <span class="sc">--</span>Date de décès</span>
-<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a><span class="sc">--</span><span class="fu">CAST</span>(((<span class="fu">CAST</span>(<span class="st">&#39;2020-07-01&#39;</span> AS DATE FORMAT <span class="st">&#39;yyyy-mm-dd&#39;</span>)) <span class="sc">-</span> B.BENF_DAT_NAISS) <span class="sc">/</span> <span class="fl">365.25</span> AS BIGINT) AS Age,</span>
+<span id="cb12-59"><a href="#cb12-59" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> (</span>
+<span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span></span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>B.BENF_NO_INDIV_BEN_BANLS <span class="kw">AS</span> <span class="kw">ID</span>,</span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>B.BENF_COD_SEXE <span class="kw">AS</span> Sexe,  <span class="co">--Sexe du bénéficiaire</span></span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>B.BENF_DAT_NAISS <span class="kw">AS</span> DatNais,  <span class="co">--Date de naissance</span></span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a>B.BENF_DAT_DECES <span class="kw">AS</span> DatDeces, <span class="co">--Date de décès</span></span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a><span class="co">--CAST(((CAST(&#39;2020-07-01&#39; AS DATE FORMAT &#39;yyyy-mm-dd&#39;)) - B.BENF_DAT_NAISS) / 365.25 AS BIGINT) AS Age,</span></span>
 <span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">*</span> On fait le recodage du code RSS pour le code RLS <span class="dv">1610</span>, les variables avec les <span class="fu">NOMS</span> (RSS) sont correctes  <span class="sc">*</span><span class="er">/</span></span>
-<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a>CASE WHEN <span class="at">BD_Adr.LGEO_COD_RSS=</span><span class="dv">16</span> AND BD_Adr.LGEO_COD_TERRI_RLS <span class="fu">IN</span> (<span class="st">&#39;1610&#39;</span>) THEN <span class="dv">15</span></span>
-<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a>ELSE BD_Adr.LGEO_COD_RSS END AS RSS_Benf,</span>
+<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a><span class="co">/* On fait le recodage du code RSS pour le code RLS 1610, les variables avec les NOMS (RSS) sont correctes  */</span></span>
+<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a><span class="cf">CASE</span> <span class="cf">WHEN</span> BD_Adr.LGEO_COD_RSS<span class="op">=</span><span class="dv">16</span> <span class="kw">AND</span> BD_Adr.LGEO_COD_TERRI_RLS <span class="kw">IN</span> (<span class="st">&#39;1610&#39;</span>) <span class="cf">THEN</span> <span class="dv">15</span></span>
+<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a><span class="cf">ELSE</span> BD_Adr.LGEO_COD_RSS <span class="cf">END</span> <span class="kw">AS</span> RSS_Benf,</span>
 <span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a>BD_NomReg_Ben.NomRSS_Benef,</span>
 <span id="cb12-71"><a href="#cb12-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-72"><a href="#cb12-72" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">*</span> On ajoute un codes RLS fonctionnel pour les régions sans RLS on fait le recodgae de code RLS <span class="dv">1610</span>, les variables avec les <span class="fu">NOMS</span> (RLS) sont correctes <span class="sc">*</span><span class="er">/</span></span>
-<span id="cb12-73"><a href="#cb12-73" aria-hidden="true" tabindex="-1"></a>CASE</span>
-<span id="cb12-74"><a href="#cb12-74" aria-hidden="true" tabindex="-1"></a>WHEN <span class="at">BD_Adr.LGEO_COD_RSS=</span><span class="dv">10</span> THEN <span class="st">&#39;1001&#39;</span></span>
-<span id="cb12-75"><a href="#cb12-75" aria-hidden="true" tabindex="-1"></a>WHEN <span class="at">BD_Adr.LGEO_COD_RSS=</span><span class="dv">17</span> THEN <span class="st">&#39;1701&#39;</span></span>
-<span id="cb12-76"><a href="#cb12-76" aria-hidden="true" tabindex="-1"></a>WHEN <span class="at">BD_Adr.LGEO_COD_RSS=</span><span class="dv">18</span> THEN <span class="st">&#39;1801&#39;</span></span>
-<span id="cb12-77"><a href="#cb12-77" aria-hidden="true" tabindex="-1"></a>WHEN BD_Adr.LGEO_COD_TERRI_RLS <span class="fu">IN</span> (<span class="st">&#39;1610&#39;</span>) THEN <span class="st">&#39;0511&#39;</span> ELSE BD_Adr.LGEO_COD_TERRI_RLS END AS RLS_Benef,</span>
+<span id="cb12-72"><a href="#cb12-72" aria-hidden="true" tabindex="-1"></a><span class="co">/* On ajoute un codes RLS fonctionnel pour les régions sans RLS on fait le recodgae de code RLS 1610, les variables avec les NOMS (RLS) sont correctes */</span></span>
+<span id="cb12-73"><a href="#cb12-73" aria-hidden="true" tabindex="-1"></a><span class="cf">CASE</span></span>
+<span id="cb12-74"><a href="#cb12-74" aria-hidden="true" tabindex="-1"></a><span class="cf">WHEN</span> BD_Adr.LGEO_COD_RSS<span class="op">=</span><span class="dv">10</span> <span class="cf">THEN</span> <span class="st">&#39;1001&#39;</span></span>
+<span id="cb12-75"><a href="#cb12-75" aria-hidden="true" tabindex="-1"></a><span class="cf">WHEN</span> BD_Adr.LGEO_COD_RSS<span class="op">=</span><span class="dv">17</span> <span class="cf">THEN</span> <span class="st">&#39;1701&#39;</span></span>
+<span id="cb12-76"><a href="#cb12-76" aria-hidden="true" tabindex="-1"></a><span class="cf">WHEN</span> BD_Adr.LGEO_COD_RSS<span class="op">=</span><span class="dv">18</span> <span class="cf">THEN</span> <span class="st">&#39;1801&#39;</span></span>
+<span id="cb12-77"><a href="#cb12-77" aria-hidden="true" tabindex="-1"></a><span class="cf">WHEN</span> BD_Adr.LGEO_COD_TERRI_RLS <span class="kw">IN</span> (<span class="st">&#39;1610&#39;</span>) <span class="cf">THEN</span> <span class="st">&#39;0511&#39;</span> <span class="cf">ELSE</span> BD_Adr.LGEO_COD_TERRI_RLS <span class="cf">END</span> <span class="kw">AS</span> RLS_Benef,</span>
 <span id="cb12-78"><a href="#cb12-78" aria-hidden="true" tabindex="-1"></a>BD_NomReg_Ben.NomRLS_Benef</span>
 <span id="cb12-79"><a href="#cb12-79" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-80"><a href="#cb12-80" aria-hidden="true" tabindex="-1"></a>FROM PROD.V_FICH_ID_BEN_CM AS B</span>
+<span id="cb12-80"><a href="#cb12-80" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> PROD.V_FICH_ID_BEN_CM <span class="kw">AS</span> B</span>
 <span id="cb12-81"><a href="#cb12-81" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-82"><a href="#cb12-82" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">**********************************************************</span></span>
-<span id="cb12-83"><a href="#cb12-83" aria-hidden="true" tabindex="-1"></a>Découpage géographique du bénéficiaire <span class="sc">:</span> codes RSS et RLS</span>
-<span id="cb12-84"><a href="#cb12-84" aria-hidden="true" tabindex="-1"></a><span class="sc">**</span><span class="er">*********************************************************/</span></span>
-<span id="cb12-85"><a href="#cb12-85" aria-hidden="true" tabindex="-1"></a><span class="er">/*</span> On sélectionne la dernière adresse du bénéficiaire durant la période sélectionnée.</span>
-<span id="cb12-86"><a href="#cb12-86" aria-hidden="true" tabindex="-1"></a>Autres méthodes <span class="sc">:</span></span>
-<span id="cb12-87"><a href="#cb12-87" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="sc">-</span> cibler la première (la plus récente) adresse de la période</span>
-<span id="cb12-88"><a href="#cb12-88" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span><span class="sc">-</span> cibler ladresse dans laquelle le BEN a résidé le plus longtemps durant la période</span>
-<span id="cb12-89"><a href="#cb12-89" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span><span class="sc">-</span> cibler ladresse à une date <span class="fu">fixe</span> (p. ex. <span class="dv">31</span> mars, <span class="dv">1</span> juillet, mi<span class="sc">-</span>année) <span class="sc">*</span><span class="er">/</span></span>
+<span id="cb12-82"><a href="#cb12-82" aria-hidden="true" tabindex="-1"></a><span class="co">/**********************************************************</span></span>
+<span id="cb12-83"><a href="#cb12-83" aria-hidden="true" tabindex="-1"></a><span class="co">Découpage géographique du bénéficiaire : codes RSS et RLS</span></span>
+<span id="cb12-84"><a href="#cb12-84" aria-hidden="true" tabindex="-1"></a><span class="co">***********************************************************/</span></span>
+<span id="cb12-85"><a href="#cb12-85" aria-hidden="true" tabindex="-1"></a><span class="co">/* On sélectionne la dernière adresse du bénéficiaire durant la période sélectionnée.</span></span>
+<span id="cb12-86"><a href="#cb12-86" aria-hidden="true" tabindex="-1"></a><span class="co">Autres méthodes :</span></span>
+<span id="cb12-87"><a href="#cb12-87" aria-hidden="true" tabindex="-1"></a><span class="co">1- cibler la première (la plus récente) adresse de la période</span></span>
+<span id="cb12-88"><a href="#cb12-88" aria-hidden="true" tabindex="-1"></a><span class="co">2- cibler ladresse dans laquelle le BEN a résidé le plus longtemps durant la période</span></span>
+<span id="cb12-89"><a href="#cb12-89" aria-hidden="true" tabindex="-1"></a><span class="co">3- cibler ladresse à une date fixe (p. ex. 31 mars, 1 juillet, mi-année) */</span></span>
 <span id="cb12-90"><a href="#cb12-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-91"><a href="#cb12-91" aria-hidden="true" tabindex="-1"></a>LEFT <span class="fu">JOIN</span> (</span>
-<span id="cb12-92"><a href="#cb12-92" aria-hidden="true" tabindex="-1"></a><span class="fu">query_V_EPISO_SOIN_DURG_CM.where_I_BENF_ADR_CM</span>(benef_adr,debut_periode,fin_periode,date_adr),</span>
-<span id="cb12-93"><a href="#cb12-93" aria-hidden="true" tabindex="-1"></a>) AS BD_Adr</span>
-<span id="cb12-94"><a href="#cb12-94" aria-hidden="true" tabindex="-1"></a>ON <span class="at">B.BENF_NO_INDIV_BEN_BANLS=</span>BD_Adr.BENF_NO_INDIV_BEN_BANLS</span>
-<span id="cb12-95"><a href="#cb12-95" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-96"><a href="#cb12-96" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">*</span> On ajoute ici les NOMS des codes RSS et RLS du bénéficiaire <span class="sc">:</span> ceci serait optionnel si la requête est trop lourde <span class="sc">*</span><span class="er">/</span></span>
-<span id="cb12-97"><a href="#cb12-97" aria-hidden="true" tabindex="-1"></a>LEFT <span class="fu">JOIN</span> (</span>
-<span id="cb12-98"><a href="#cb12-98" aria-hidden="true" tabindex="-1"></a>SELECT</span>
-<span id="cb12-99"><a href="#cb12-99" aria-hidden="true" tabindex="-1"></a>CodRLS,</span>
-<span id="cb12-100"><a href="#cb12-100" aria-hidden="true" tabindex="-1"></a>NomRLS AS NomRLS_Benef,</span>
-<span id="cb12-101"><a href="#cb12-101" aria-hidden="true" tabindex="-1"></a>NomRSS AS NomRSS_Benef</span>
-<span id="cb12-102"><a href="#cb12-102" aria-hidden="true" tabindex="-1"></a>FROM DONNE_INESSS.tGI_RLS_RTS) AS BD_NomReg_Ben</span>
-<span id="cb12-103"><a href="#cb12-103" aria-hidden="true" tabindex="-1"></a>ON <span class="at">BD_Adr.LGEO_COD_TERRI_RLS=</span>BD_NomReg_Ben.CodRLS</span>
-<span id="cb12-104"><a href="#cb12-104" aria-hidden="true" tabindex="-1"></a>) AS BD_Caract</span>
-<span id="cb12-105"><a href="#cb12-105" aria-hidden="true" tabindex="-1"></a>) AS BD_Caract_benef</span>
-<span id="cb12-106"><a href="#cb12-106" aria-hidden="true" tabindex="-1"></a>ON BD_Caract_benef.ID<span class="ot">=</span>BD_BDCU.SURG_NO_INDIV_BEN_BANLS</span>
-<span id="cb12-107"><a href="#cb12-107" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-108"><a href="#cb12-108" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-109"><a href="#cb12-109" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-110"><a href="#cb12-110" aria-hidden="true" tabindex="-1"></a><span class="sc">---</span>Requête Étabilissement de soins</span>
-<span id="cb12-111"><a href="#cb12-111" aria-hidden="true" tabindex="-1"></a>LEFT <span class="fu">JOIN</span> (</span>
-<span id="cb12-112"><a href="#cb12-112" aria-hidden="true" tabindex="-1"></a>SELECT</span>
-<span id="cb12-113"><a href="#cb12-113" aria-hidden="true" tabindex="-1"></a>Z.ETAB_NO_ETAB_MSSS,</span>
-<span id="cb12-114"><a href="#cb12-114" aria-hidden="true" tabindex="-1"></a>Z.LGEO_COD_TERRI_RLS,</span>
-<span id="cb12-115"><a href="#cb12-115" aria-hidden="true" tabindex="-1"></a>Z.NomRLS_Etab,</span>
-<span id="cb12-116"><a href="#cb12-116" aria-hidden="true" tabindex="-1"></a>Z.CODE_RSS,</span>
-<span id="cb12-117"><a href="#cb12-117" aria-hidden="true" tabindex="-1"></a>Z.NOM_RSS,</span>
-<span id="cb12-118"><a href="#cb12-118" aria-hidden="true" tabindex="-1"></a>NOM_ETAB</span>
+<span id="cb12-91"><a href="#cb12-91" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> (</span>
+<span id="cb12-92"><a href="#cb12-92" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span></span>
+<span id="cb12-93"><a href="#cb12-93" aria-hidden="true" tabindex="-1"></a>              BENF_NO_INDIV_BEN_BANLS,</span>
+<span id="cb12-94"><a href="#cb12-94" aria-hidden="true" tabindex="-1"></a>              BENF_DD_ADR_BEN,</span>
+<span id="cb12-95"><a href="#cb12-95" aria-hidden="true" tabindex="-1"></a>              BENF_DF_ADR_BEN,</span>
+<span id="cb12-96"><a href="#cb12-96" aria-hidden="true" tabindex="-1"></a>              LGEO_COD_RSS,</span>
+<span id="cb12-97"><a href="#cb12-97" aria-hidden="true" tabindex="-1"></a>              LGEO_COD_TERRI_RLS</span>
+<span id="cb12-98"><a href="#cb12-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-99"><a href="#cb12-99" aria-hidden="true" tabindex="-1"></a>              <span class="kw">FROM</span> Prod.I_BENF_ADR_CM</span>
+<span id="cb12-100"><a href="#cb12-100" aria-hidden="true" tabindex="-1"></a>              <span class="kw">WHERE</span> BENF_IND_ADR_HQ <span class="kw">IN</span> (<span class="st">&#39;N&#39;</span>) <span class="kw">AND</span> BENF_COD_TYP_ADR <span class="kw">IN</span> (<span class="st">&#39;R&#39;</span>)</span>
+<span id="cb12-101"><a href="#cb12-101" aria-hidden="true" tabindex="-1"></a>              <span class="kw">AND</span> (BENF_DD_ADR_BEN<span class="op">&lt;=</span><span class="st">&#39;2022-03-31&#39;</span> <span class="kw">AND</span> BENF_DF_ADR_BEN<span class="op">&gt;=</span><span class="st">&#39;2021-04-01&#39;</span>)</span>
+<span id="cb12-102"><a href="#cb12-102" aria-hidden="true" tabindex="-1"></a>              QUALIFY <span class="fu">Row_Number</span>()<span class="kw">Over</span> (<span class="kw">PARTITION</span> <span class="kw">BY</span> BENF_NO_INDIV_BEN_BANLS <span class="kw">ORDER</span> <span class="kw">BY</span> BENF_DD_ADR_BEN <span class="kw">DESC</span>)<span class="op">=</span><span class="dv">1</span> <span class="co">--dernière adresse</span></span>
+<span id="cb12-103"><a href="#cb12-103" aria-hidden="true" tabindex="-1"></a>) <span class="kw">AS</span> BD_Adr</span>
+<span id="cb12-104"><a href="#cb12-104" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> B.BENF_NO_INDIV_BEN_BANLS<span class="op">=</span>BD_Adr.BENF_NO_INDIV_BEN_BANLS</span>
+<span id="cb12-105"><a href="#cb12-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-106"><a href="#cb12-106" aria-hidden="true" tabindex="-1"></a><span class="co">/* On ajoute ici les NOMS des codes RSS et RLS du bénéficiaire : ceci serait optionnel si la requête est trop lourde */</span></span>
+<span id="cb12-107"><a href="#cb12-107" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> (</span>
+<span id="cb12-108"><a href="#cb12-108" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span></span>
+<span id="cb12-109"><a href="#cb12-109" aria-hidden="true" tabindex="-1"></a>CodRLS,</span>
+<span id="cb12-110"><a href="#cb12-110" aria-hidden="true" tabindex="-1"></a>NomRLS <span class="kw">AS</span> NomRLS_Benef,</span>
+<span id="cb12-111"><a href="#cb12-111" aria-hidden="true" tabindex="-1"></a>NomRSS <span class="kw">AS</span> NomRSS_Benef</span>
+<span id="cb12-112"><a href="#cb12-112" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> DONNE_INESSS.tGI_RLS_RTS) <span class="kw">AS</span> BD_NomReg_Ben</span>
+<span id="cb12-113"><a href="#cb12-113" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> BD_Adr.LGEO_COD_TERRI_RLS<span class="op">=</span>BD_NomReg_Ben.CodRLS</span>
+<span id="cb12-114"><a href="#cb12-114" aria-hidden="true" tabindex="-1"></a>) <span class="kw">AS</span> BD_Caract</span>
+<span id="cb12-115"><a href="#cb12-115" aria-hidden="true" tabindex="-1"></a>) <span class="kw">AS</span> BD_Caract_benef</span>
+<span id="cb12-116"><a href="#cb12-116" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> BD_Caract_benef.<span class="kw">ID</span><span class="op">=</span>BD_BDCU.SURG_NO_INDIV_BEN_BANLS</span>
+<span id="cb12-117"><a href="#cb12-117" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-118"><a href="#cb12-118" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-119"><a href="#cb12-119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-120"><a href="#cb12-120" aria-hidden="true" tabindex="-1"></a><span class="fu">FROM</span> (</span>
-<span id="cb12-121"><a href="#cb12-121" aria-hidden="true" tabindex="-1"></a>SELECT <span class="sc">*</span></span>
-<span id="cb12-122"><a href="#cb12-122" aria-hidden="true" tabindex="-1"></a><span class="fu">FROM</span> (</span>
-<span id="cb12-123"><a href="#cb12-123" aria-hidden="true" tabindex="-1"></a>SELECT distinct</span>
-<span id="cb12-124"><a href="#cb12-124" aria-hidden="true" tabindex="-1"></a>ETAB_NO_ETAB,</span>
-<span id="cb12-125"><a href="#cb12-125" aria-hidden="true" tabindex="-1"></a>ETAB_NO_ETAB_MSSS,</span>
-<span id="cb12-126"><a href="#cb12-126" aria-hidden="true" tabindex="-1"></a>ETAB_COD_POSTL</span>
-<span id="cb12-127"><a href="#cb12-127" aria-hidden="true" tabindex="-1"></a>FROM RES_SSS.V_ETAB_CTRE_HOSP_MSSS_DERN</span>
-<span id="cb12-128"><a href="#cb12-128" aria-hidden="true" tabindex="-1"></a>) AS A</span>
+<span id="cb12-120"><a href="#cb12-120" aria-hidden="true" tabindex="-1"></a><span class="co">---Requête Étabilissement de soins</span></span>
+<span id="cb12-121"><a href="#cb12-121" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> (</span>
+<span id="cb12-122"><a href="#cb12-122" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span></span>
+<span id="cb12-123"><a href="#cb12-123" aria-hidden="true" tabindex="-1"></a>Z.ETAB_NO_ETAB_MSSS,</span>
+<span id="cb12-124"><a href="#cb12-124" aria-hidden="true" tabindex="-1"></a>Z.LGEO_COD_TERRI_RLS,</span>
+<span id="cb12-125"><a href="#cb12-125" aria-hidden="true" tabindex="-1"></a>Z.NomRLS_Etab,</span>
+<span id="cb12-126"><a href="#cb12-126" aria-hidden="true" tabindex="-1"></a>Z.CODE_RSS,</span>
+<span id="cb12-127"><a href="#cb12-127" aria-hidden="true" tabindex="-1"></a>Z.NOM_RSS,</span>
+<span id="cb12-128"><a href="#cb12-128" aria-hidden="true" tabindex="-1"></a>NOM_ETAB</span>
 <span id="cb12-129"><a href="#cb12-129" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-130"><a href="#cb12-130" aria-hidden="true" tabindex="-1"></a>LEFT <span class="fu">JOIN</span> (</span>
-<span id="cb12-131"><a href="#cb12-131" aria-hidden="true" tabindex="-1"></a>SELECT</span>
-<span id="cb12-132"><a href="#cb12-132" aria-hidden="true" tabindex="-1"></a>LGEO_COD_POSTL,</span>
-<span id="cb12-133"><a href="#cb12-133" aria-hidden="true" tabindex="-1"></a>LGEO_COD_TERRI_RLS</span>
-<span id="cb12-134"><a href="#cb12-134" aria-hidden="true" tabindex="-1"></a>FROM PROD.V_DECOU_GEO_POSTL_DERN_CP</span>
-<span id="cb12-135"><a href="#cb12-135" aria-hidden="true" tabindex="-1"></a>QUALIFY <span class="fu">ROW_NUMBER</span>() <span class="fu">OVER</span> (PARTITION BY LGEO_COD_POSTL ORDER BY LGEO_DD_PER DESC)<span class="ot">=</span><span class="dv">1</span></span>
-<span id="cb12-136"><a href="#cb12-136" aria-hidden="true" tabindex="-1"></a>) AS B</span>
-<span id="cb12-137"><a href="#cb12-137" aria-hidden="true" tabindex="-1"></a>ON <span class="at">A.ETAB_COD_POSTL=</span>B.LGEO_COD_POSTL</span>
-<span id="cb12-138"><a href="#cb12-138" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-139"><a href="#cb12-139" aria-hidden="true" tabindex="-1"></a>LEFT <span class="fu">JOIN</span> (</span>
-<span id="cb12-140"><a href="#cb12-140" aria-hidden="true" tabindex="-1"></a>select</span>
-<span id="cb12-141"><a href="#cb12-141" aria-hidden="true" tabindex="-1"></a>NO_ETAB_MSSS,</span>
-<span id="cb12-142"><a href="#cb12-142" aria-hidden="true" tabindex="-1"></a>NOM_ETAB,</span>
-<span id="cb12-143"><a href="#cb12-143" aria-hidden="true" tabindex="-1"></a>CODE_RSS,</span>
-<span id="cb12-144"><a href="#cb12-144" aria-hidden="true" tabindex="-1"></a>NOM_RSS</span>
-<span id="cb12-145"><a href="#cb12-145" aria-hidden="true" tabindex="-1"></a>FROM DONNE_INESSS.tGI_NOM_ETAB_HOSP</span>
-<span id="cb12-146"><a href="#cb12-146" aria-hidden="true" tabindex="-1"></a>where <span class="at">ROW_NO_ETAB_MSSS=</span><span class="dv">1</span></span>
-<span id="cb12-147"><a href="#cb12-147" aria-hidden="true" tabindex="-1"></a>) AS F</span>
-<span id="cb12-148"><a href="#cb12-148" aria-hidden="true" tabindex="-1"></a>ON <span class="at">A.ETAB_NO_ETAB_MSSS=</span>F.NO_ETAB_MSSS</span>
-<span id="cb12-149"><a href="#cb12-149" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-150"><a href="#cb12-150" aria-hidden="true" tabindex="-1"></a>LEFT <span class="fu">JOIN</span> (</span>
-<span id="cb12-151"><a href="#cb12-151" aria-hidden="true" tabindex="-1"></a>SELECT</span>
-<span id="cb12-152"><a href="#cb12-152" aria-hidden="true" tabindex="-1"></a>CodRLS,</span>
-<span id="cb12-153"><a href="#cb12-153" aria-hidden="true" tabindex="-1"></a>NomRLS AS NomRLS_Etab</span>
-<span id="cb12-154"><a href="#cb12-154" aria-hidden="true" tabindex="-1"></a>FROM DONNE_INESSS.tGI_RLS_RTS</span>
-<span id="cb12-155"><a href="#cb12-155" aria-hidden="true" tabindex="-1"></a>) AS Y</span>
-<span id="cb12-156"><a href="#cb12-156" aria-hidden="true" tabindex="-1"></a>ON <span class="at">B.LGEO_COD_TERRI_RLS=</span>Y.CodRLS</span>
-<span id="cb12-157"><a href="#cb12-157" aria-hidden="true" tabindex="-1"></a>) AS Z</span>
-<span id="cb12-158"><a href="#cb12-158" aria-hidden="true" tabindex="-1"></a>) AS W</span>
-<span id="cb12-159"><a href="#cb12-159" aria-hidden="true" tabindex="-1"></a>ON BD_BDCU.SURG_NO_ETAB_MSSS<span class="ot">=</span>W.ETAB_NO_ETAB_MSSS</span>
-<span id="cb12-160"><a href="#cb12-160" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-161"><a href="#cb12-161" aria-hidden="true" tabindex="-1"></a><span class="sc">/</span><span class="er">*</span> WHERE <span class="fu">query_V_EPISO_SOIN_DURG_CM.date_dx_var</span>(date_dx_var) between <span class="fu">to_date</span>(<span class="st">&#39;&quot;,debut_periode,&quot;&#39;</span>) and <span class="fu">to_date</span>(<span class="st">&#39;&quot;,fin_periode,&quot;&#39;</span>)<span class="sc">*</span><span class="er">/</span></span>
-<span id="cb12-162"><a href="#cb12-162" aria-hidden="true" tabindex="-1"></a><span class="er">/*</span> <span class="fu">query_V_EPISO_SOIN_DURG_CM.diagn</span>(diagn)<span class="sc">*</span><span class="er">/</span></span>
-<span id="cb12-163"><a href="#cb12-163" aria-hidden="true" tabindex="-1"></a>AND SURG_COD_PRIOR_TRIAG_DURG <span class="fu">IN</span> (<span class="st">&#39;1&#39;</span>,<span class="st">&#39;2&#39;</span>,<span class="st">&#39;3&#39;</span>,<span class="st">&#39;4&#39;</span>,<span class="st">&#39;5&#39;</span>)</span>
-<span id="cb12-164"><a href="#cb12-164" aria-hidden="true" tabindex="-1"></a>ORDER BY <span class="dv">1</span></span></code></pre></div>
+<span id="cb12-130"><a href="#cb12-130" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> (</span>
+<span id="cb12-131"><a href="#cb12-131" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb12-132"><a href="#cb12-132" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> (</span>
+<span id="cb12-133"><a href="#cb12-133" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="kw">distinct</span></span>
+<span id="cb12-134"><a href="#cb12-134" aria-hidden="true" tabindex="-1"></a>ETAB_NO_ETAB,</span>
+<span id="cb12-135"><a href="#cb12-135" aria-hidden="true" tabindex="-1"></a>ETAB_NO_ETAB_MSSS,</span>
+<span id="cb12-136"><a href="#cb12-136" aria-hidden="true" tabindex="-1"></a>ETAB_COD_POSTL</span>
+<span id="cb12-137"><a href="#cb12-137" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> RES_SSS.V_ETAB_CTRE_HOSP_MSSS_DERN</span>
+<span id="cb12-138"><a href="#cb12-138" aria-hidden="true" tabindex="-1"></a>) <span class="kw">AS</span> A</span>
+<span id="cb12-139"><a href="#cb12-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-140"><a href="#cb12-140" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> (</span>
+<span id="cb12-141"><a href="#cb12-141" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span></span>
+<span id="cb12-142"><a href="#cb12-142" aria-hidden="true" tabindex="-1"></a>LGEO_COD_POSTL,</span>
+<span id="cb12-143"><a href="#cb12-143" aria-hidden="true" tabindex="-1"></a>LGEO_COD_TERRI_RLS</span>
+<span id="cb12-144"><a href="#cb12-144" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> PROD.V_DECOU_GEO_POSTL_DERN_CP</span>
+<span id="cb12-145"><a href="#cb12-145" aria-hidden="true" tabindex="-1"></a>QUALIFY <span class="fu">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION</span> <span class="kw">BY</span> LGEO_COD_POSTL <span class="kw">ORDER</span> <span class="kw">BY</span> LGEO_DD_PER <span class="kw">DESC</span>)<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb12-146"><a href="#cb12-146" aria-hidden="true" tabindex="-1"></a>) <span class="kw">AS</span> B</span>
+<span id="cb12-147"><a href="#cb12-147" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> A.ETAB_COD_POSTL<span class="op">=</span>B.LGEO_COD_POSTL</span>
+<span id="cb12-148"><a href="#cb12-148" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-149"><a href="#cb12-149" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> (</span>
+<span id="cb12-150"><a href="#cb12-150" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span></span>
+<span id="cb12-151"><a href="#cb12-151" aria-hidden="true" tabindex="-1"></a>NO_ETAB_MSSS,</span>
+<span id="cb12-152"><a href="#cb12-152" aria-hidden="true" tabindex="-1"></a>NOM_ETAB,</span>
+<span id="cb12-153"><a href="#cb12-153" aria-hidden="true" tabindex="-1"></a>CODE_RSS,</span>
+<span id="cb12-154"><a href="#cb12-154" aria-hidden="true" tabindex="-1"></a>NOM_RSS</span>
+<span id="cb12-155"><a href="#cb12-155" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> DONNE_INESSS.tGI_NOM_ETAB_HOSP</span>
+<span id="cb12-156"><a href="#cb12-156" aria-hidden="true" tabindex="-1"></a><span class="kw">where</span> ROW_NO_ETAB_MSSS<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb12-157"><a href="#cb12-157" aria-hidden="true" tabindex="-1"></a>) <span class="kw">AS</span> F</span>
+<span id="cb12-158"><a href="#cb12-158" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> A.ETAB_NO_ETAB_MSSS<span class="op">=</span>F.NO_ETAB_MSSS</span>
+<span id="cb12-159"><a href="#cb12-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-160"><a href="#cb12-160" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> (</span>
+<span id="cb12-161"><a href="#cb12-161" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span></span>
+<span id="cb12-162"><a href="#cb12-162" aria-hidden="true" tabindex="-1"></a>CodRLS,</span>
+<span id="cb12-163"><a href="#cb12-163" aria-hidden="true" tabindex="-1"></a>NomRLS <span class="kw">AS</span> NomRLS_Etab</span>
+<span id="cb12-164"><a href="#cb12-164" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> DONNE_INESSS.tGI_RLS_RTS</span>
+<span id="cb12-165"><a href="#cb12-165" aria-hidden="true" tabindex="-1"></a>) <span class="kw">AS</span> Y</span>
+<span id="cb12-166"><a href="#cb12-166" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> B.LGEO_COD_TERRI_RLS<span class="op">=</span>Y.CodRLS</span>
+<span id="cb12-167"><a href="#cb12-167" aria-hidden="true" tabindex="-1"></a>) <span class="kw">AS</span> Z</span>
+<span id="cb12-168"><a href="#cb12-168" aria-hidden="true" tabindex="-1"></a>) <span class="kw">AS</span> W</span>
+<span id="cb12-169"><a href="#cb12-169" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> BD_BDCU.SURG_NO_ETAB_MSSS<span class="op">=</span>W.ETAB_NO_ETAB_MSSS</span>
+<span id="cb12-170"><a href="#cb12-170" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-171"><a href="#cb12-171" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> SURG_DHD_EPISO_SOIN_DURG <span class="kw">between</span> <span class="st">&#39;2021-04-01&#39;</span> <span class="kw">and</span> <span class="st">&#39;2022-03-31&#39;</span></span>
+<span id="cb12-172"><a href="#cb12-172" aria-hidden="true" tabindex="-1"></a><span class="kw">AND</span> SURG_COD_DIAGN_MDCAL_CLINQ <span class="kw">like</span> <span class="kw">any</span> (<span class="ot">&quot;2500%&quot;</span>, <span class="ot">&quot;2501%&quot;</span>, <span class="ot">&quot;2502%&quot;</span>,<span class="ot">&quot;E100%&quot;</span>, <span class="ot">&quot;E101%&quot;</span>, <span class="ot">&quot;E109%&quot;</span>, <span class="ot">&quot;E110%&quot;</span>, <span class="ot">&quot;E111%&quot;</span>)</span>
+<span id="cb12-173"><a href="#cb12-173" aria-hidden="true" tabindex="-1"></a><span class="kw">AND</span> SURG_COD_PRIOR_TRIAG_DURG <span class="kw">IN</span> (<span class="st">&#39;1&#39;</span>,<span class="st">&#39;2&#39;</span>,<span class="st">&#39;3&#39;</span>,<span class="st">&#39;4&#39;</span>,<span class="st">&#39;5&#39;</span>)</span>
+<span id="cb12-174"><a href="#cb12-174" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> <span class="dv">1</span>;</span></code></pre></div>
 </div>
+<div id="taskextraction_bdcu_occu_civie_durg" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span>
+<code>task=&quot;extraction_BDCU_OCCU_CIVIE_DURG&quot;</code></h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>BD_OCCUCIVIE.SURG_NO_INDIV_BEN_BANLS <span class="kw">AS</span> <span class="kw">ID</span>,<span class="co">--   Numéro d&#39;individu de la personne assurée</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>BD_OCCUCIVIE.SURG_NO_SEQ_OCCU_CIVIE_DURG,<span class="co">-- Numéro de séquence de l&#39;occupation de civière</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>BD_OCCUCIVIE.SURG_DHD_OCCU_CIVIE_DURG,<span class="co">--    Date et heure de début d&#39;occupation de civière</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">Cast</span>(BD_OCCUCIVIE.SURG_DHD_OCCU_CIVIE_DURG <span class="kw">AS</span> <span class="dt">DATE</span>) <span class="kw">AS</span> DD_Occup_civ, <span class="co">-- Date début d&#39;occupation de civière</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>BD_OCCUCIVIE.SURG_DHF_OCCU_CIVIE_DURG,<span class="co">--    Date et heure de fin_cohort d&#39;occupation de civière</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="fu">Cast</span>(BD_OCCUCIVIE.SURG_DHF_OCCU_CIVIE_DURG <span class="kw">AS</span> <span class="dt">DATE</span>) <span class="kw">AS</span> DF_Occup_civ, <span class="co">-- Date début d&#39;occupation de civière</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>BD_OCCUCIVIE.SURG_CATG_CIVIE_DURG <span class="co">--    Catégorie de civière en département d&#39;urgence</span></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> RES_SSS.V_OCCU_CIVIE_DURG_CM <span class="kw">AS</span> BD_OCCUCIVIE</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> <span class="dv">1</span>;</span></code></pre></div>
+</div>
+<div id="taskextraction_bdcu_cnsul_durg-1" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span>
+<code>task=&quot;extraction_BDCU_CNSUL_DURG&quot;</code></h2>
+<div class="sourceCode" id="cb14"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>BD_CNSUL.SURG_NO_INDIV_BEN_BANLS <span class="kw">AS</span> <span class="kw">ID</span>,<span class="co">--   Numéro d&#39;individu de la personne assurée</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>BD_CNSUL.SURG_NO_SEQ_CNSUL_DURG,<span class="co">--  Numéro de séquence de consultation</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>BD_CNSUL.SURG_COD_SPEC_CNSUL_DURG,<span class="co">--    Code de spécialité de consultation d&#39;urgence</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>BD_CNSUL.SURG_COD_ETA_CNSUL_DURG,<span class="co">-- Code spécifiant l&#39;état de la consultation</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>BD_CNSUL.SURG_DH_DEM_CNSUL_DURG,<span class="co">--  Date et heure de la demande de consultation</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a><span class="fu">Cast</span>(BD_CNSUL.SURG_DH_DEM_CNSUL_DURG <span class="kw">AS</span> <span class="dt">DATE</span>) <span class="kw">AS</span> DD_DEM_CNSUL, <span class="co">-- Date demande consult</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>BD_CNSUL.SURG_DH_REAL_CNSUL_DURG, <span class="co">--    Date et heure de réalisation de consultation</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="fu">Cast</span>(BD_CNSUL.SURG_DH_REAL_CNSUL_DURG <span class="kw">AS</span> <span class="dt">DATE</span>) <span class="kw">AS</span> DD_REAL_CNSUL <span class="co">-- Date realisation consult</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> RES_SSS.V_CNSUL_DURG_CM <span class="kw">AS</span> BD_CNSUL</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> <span class="dv">1</span>;</span></code></pre></div>
 </div>
 </div>
 

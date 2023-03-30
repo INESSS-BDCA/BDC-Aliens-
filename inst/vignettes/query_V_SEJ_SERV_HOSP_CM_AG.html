@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Auteurs: Ahmed Ghachem" />
+
+
+<title>query_V_SEJ_SERV_HOSP_CM_AG</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">query_V_SEJ_SERV_HOSP_CM_AG</h1>
+<h4 class="author">Auteurs: Ahmed Ghachem</h4>
+<h4 class="date">Date de création: 27 mars 2023</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#installation-de-la-librairie-r-requetegeneriquebdca"><span class="toc-section-number">1</span> Installation de la librairie R
+<em>RequeteGeneriqueBDCA</em></a>
+<ul>
+<li><a href="#fichier-nécessaire"><span class="toc-section-number">1.1</span> Fichier nécessaire</a></li>
+<li><a href="#activer-la-librairie"><span class="toc-section-number">1.2</span> Activer la librairie</a></li>
+</ul></li>
+<li><a href="#query_v_sej_serv_hosp_cm_ag"><span class="toc-section-number">2</span> query_V_SEJ_SERV_HOSP_CM_AG</a>
+<ul>
+<li><a href="#la-fonction"><span class="toc-section-number">2.1</span>
+La fonction</a></li>
+<li><a href="#définition-des-arguments"><span class="toc-section-number">2.2</span> Définition des arguments</a>
+<ul>
+<li><a href="#query"><span class="toc-section-number">2.2.1</span>
+query</a></li>
+<li><a href="#debut_periode-fin_periode"><span class="toc-section-number">2.2.2</span> debut_periode &amp;
+fin_periode</a></li>
+<li><a href="#date-début-et-fin-de-la-cohorte"><span class="toc-section-number">2.2.3</span> Date début et fin de la
+cohorte</a></li>
+<li><a href="#date_dx_var"><span class="toc-section-number">2.2.4</span>
+date_dx_var</a></li>
+<li><a href="#diagn"><span class="toc-section-number">2.2.5</span>
+diagn</a></li>
+</ul></li>
+<li><a href="#usage-de-la-fonction"><span class="toc-section-number">2.3</span> Usage de la fonction</a></li>
+</ul></li>
+<li><a href="#table-résultante"><span class="toc-section-number">3</span> Table Résultante</a>
+<ul>
+<li><a href="#taskextraction_medecho_sej_serv"><span class="toc-section-number">3.1</span>
+<code>task=&quot;extraction_MEDECHO_SEJ_SERV&quot;</code></a></li>
+</ul></li>
+<li><a href="#discription-de-la-syntaxe-sql"><span class="toc-section-number">4</span> Discription de la syntaxe SQL</a>
+<ul>
+<li><a href="#taskextraction_medecho_sej_serv-1"><span class="toc-section-number">4.1</span>
+<code>task=&quot;extraction_MEDECHO_SEJ_SERV&quot;</code></a></li>
+</ul></li>
+</ul>
+</div>
+
+<div id="installation-de-la-librairie-r-requetegeneriquebdca" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Installation de la
+librairie R <em>RequeteGeneriqueBDCA</em></h1>
+<div id="fichier-nécessaire" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Fichier
+nécessaire</h2>
+<p>Télécharger le fichier <code>RequeteGeneriqueBDCA.x.y.tar.gz</code> à
+partir de Microsoft Teams.<br> <a href="https://msss365.sharepoint.com/:f:/r/teams/INESSS-DocumentationBDCA/Shared%20Documents/Outils/Librairie%20R%20INESSS?csf=1&amp;web=1&amp;e=j5SylU">INESSS
+- Documentation BDCA &gt; Documents &gt; Outils &gt; Librairie R INESSS
+&gt; RequeteGeneriqueBDCA_x.y.z.tar.gz</a>.</p>
+<p>Ouvrir RStudio.</p>
+<p>Dans la console, écrire le code suivant :</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_local</span>(<span class="st">&quot;C:</span><span class="sc">\\</span><span class="st">msXXX</span><span class="sc">\\</span><span class="st">Desktop</span><span class="sc">\\</span><span class="st">RequeteGeneriqueBDCA_x.y.z.tar.gz&quot;</span>)</span></code></pre></div>
+<p>Prendre note que les «<code>\</code>» sont doubles.</p>
+<p>Si la librairie <code>remotes</code> n’est pas installée, écrire dans
+la console le code suivant :
+<code>install.packages(&quot;remotes&quot;)</code>.</p>
+<p>Avant d’installer une librairie, il est préférable de ne pas l’avoir
+<em>appelé</em> auparavant.</p>
+<p>Il est déconseillé de mettre à jour les librairies utilisées par
+<em>RequeteGeneriqueBDCA</em>.</p>
+<p>L’installation se termine lorsqu’on peut lire dans la console :
+<em>DONE (RequeteGeneriqueBDCA)</em>.</p>
+</div>
+<div id="activer-la-librairie" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> Activer la
+librairie</h2>
+<p>Après avoir installé la librairie <em>RequeteGeneriqueBDCA</em>, il
+suffit de l’activer pour avoir accès aux fonctions :</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RequeteGeneriqueBDCA)</span></code></pre></div>
+<hr />
+</div>
+</div>
+<div id="query_v_sej_serv_hosp_cm_ag" class="section level1" number="2">
+<h1><span class="header-section-number">2</span>
+query_V_SEJ_SERV_HOSP_CM_AG</h1>
+<p>La fonction <code>query_V_SEJ_SERV_HOSP_CM_AG</code> est une
+<code>parent_function</code> qui retourne une syntaxe sql pour: <br /> 1)
+extraire les variables pertinentes de MEDECHO
+<code>V_SEJ_SERV_HOSP_CM</code> <br /> 2) extraire les diagnostics pour
+la création d’une cohorte <br /></p>
+<p>Elle est utilisée par: <br /> - la fonction <a href="user_MEDECHO_DIAGN_SEJ_HOSP_CM">user_MEDECHO_DIAGN_SEJ_HOSP_CM</a>
+<br /> - la fonction <a href="SQL_reperage_cond_med.html">SQL_reperage_cond_med</a> <br /></p>
+<div id="la-fonction" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> La fonction</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">query_V_SEJ_SERV_HOSP_CM_AG</span>(query,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                    debut_periode,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                    fin_periode,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                    debut_cohort,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                    fin_cohort,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                    date_dx_var,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                    diagn)</span></code></pre></div>
+</div>
+<div id="définition-des-arguments" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Définition des
+arguments</h2>
+<div id="query" class="section level3" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> query</h3>
+<p>Indiquant la requête à exécuter.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>query<span class="ot">=</span><span class="fu">c</span>(<span class="st">&quot;extraction_MEDECHO_SEJ_SERV&quot;</span>,<span class="st">&quot;extraction_Dx&quot;</span>) </span></code></pre></div>
+</div>
+<div id="debut_periode-fin_periode" class="section level3" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> debut_periode &amp;
+fin_periode</h3>
+<p>Indiquant le début et la fin de la période d’étude au format
+<code>AAAA-MM-JJ</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>debut_periode <span class="ot">=</span> <span class="st">&quot;2021-04-01&quot;</span>, fin_periode <span class="ot">=</span> <span class="st">&quot;2022-03-31&quot;</span></span></code></pre></div>
+</div>
+<div id="date-début-et-fin-de-la-cohorte" class="section level3" number="2.2.3">
+<h3><span class="header-section-number">2.2.3</span> Date début et fin
+de la cohorte</h3>
+<p>Date de début et de fin de la création d’une cohort au format
+AAAA-MM-JJ.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>debut_cohort <span class="ot">=</span> <span class="st">&quot;2018-01-01&quot;</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>fin_cohort <span class="ot">=</span> <span class="st">&quot;2020-12-31&quot;</span></span></code></pre></div>
+</div>
+<div id="date_dx_var" class="section level3" number="2.2.4">
+<h3><span class="header-section-number">2.2.4</span> date_dx_var</h3>
+<p>Un vecteur indiquant si on utilise la date d’admission ou la date de
+départ comme date indexe pour l’étude.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>date_dx_var<span class="ot">=</span><span class="fu">c</span>(<span class="st">&#39;admis&#39;</span>,<span class="st">&#39;depar&#39;</span>)</span></code></pre></div>
+</div>
+<div id="diagn" class="section level3" number="2.2.5">
+<h3><span class="header-section-number">2.2.5</span> diagn</h3>
+<p><code>list</code> contenant les codes diagnostics CIM9 et CIM10.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>diagn <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">diabete =</span> <span class="fu">list</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">CIM9 =</span> <span class="fu">c</span>(<span class="st">&quot;2500%&quot;</span>, <span class="st">&quot;2501%&quot;</span>, <span class="st">&quot;2502%&quot;</span>),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">CIM10 =</span> <span class="fu">c</span>(<span class="st">&quot;E100%&quot;</span>, <span class="st">&quot;E101%&quot;</span>, <span class="st">&quot;E109%&quot;</span>, <span class="st">&quot;E110%&quot;</span>, <span class="st">&quot;E111%&quot;</span>, <span class="st">&quot;E119%&quot;</span>, <span class="st">&quot;E130%&quot;</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>              <span class="st">&quot;E131%&quot;</span>, <span class="st">&quot;E139%&quot;</span>, <span class="st">&quot;E140%&quot;</span>, <span class="st">&quot;E141%&quot;</span>, <span class="st">&quot;E149%&quot;</span>)),</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">diabete_complication =</span> <span class="fu">list</span>(</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">CIM9 =</span> <span class="fu">paste0</span>(<span class="dv">2503</span><span class="sc">:</span><span class="dv">2509</span>, <span class="st">&quot;%&quot;</span>),</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">CIM10 =</span> <span class="fu">paste0</span>(<span class="st">&quot;E&quot;</span>, <span class="fu">c</span>(<span class="dv">102</span><span class="sc">:</span><span class="dv">108</span>, <span class="dv">112</span><span class="sc">:</span><span class="dv">118</span>, <span class="dv">132</span><span class="sc">:</span><span class="dv">138</span>, <span class="dv">142</span><span class="sc">:</span><span class="dv">148</span>), <span class="st">&quot;%&quot;</span>)</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+</div>
+<div id="usage-de-la-fonction" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Usage de la
+fonction</h2>
+<p>La fonction <code>query_V_SEJ_SERV_HOSP_CM_AG</code> est
+principalement utilisée par la fonction
+<code>user_MEDECHO_DIAGN_SEJ_HOSP_CM</code>. Voir <a href="user_MEDECHO_DIAGN_SEJ_HOSP_CM.html">user_MEDECHO_DIAGN_SEJ_HOSP_CM</a><br />.
+Elle peut-être également exécutée indépendament des autres
+fonctions.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>DT<span class="ot">&lt;-</span>data.table<span class="sc">::</span><span class="fu">as.data.table</span>(odbc<span class="sc">::</span><span class="fu">dbGetQuery</span>(<span class="at">conn=</span><span class="fu">SQL_connexion</span>(),</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="at">statement=</span><span class="fu">query_V_SEJ_SERV_HOSP_CM_AG</span> (</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="at">query=</span><span class="st">&quot;extraction_MEDECHO_SEJ_SERV&quot;</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="at">debut_periode=</span><span class="st">&quot;2021-04-01&quot;</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="at">fin_periode=</span><span class="st">&quot;2022-03-31&quot;</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="at">date_dx_var=</span><span class="fu">c</span>(<span class="st">&#39;admis&#39;</span>, <span class="st">&#39;depar&#39;</span>),</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="at">diagn =</span> <span class="fu">list</span>(<span class="at">diabete =</span> <span class="fu">list</span>(<span class="at">CIM9 =</span> <span class="fu">c</span>(<span class="st">&quot;2500%&quot;</span>, <span class="st">&quot;2501%&quot;</span>, <span class="st">&quot;2502%&quot;</span>),<span class="at">CIM10 =</span> <span class="fu">c</span>(<span class="st">&quot;E100%&quot;</span>, <span class="st">&quot;E101%&quot;</span>, <span class="st">&quot;E109%&quot;</span>, <span class="st">&quot;E110%&quot;</span>, <span class="st">&quot;E111%&quot;</span>)))</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a> ))</span></code></pre></div>
+</div>
+</div>
+<div id="table-résultante" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Table Résultante</h1>
+<div id="taskextraction_medecho_sej_serv" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span>
+<code>task=&quot;extraction_MEDECHO_SEJ_SERV&quot;</code></h2>
+<p>Extraction des variables pertinentes de MEDECHO: V_SEJ_SERV_HOSP_CM.
+Une base de données avec 11 variables. - <strong>ID </strong> : Numéro
+du bénéficiaire <br /> - <strong>SHOP_NO_INDIV_BEN_BANLS</strong> :
+Numéro d’individu de la personne assurée <br /> -
+<strong>SHOP_NO_SEQ_SEJ_HOSP</strong> : No séquentiel séjour hospitalier
+<br /> - <strong>SHOP_NO_SEJ_SERV_HOSP</strong> : No séjour service
+hospitalier <br /> - <strong>SHOP_TYP_SEJ_SERV_HOSP</strong> : Type
+séjour service hospitalier <br /> -
+<strong>SHOP_COD_SERV_SEJ_HOSP</strong> : Code service séjour
+hospitalier <br /> - <strong>SHOP_COD_SPEC_SEJ_HOSP_SERV</strong> : Code
+spécialité séjour hospitalier service <br /> -
+<strong>SHOP_COD_DIAGN_MDCAL_CLINQ</strong> : Code de diagnostic médical
+clinique <br /> - <strong>SHOP_NO_SEQ_SYS_CLA</strong> : No séquentiel
+système classification <br /> -
+<strong>SHOP_COD_CAR_DIAGN_SERV_HOSP</strong> : Caractéristique
+diagnostic service hospitalier <br /> -
+<strong>SHOP_NBR_JR_SEJ_SERV_HOSP</strong> : Nombre jour séjour service
+hospitalier <br /></p>
+</div>
+</div>
+<div id="discription-de-la-syntaxe-sql" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Discription de la
+syntaxe SQL</h1>
+<div id="taskextraction_medecho_sej_serv-1" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span>
+<code>task=&quot;extraction_MEDECHO_SEJ_SERV&quot;</code></h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>SHOP_NO_INDIV_BEN_BANLS <span class="kw">as</span> <span class="kw">ID</span>,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>SHOP_DAT_ADMIS_SEJ_HOSP <span class="kw">as</span> DATE_DX,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>SHOP_COD_DIAGN_MDCAL_CLINQ <span class="kw">AS</span> DX,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>SHOP_DAT_ADMIS_SEJ_HOSP,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>SHOP_DAT_DEPAR_SEJ_HOSP,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>SHOP_NO_SEQ_SEJ_HOSP,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>SHOP_NO_ETAB_MSSS,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>SHOP_TYP_SOIN_SEJ_HOSP,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>SHOP_NO_SEQ_SYS_CLA ,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="kw">From</span> RES_SSS.V_SEJ_SERV_HOSP_CM,</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> SHOP_DAT_ADMIS_SEJ_HOSP <span class="kw">between</span> <span class="st">&#39;2021-04-01&#39;</span> <span class="kw">and</span> <span class="st">&#39;2022-03-31&#39;</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="kw">AND</span> SHOP_COD_DIAGN_MDCAL_CLINQ <span class="kw">like</span> <span class="kw">any</span> (<span class="ot">&quot;2500%&quot;</span>, <span class="ot">&quot;2501%&quot;</span>, <span class="ot">&quot;2502%&quot;</span>,<span class="ot">&quot;E100%&quot;</span>, <span class="ot">&quot;E101%&quot;</span>, <span class="ot">&quot;E109%&quot;</span>, <span class="ot">&quot;E110%&quot;</span>, <span class="ot">&quot;E111%&quot;</span>)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>;</span></code></pre></div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

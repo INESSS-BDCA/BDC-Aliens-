@@ -857,10 +857,10 @@ user_I_SMOD_SERV_MD_CM_AG<-function(task,
 
             # Define a function to filter and plot the data for each CodeActe
             list_code <- unique(DT_final$CodeActe)
-            filter_and_plot <- function(CodeActe) {
+            filter_and_plot <- function(codeActe) {
               data <- DT_final %>%
                 select(CodeActe, CoutActe, Desc_SMOD_COD_SPEC) %>%
-                filter(CodeActe == CodeActe, Desc_SMOD_COD_SPEC != "Anesthésiologie")
+                filter(CodeActe == codeActe, Desc_SMOD_COD_SPEC != "Anesthésiologie")
 
               # Calculate statistics for the CodeActe
               max_count <- max(table(data$CoutActe))
@@ -875,7 +875,7 @@ user_I_SMOD_SERV_MD_CM_AG<-function(task,
                 scale_x_continuous(breaks = pretty(range(DT_final$CoutActe))) +
                 scale_y_continuous(labels = scales::number_format(scale = 1, accuracy = 1)) +
                 labs(x = "Coût Acte", y = "Fréquence",
-                     title = paste0("Code Acte: ", CodeActe)) +
+                     title = paste0("Code Acte: ", codeActe)) +
                 theme(axis.text = element_text(size = 12),
                       axis.title = element_text(size = 14))+
                 geom_vline(xintercept = mean_cout, color = "red", size = 1, linetype = "dashed") +
@@ -900,10 +900,10 @@ user_I_SMOD_SERV_MD_CM_AG<-function(task,
             # coût Anesthésiologie
             # Define a function to filter and plot the data for each CodeActe
             list_code <- unique(DT_final$CodeActe)
-            filter_and_plot <- function(CodeActe) {
+            filter_and_plot <- function(codeActe) {
               data <- DT_final %>%
                 select(CodeActe, CoutActe, Desc_SMOD_COD_SPEC) %>%
-                filter(CodeActe == CodeActe, Desc_SMOD_COD_SPEC == "Anesthésiologie")
+                filter(CodeActe == codeActe, Desc_SMOD_COD_SPEC == "Anesthésiologie")
 
               # Calculate statistics for the CodeActe
               max_count <- max(table(data$CoutActe))
@@ -918,7 +918,7 @@ user_I_SMOD_SERV_MD_CM_AG<-function(task,
                 scale_x_continuous(breaks = pretty(range(DT_final$CoutActe))) +
                 scale_y_continuous(labels = scales::number_format(scale = 1, accuracy = 1)) +
                 labs(x = "Coût Acte", y = "Fréquence",
-                     title = paste0("Code Acte: ", CodeActe)) +
+                     title = paste0("Code Acte: ", codeActe)) +
                 theme(axis.text = element_text(size = 12),
                       axis.title = element_text(size = 14))+
                 geom_vline(xintercept = mean_cout, color = "red", size = 1, linetype = "dashed") +

@@ -118,6 +118,7 @@ query_V_DIAGN_SEJ_HOSP_CM.where_diagn <- function(diagn) {
 #' @encoding UTF-8
 #' @keywords internal
 query_V_DIAGN_SEJ_HOSP_CM.where_diagn_AG <- function(diagn) {
+  if (!is.null(diagn)){
   for (dia in names(diagn)) {
     cim9 <- diagn[[dia]]$CIM9
     cim10 <- diagn[[dia]]$CIM10
@@ -135,20 +136,28 @@ query_V_DIAGN_SEJ_HOSP_CM.where_diagn_AG <- function(diagn) {
       indent(),
       "(SHOP_COD_DIAGN_MDCAL_CLINQ like any (",qu(cim9),") and SHOP_NO_SEQ_SYS_CLA = 4))\n"
     ))
-  } else if (length(cim9) && !length(cim10)) {
+  }
+    else if (length(cim9) && !length(cim10)) {
     # CIM9 seulement
     return(paste0(
       indent(),
       "and SHOP_COD_DIAGN_MDCAL_CLINQ like any (",qu(cim9),") and SHOP_NO_SEQ_SYS_CLA = 4\n"
     ))
-  } else if (!length(cim9) && length(cim10)) {
+  }
+    else if (!length(cim9) && length(cim10)) {
     # CIM10 seulement
     return(paste0(
       indent(),
       "and SHOP_COD_DIAGN_MDCAL_CLINQ like any (",qu(cim10),") and SHOP_NO_SEQ_SYS_CLA = 1\n"
     ))
-  } else {
+  }
+    else {
     stop("query_V_DIAGN_SEJ_HOSP_CM.where_diagn : diagn est vide.")
+  }
+  }
+  else if (is.null(diagn)){
+    return(paste0(
+      "/*SHOP_COD_DIAGN_MDCAL_CLINQ like any ()*/\n"))
   }
 }
 

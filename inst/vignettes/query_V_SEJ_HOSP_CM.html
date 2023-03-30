@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Auteurs: Ahmed Ghachem" />
+
+
+<title>query_V_SEJ_HOSP_CM</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">query_V_SEJ_HOSP_CM</h1>
+<h4 class="author">Auteurs: Ahmed Ghachem</h4>
+<h4 class="date">Date de création: 27 mars 2023</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#installation-de-la-librairie-r-requetegeneriquebdca"><span class="toc-section-number">1</span> Installation de la librairie R
+<em>RequeteGeneriqueBDCA</em></a>
+<ul>
+<li><a href="#fichier-nécessaire"><span class="toc-section-number">1.1</span> Fichier nécessaire</a></li>
+<li><a href="#activer-la-librairie"><span class="toc-section-number">1.2</span> Activer la librairie</a></li>
+</ul></li>
+<li><a href="#query_v_sej_hosp_cm"><span class="toc-section-number">2</span> query_V_SEJ_HOSP_CM</a>
+<ul>
+<li><a href="#la-fonction"><span class="toc-section-number">2.1</span>
+La fonction</a></li>
+<li><a href="#définition-des-arguments"><span class="toc-section-number">2.2</span> Définition des arguments</a>
+<ul>
+<li><a href="#query"><span class="toc-section-number">2.2.1</span>
+query</a></li>
+<li><a href="#debut_periode-fin_periode"><span class="toc-section-number">2.2.2</span> debut_periode &amp;
+fin_periode</a></li>
+<li><a href="#date_dx_var"><span class="toc-section-number">2.2.3</span>
+date_dx_var</a></li>
+<li><a href="#benef_adr"><span class="toc-section-number">2.2.4</span>
+benef_adr</a></li>
+<li><a href="#date_adr"><span class="toc-section-number">2.2.5</span>
+date_adr</a></li>
+</ul></li>
+<li><a href="#usage-de-la-fonction"><span class="toc-section-number">2.3</span> Usage de la fonction</a></li>
+</ul></li>
+<li><a href="#table-résultante"><span class="toc-section-number">3</span> Table Résultante</a>
+<ul>
+<li><a href="#taskextraction_medecho_sej_hosp"><span class="toc-section-number">3.1</span>
+<code>task=&quot;extraction_MEDECHO_SEJ_HOSP&quot;</code></a></li>
+</ul></li>
+<li><a href="#discription-de-la-syntaxe-sql"><span class="toc-section-number">4</span> Discription de la syntaxe SQL</a>
+<ul>
+<li><a href="#taskextraction_medecho_sej_hosp-1"><span class="toc-section-number">4.1</span>
+<code>task=&quot;extraction_MEDECHO_SEJ_HOSP&quot;</code></a></li>
+</ul></li>
+</ul>
+</div>
+
+<div id="installation-de-la-librairie-r-requetegeneriquebdca" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Installation de la
+librairie R <em>RequeteGeneriqueBDCA</em></h1>
+<div id="fichier-nécessaire" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Fichier
+nécessaire</h2>
+<p>Télécharger le fichier <code>RequeteGeneriqueBDCA.x.y.tar.gz</code> à
+partir de Microsoft Teams.<br> <a href="https://msss365.sharepoint.com/:f:/r/teams/INESSS-DocumentationBDCA/Shared%20Documents/Outils/Librairie%20R%20INESSS?csf=1&amp;web=1&amp;e=j5SylU">INESSS
+- Documentation BDCA &gt; Documents &gt; Outils &gt; Librairie R INESSS
+&gt; RequeteGeneriqueBDCA_x.y.z.tar.gz</a>.</p>
+<p>Ouvrir RStudio.</p>
+<p>Dans la console, écrire le code suivant :</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_local</span>(<span class="st">&quot;C:</span><span class="sc">\\</span><span class="st">msXXX</span><span class="sc">\\</span><span class="st">Desktop</span><span class="sc">\\</span><span class="st">RequeteGeneriqueBDCA_x.y.z.tar.gz&quot;</span>)</span></code></pre></div>
+<p>Prendre note que les «<code>\</code>» sont doubles.</p>
+<p>Si la librairie <code>remotes</code> n’est pas installée, écrire dans
+la console le code suivant :
+<code>install.packages(&quot;remotes&quot;)</code>.</p>
+<p>Avant d’installer une librairie, il est préférable de ne pas l’avoir
+<em>appelé</em> auparavant.</p>
+<p>Il est déconseillé de mettre à jour les librairies utilisées par
+<em>RequeteGeneriqueBDCA</em>.</p>
+<p>L’installation se termine lorsqu’on peut lire dans la console :
+<em>DONE (RequeteGeneriqueBDCA)</em>.</p>
+</div>
+<div id="activer-la-librairie" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> Activer la
+librairie</h2>
+<p>Après avoir installé la librairie <em>RequeteGeneriqueBDCA</em>, il
+suffit de l’activer pour avoir accès aux fonctions :</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RequeteGeneriqueBDCA)</span></code></pre></div>
+<hr />
+</div>
+</div>
+<div id="query_v_sej_hosp_cm" class="section level1" number="2">
+<h1><span class="header-section-number">2</span>
+query_V_SEJ_HOSP_CM</h1>
+<p>La fonction <code>query_V_SEJ_HOSP_CM</code> est une
+<code>parent_function</code> qui retourne une syntaxe sql pour: <br /> 1)
+extraire les variables pertinentes de MEDECHO <code>V_SEJ_HOSP_CM</code>
+combinées avec d’autres bases de données pour rajouter les
+caractéristiques du bénéficiaire et de l’établissement de soins.
+<br /></p>
+<p>Elle est utilisée par: <br /> - la fonction <a href="user_MEDECHO_DIAGN_SEJ_HOSP_CM">user_MEDECHO_DIAGN_SEJ_HOSP_CM</a>
+<br /> - la fonction <a href="SQL_reperage_cond_med.html">SQL_reperage_cond_med</a> <br /> -
+…</p>
+<div id="la-fonction" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> La fonction</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">query_V_SEJ_HOSP_CM</span>(query,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>                    debut_periode,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                    fin_periode,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                    date_dx_var,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                    benef_adr,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                    date_adr)</span></code></pre></div>
+</div>
+<div id="définition-des-arguments" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Définition des
+arguments</h2>
+<div id="query" class="section level3" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> query</h3>
+<p>Indiquant la requête à exécuter.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>query<span class="ot">=</span><span class="fu">c</span>(<span class="st">&quot;extraction_MEDECHO_SEJ_HOSP&quot;</span>) </span></code></pre></div>
+</div>
+<div id="debut_periode-fin_periode" class="section level3" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> debut_periode &amp;
+fin_periode</h3>
+<p>Indiquant le début et la fin de la période d’étude au format
+<code>AAAA-MM-JJ</code>.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>debut_periode <span class="ot">=</span> <span class="st">&quot;2021-04-01&quot;</span>, fin_periode <span class="ot">=</span> <span class="st">&quot;2022-03-31&quot;</span></span></code></pre></div>
+</div>
+<div id="date_dx_var" class="section level3" number="2.2.3">
+<h3><span class="header-section-number">2.2.3</span> date_dx_var</h3>
+<p>Un vecteur indiquant si on utilise la date d’admission ou la date de
+départ comme date indexe pour l’étude.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>date_dx_var<span class="ot">=</span><span class="fu">c</span>(<span class="st">&#39;admis&#39;</span>,<span class="st">&#39;depar&#39;</span>)</span></code></pre></div>
+</div>
+<div id="benef_adr" class="section level3" number="2.2.4">
+<h3><span class="header-section-number">2.2.4</span> benef_adr</h3>
+<p>Permet de définir la méthode d’identification de l’adresse du
+bénéficiaire.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>benef_adr<span class="ot">=</span><span class="fu">c</span>(<span class="st">&quot;date_fixe&quot;</span>,<span class="st">&quot;dernière_adresse&quot;</span>,<span class="st">&quot;première_adresse&quot;</span>,<span class="st">&quot;long_adresse&quot;</span>)</span></code></pre></div>
+</div>
+<div id="date_adr" class="section level3" number="2.2.5">
+<h3><span class="header-section-number">2.2.5</span> date_adr</h3>
+<p>Si <code>benef_adr</code>=“date_fixe”, <code>date_adr</code> permet
+de choisir une date fixe pour identifier l’adresse de bénéficiaire.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>date_adr<span class="ot">=</span><span class="st">&quot;2020-07-01&quot;</span></span></code></pre></div>
+</div>
+</div>
+<div id="usage-de-la-fonction" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Usage de la
+fonction</h2>
+<p>La fonction <code>query_V_SEJ_HOSP_CM</code> est principalement
+utilisée par la fonction <code>user_MEDECHO_DIAGN_SEJ_HOSP_CM</code>.
+Voir <a href="user_MEDECHO_DIAGN_SEJ_HOSP_CM.html">user_MEDECHO_DIAGN_SEJ_HOSP_CM</a><br />.
+Elle peut-être également exécutée indépendament des autres
+fonctions.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>DT<span class="ot">&lt;-</span>data.table<span class="sc">::</span><span class="fu">as.data.table</span>(odbc<span class="sc">::</span><span class="fu">dbGetQuery</span>(<span class="at">conn=</span><span class="fu">SQL_connexion</span>(),</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="at">statement=</span><span class="fu">query_V_SEJ_HOSP_CM</span> (</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="at">query=</span><span class="st">&quot;extraction_MEDECHO_SEJ_HOSP&quot;</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="at">debut_periode=</span><span class="st">&quot;2021-04-01&quot;</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="at">fin_periode=</span><span class="st">&quot;2022-03-31&quot;</span>,</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="at">date_dx_var=</span><span class="fu">c</span>(<span class="st">&#39;admis&#39;</span>, <span class="st">&#39;depar&#39;</span>),</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="at">benef_adr=</span><span class="st">&quot;dernière_adresse&quot;</span>,</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a><span class="at">date_adr=</span><span class="cn">NULL</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a> ))</span></code></pre></div>
+</div>
+</div>
+<div id="table-résultante" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Table Résultante</h1>
+<div id="taskextraction_medecho_sej_hosp" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span>
+<code>task=&quot;extraction_MEDECHO_SEJ_HOSP&quot;</code></h2>
+<p>Extraction des variables pertinentes de MEDECHO: V_SEJ_HOSP_CM
+combinées avec les caractéristiques du bénéf et de l’établissement. Une
+base de données avec 35 variables. - <strong>ID </strong> : Numéro du
+bénéficiaire <br /> - <strong>SHOP_NO_SEQ_SEJ_HOSP</strong> : No
+séquentiel séjour hospitalier <br /> - <strong>SHOP_AN_PER_TEMPS</strong>
+: Année période temps <br /> -
+<strong>SHOP_DAT_ARRIV_URG_SEJ_HOSP</strong> : Date arrivée urgence
+séjour hospitalier <br /> - <strong>SHOP_DAT_ADMIS_SEJ_HOSP</strong> :
+Date admission séjour hospitalier <br /> -
+<strong>SHOP_HRE_ADMIS_SEJ_HOSP</strong> : Heure admission séjour
+hospitalier <br /> - <strong>SHOP_DAT_DEPAR_SEJ_HOSP</strong> : Date
+départ séjour hospitalier <br /> -
+<strong>SHOP_HRE_DEPAR_SEJ_HOSP</strong> : Heure départ séjour
+hospitalier <br /> - <strong>SHOP_NBR_JR_ABSNT_SEJ_HOSP</strong> : Nombre
+jour absence séjour hospitalier <br /> -
+<strong>SHOP_TYP_LIEU_SEJ_HOSP_PROVE</strong> : Type lieu séjour
+hospitalier provenance <br /> - <strong>SHOP_NO_ETAB_MSSS_PROVE</strong>
+: No établissement MSSS provenance <br /> -
+<strong>SHOP_TYP_LIEU_SEJ_HOSP_DESTI</strong> : Type lieu séjour
+hospitalier destination <br /> - <strong>SHOP_NO_ETAB_MSSS_DESTI</strong>
+: No établissement MSSS destination <br /> -
+<strong>SHOP_TYP_SOIN_SEJ_HOSP</strong> : Type soins séjour hospitalier
+<br /> - <strong>SHOP_TYP_ADMIS_SEJ_HOSP</strong> : Type admission séjour
+hospitalier <br /> - <strong>SHOP_IND_NOUV_NE_SEJ_HOSP</strong> :
+Indicateur nouveau né séjour hospitalier <br /> -
+<strong>SHOP_TYP_DECES_SEJ_HOSP</strong> : Type décès séjour hospitalier
+<br /> - <strong>SHOP_NBR_CNSUL_SEJ_HOSP</strong> : Nombre consultation
+séjour hospitalier <br /> - <strong>SHOP_DAT_ACCID_SEJ_HOSP</strong> :
+Date accident séjour hospitalier <br /> -
+<strong>SHOP_COD_DIAGN_LIEU_ACCID</strong> : Code diagnostic lieu
+accident <br /> - <strong>SHOP_COD_DIAGN_CAUS_ACCID</strong> : Code
+diagnostic cause accident <br /> - <strong>SHOP_NO_SEQ_SYS_CLA</strong> :
+No séquentiel système classification <br /> -
+<strong>SHOP_NO_ETAB_MSSS</strong> : Numéro del’établissement attribué
+par le MSSS <br /> - <strong>Sexe </strong> : Sexe du bénéficiaire <br />
+- <strong>DatNais </strong> : Date de naissance du bénéficiaire au
+format <em>AAAA-MM-JJ</em> <br /> - <strong>DatDeces </strong> : Date de
+décès du bénéficiaire au format <em>AAAA-MM-JJ</em> <br /> -
+<strong>RSS_Benf </strong>: Régions sociosanitaires (RSS) du
+bénéficiaire <br /> - <strong>RLS_Benef </strong> : Réseaux locaux de
+services (RLS) du bénéficiaire <br /> - <strong>NomRSS_Benef </strong> :
+Nom régions sociosanitaires (RSS) du bénéficiaire <br /> -
+<strong>NomRLS_Benef </strong> : Nom réseaux locaux de services (RLS) du
+bénéficiaire <br /> - <strong>RLS_ETAB </strong> : Régions
+sociosanitaires (RSS) de l’établissement <br /> - <strong>NomRLS_Etab
+</strong> : Nom réseaux locaux de services (RLS) de l’établissement
+<br /> - <strong>RSS_ETAB </strong> : Régions sociosanitaires (RSS) de
+l’établissement <br /> - <strong>NOM_RSS_Etab </strong> : Nom régions
+sociosanitaires (RSS) de l’établissement <br /></p>
+</div>
+</div>
+<div id="discription-de-la-syntaxe-sql" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Discription de la
+syntaxe SQL</h1>
+<div id="taskextraction_medecho_sej_hosp-1" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span>
+<code>task=&quot;extraction_MEDECHO_SEJ_HOSP&quot;</code></h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">select</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_NO_INDIV_BEN_BANLS <span class="kw">AS</span> <span class="kw">ID</span>,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_NO_SEQ_SEJ_HOSP,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_AN_PER_TEMPS,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_DAT_ARRIV_URG_SEJ_HOSP,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_DAT_ADMIS_SEJ_HOSP,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_HRE_ADMIS_SEJ_HOSP,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_DAT_DEPAR_SEJ_HOSP,</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_HRE_DEPAR_SEJ_HOSP,</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_NBR_JR_ABSNT_SEJ_HOSP,</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_TYP_LIEU_SEJ_HOSP_PROVE,</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_NO_ETAB_MSSS_PROVE,</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_TYP_LIEU_SEJ_HOSP_DESTI,</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_NO_ETAB_MSSS_DESTI,</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_TYP_SOIN_SEJ_HOSP,</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_TYP_ADMIS_SEJ_HOSP,</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_IND_NOUV_NE_SEJ_HOSP,</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_TYP_DECES_SEJ_HOSP,</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_NBR_CNSUL_SEJ_HOSP,</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_DAT_ACCID_SEJ_HOSP,</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_COD_DIAGN_LIEU_ACCID,</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_COD_DIAGN_CAUS_ACCID,</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_NO_SEQ_SYS_CLA,</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>BD_sej_hosp.SHOP_NO_ETAB_MSSS,</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a><span class="co">-- vue: PROD.V_FICH_ID_BEN_CM (FIPA); Prod.I_BENF_ADR_CM; DONNE_INESSS.tGI_RLS_RTS</span></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>BD_Caract_benef.Sexe,</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>BD_Caract_benef.DatNais,</span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>BD_Caract_benef.DatDeces,</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>BD_Caract_benef.RSS_Benf,</span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>BD_Caract_benef.RLS_Benef,</span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>BD_Caract_benef.NomRSS_Benef,</span>
+<span id="cb10-33"><a href="#cb10-33" aria-hidden="true" tabindex="-1"></a>BD_Caract_benef.NomRLS_Benef,</span>
+<span id="cb10-34"><a href="#cb10-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-35"><a href="#cb10-35" aria-hidden="true" tabindex="-1"></a><span class="co">-- vue: RES_SSS.V_ETAB_CTRE_HOSP_MSSS_DERN; PROD.V_DECOU_GEO_POSTL_DERN_CP; DONNE_INESSS.tGI_NOM_ETAB_HOSP; DONNE_INESSS.tGI_RLS_RTS</span></span>
+<span id="cb10-36"><a href="#cb10-36" aria-hidden="true" tabindex="-1"></a>W.LGEO_COD_TERRI_RLS <span class="kw">AS</span> RLS_ETAB,</span>
+<span id="cb10-37"><a href="#cb10-37" aria-hidden="true" tabindex="-1"></a>W.NomRLS_Etab,</span>
+<span id="cb10-38"><a href="#cb10-38" aria-hidden="true" tabindex="-1"></a>W.CODE_RSS <span class="kw">AS</span> RSS_ETAB,</span>
+<span id="cb10-39"><a href="#cb10-39" aria-hidden="true" tabindex="-1"></a>W.NOM_RSS <span class="kw">AS</span> NOM_RSS_Etab,</span>
+<span id="cb10-40"><a href="#cb10-40" aria-hidden="true" tabindex="-1"></a>W.NOM_ETAB</span>
+<span id="cb10-41"><a href="#cb10-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-42"><a href="#cb10-42" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> RES_SSS.V_SEJ_HOSP_CM <span class="kw">AS</span> BD_sej_hosp</span>
+<span id="cb10-43"><a href="#cb10-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-44"><a href="#cb10-44" aria-hidden="true" tabindex="-1"></a><span class="co">---Requête caractéristiques, rss, rls bénéficiaire</span></span>
+<span id="cb10-45"><a href="#cb10-45" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> (</span>
+<span id="cb10-46"><a href="#cb10-46" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span></span>
+<span id="cb10-47"><a href="#cb10-47" aria-hidden="true" tabindex="-1"></a>  <span class="kw">ID</span>,</span>
+<span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a>  Sexe,</span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>  DatNais,</span>
+<span id="cb10-50"><a href="#cb10-50" aria-hidden="true" tabindex="-1"></a>  DatDeces,</span>
+<span id="cb10-51"><a href="#cb10-51" aria-hidden="true" tabindex="-1"></a>  <span class="co">--Age,</span></span>
+<span id="cb10-52"><a href="#cb10-52" aria-hidden="true" tabindex="-1"></a>  RSS_Benf,</span>
+<span id="cb10-53"><a href="#cb10-53" aria-hidden="true" tabindex="-1"></a>  RLS_Benef,</span>
+<span id="cb10-54"><a href="#cb10-54" aria-hidden="true" tabindex="-1"></a>  NomRSS_Benef,</span>
+<span id="cb10-55"><a href="#cb10-55" aria-hidden="true" tabindex="-1"></a>  NomRLS_Benef</span>
+<span id="cb10-56"><a href="#cb10-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-57"><a href="#cb10-57" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> (</span>
+<span id="cb10-58"><a href="#cb10-58" aria-hidden="true" tabindex="-1"></a>    <span class="kw">SELECT</span></span>
+<span id="cb10-59"><a href="#cb10-59" aria-hidden="true" tabindex="-1"></a>    B.BENF_NO_INDIV_BEN_BANLS <span class="kw">AS</span> <span class="kw">ID</span>,</span>
+<span id="cb10-60"><a href="#cb10-60" aria-hidden="true" tabindex="-1"></a>    B.BENF_COD_SEXE <span class="kw">AS</span> Sexe,  <span class="co">--Sexe du bénéficiaire</span></span>
+<span id="cb10-61"><a href="#cb10-61" aria-hidden="true" tabindex="-1"></a>    B.BENF_DAT_NAISS <span class="kw">AS</span> DatNais,  <span class="co">--Date de naissance</span></span>
+<span id="cb10-62"><a href="#cb10-62" aria-hidden="true" tabindex="-1"></a>    B.BENF_DAT_DECES <span class="kw">AS</span> DatDeces, <span class="co">--Date de décès</span></span>
+<span id="cb10-63"><a href="#cb10-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-64"><a href="#cb10-64" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* On fait le recodage du code RSS pour le code RLS 1610, les variables avec les NOMS (RSS) sont correctes  */</span></span>
+<span id="cb10-65"><a href="#cb10-65" aria-hidden="true" tabindex="-1"></a>      <span class="cf">CASE</span> <span class="cf">WHEN</span> BD_Adr.LGEO_COD_RSS<span class="op">=</span><span class="dv">16</span> <span class="kw">AND</span> BD_Adr.LGEO_COD_TERRI_RLS <span class="kw">IN</span> (<span class="st">&#39;1610&#39;</span>) <span class="cf">THEN</span> <span class="dv">15</span></span>
+<span id="cb10-66"><a href="#cb10-66" aria-hidden="true" tabindex="-1"></a>    <span class="cf">ELSE</span> BD_Adr.LGEO_COD_RSS <span class="cf">END</span> <span class="kw">AS</span> RSS_Benf,</span>
+<span id="cb10-67"><a href="#cb10-67" aria-hidden="true" tabindex="-1"></a>    BD_NomReg_Ben.NomRSS_Benef,</span>
+<span id="cb10-68"><a href="#cb10-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-69"><a href="#cb10-69" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* On ajoute un codes RLS fonctionnel pour les régions sans RLS on fait le recodgae de code RLS 1610, les variables avec les NOMS (RLS) sont correctes */</span></span>
+<span id="cb10-70"><a href="#cb10-70" aria-hidden="true" tabindex="-1"></a>      <span class="cf">CASE</span></span>
+<span id="cb10-71"><a href="#cb10-71" aria-hidden="true" tabindex="-1"></a>    <span class="cf">WHEN</span> BD_Adr.LGEO_COD_RSS<span class="op">=</span><span class="dv">10</span> <span class="cf">THEN</span> <span class="st">&#39;1001&#39;</span></span>
+<span id="cb10-72"><a href="#cb10-72" aria-hidden="true" tabindex="-1"></a>    <span class="cf">WHEN</span> BD_Adr.LGEO_COD_RSS<span class="op">=</span><span class="dv">17</span> <span class="cf">THEN</span> <span class="st">&#39;1701&#39;</span></span>
+<span id="cb10-73"><a href="#cb10-73" aria-hidden="true" tabindex="-1"></a>    <span class="cf">WHEN</span> BD_Adr.LGEO_COD_RSS<span class="op">=</span><span class="dv">18</span> <span class="cf">THEN</span> <span class="st">&#39;1801&#39;</span></span>
+<span id="cb10-74"><a href="#cb10-74" aria-hidden="true" tabindex="-1"></a>    <span class="cf">WHEN</span> BD_Adr.LGEO_COD_TERRI_RLS <span class="kw">IN</span> (<span class="st">&#39;1610&#39;</span>) <span class="cf">THEN</span> <span class="st">&#39;0511&#39;</span> <span class="cf">ELSE</span> BD_Adr.LGEO_COD_TERRI_RLS <span class="cf">END</span> <span class="kw">AS</span> RLS_Benef,</span>
+<span id="cb10-75"><a href="#cb10-75" aria-hidden="true" tabindex="-1"></a>    BD_NomReg_Ben.NomRLS_Benef</span>
+<span id="cb10-76"><a href="#cb10-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-77"><a href="#cb10-77" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> PROD.V_FICH_ID_BEN_CM <span class="kw">AS</span> B</span>
+<span id="cb10-78"><a href="#cb10-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-79"><a href="#cb10-79" aria-hidden="true" tabindex="-1"></a>    <span class="co">/**********************************************************</span></span>
+<span id="cb10-80"><a href="#cb10-80" aria-hidden="true" tabindex="-1"></a><span class="co">      Découpage géographique du bénéficiaire : codes RSS et RLS</span></span>
+<span id="cb10-81"><a href="#cb10-81" aria-hidden="true" tabindex="-1"></a><span class="co">    ***********************************************************/</span></span>
+<span id="cb10-82"><a href="#cb10-82" aria-hidden="true" tabindex="-1"></a>      <span class="co">/* On sélectionne la dernière adresse du bénéficiaire durant la période sélectionnée.</span></span>
+<span id="cb10-83"><a href="#cb10-83" aria-hidden="true" tabindex="-1"></a><span class="co">    Autres méthodes :</span></span>
+<span id="cb10-84"><a href="#cb10-84" aria-hidden="true" tabindex="-1"></a><span class="co">      1- cibler la première (la plus récente) adresse de la période</span></span>
+<span id="cb10-85"><a href="#cb10-85" aria-hidden="true" tabindex="-1"></a><span class="co">      2- cibler l&#39;adresse dans laquelle le BEN a résidé le plus longtemps durant la période</span></span>
+<span id="cb10-86"><a href="#cb10-86" aria-hidden="true" tabindex="-1"></a><span class="co">      3- cibler l&#39;adresse à une date fixe (p. ex. 31 mars, 1 juillet, mi-année) */</span></span>
+<span id="cb10-87"><a href="#cb10-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-88"><a href="#cb10-88" aria-hidden="true" tabindex="-1"></a>      <span class="kw">LEFT</span> <span class="kw">JOIN</span> (<span class="kw">SELECT</span></span>
+<span id="cb10-89"><a href="#cb10-89" aria-hidden="true" tabindex="-1"></a>              BENF_NO_INDIV_BEN_BANLS,</span>
+<span id="cb10-90"><a href="#cb10-90" aria-hidden="true" tabindex="-1"></a>              BENF_DD_ADR_BEN,</span>
+<span id="cb10-91"><a href="#cb10-91" aria-hidden="true" tabindex="-1"></a>              BENF_DF_ADR_BEN,</span>
+<span id="cb10-92"><a href="#cb10-92" aria-hidden="true" tabindex="-1"></a>              LGEO_COD_RSS,</span>
+<span id="cb10-93"><a href="#cb10-93" aria-hidden="true" tabindex="-1"></a>              LGEO_COD_TERRI_RLS</span>
+<span id="cb10-94"><a href="#cb10-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-95"><a href="#cb10-95" aria-hidden="true" tabindex="-1"></a>              <span class="kw">FROM</span> Prod.I_BENF_ADR_CM</span>
+<span id="cb10-96"><a href="#cb10-96" aria-hidden="true" tabindex="-1"></a>              <span class="kw">WHERE</span> BENF_IND_ADR_HQ <span class="kw">IN</span> (<span class="st">&#39;N&#39;</span>) <span class="kw">AND</span> BENF_COD_TYP_ADR <span class="kw">IN</span> (<span class="st">&#39;R&#39;</span>)</span>
+<span id="cb10-97"><a href="#cb10-97" aria-hidden="true" tabindex="-1"></a>              <span class="kw">AND</span> (BENF_DD_ADR_BEN<span class="op">&lt;=</span><span class="st">&#39;2022-03-31&#39;</span> <span class="kw">AND</span> BENF_DF_ADR_BEN<span class="op">&gt;=</span><span class="st">&#39;2021-04-01&#39;</span>)</span>
+<span id="cb10-98"><a href="#cb10-98" aria-hidden="true" tabindex="-1"></a>              QUALIFY <span class="fu">Row_Number</span>()<span class="kw">Over</span> (<span class="kw">PARTITION</span> <span class="kw">BY</span> BENF_NO_INDIV_BEN_BANLS <span class="kw">ORDER</span> <span class="kw">BY</span> BENF_DD_ADR_BEN <span class="kw">DESC</span>)<span class="op">=</span><span class="dv">1</span> <span class="co">--dernière adresse</span></span>
+<span id="cb10-99"><a href="#cb10-99" aria-hidden="true" tabindex="-1"></a>              ) <span class="kw">AS</span> BD_Adr</span>
+<span id="cb10-100"><a href="#cb10-100" aria-hidden="true" tabindex="-1"></a>              </span>
+<span id="cb10-101"><a href="#cb10-101" aria-hidden="true" tabindex="-1"></a>    <span class="kw">ON</span> B.BENF_NO_INDIV_BEN_BANLS<span class="op">=</span>BD_Adr.BENF_NO_INDIV_BEN_BANLS</span>
+<span id="cb10-102"><a href="#cb10-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-103"><a href="#cb10-103" aria-hidden="true" tabindex="-1"></a>    <span class="co">/* On ajoute ici les NOMS des codes RSS et RLS du bénéficiaire : ceci serait optionnel si la requête est trop lourde */</span></span>
+<span id="cb10-104"><a href="#cb10-104" aria-hidden="true" tabindex="-1"></a>      <span class="kw">LEFT</span> <span class="kw">JOIN</span> (</span>
+<span id="cb10-105"><a href="#cb10-105" aria-hidden="true" tabindex="-1"></a>        <span class="kw">SELECT</span></span>
+<span id="cb10-106"><a href="#cb10-106" aria-hidden="true" tabindex="-1"></a>        CodRLS,</span>
+<span id="cb10-107"><a href="#cb10-107" aria-hidden="true" tabindex="-1"></a>        NomRLS <span class="kw">AS</span> NomRLS_Benef,</span>
+<span id="cb10-108"><a href="#cb10-108" aria-hidden="true" tabindex="-1"></a>        NomRSS <span class="kw">AS</span> NomRSS_Benef</span>
+<span id="cb10-109"><a href="#cb10-109" aria-hidden="true" tabindex="-1"></a>        <span class="kw">FROM</span> DONNE_INESSS.tGI_RLS_RTS) <span class="kw">AS</span> BD_NomReg_Ben</span>
+<span id="cb10-110"><a href="#cb10-110" aria-hidden="true" tabindex="-1"></a>    <span class="kw">ON</span> BD_Adr.LGEO_COD_TERRI_RLS<span class="op">=</span>BD_NomReg_Ben.CodRLS</span>
+<span id="cb10-111"><a href="#cb10-111" aria-hidden="true" tabindex="-1"></a>  ) <span class="kw">AS</span> BD_Caract</span>
+<span id="cb10-112"><a href="#cb10-112" aria-hidden="true" tabindex="-1"></a>) <span class="kw">AS</span> BD_Caract_benef</span>
+<span id="cb10-113"><a href="#cb10-113" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> BD_Caract_benef.<span class="kw">ID</span><span class="op">=</span>BD_sej_hosp.SHOP_NO_INDIV_BEN_BANLS \n<span class="ot">&quot;,</span></span>
+<span id="cb10-114"><a href="#cb10-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-115"><a href="#cb10-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-116"><a href="#cb10-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-117"><a href="#cb10-117" aria-hidden="true" tabindex="-1"></a> <span class="co">---Requête Étabilissement de soins</span></span>
+<span id="cb10-118"><a href="#cb10-118" aria-hidden="true" tabindex="-1"></a><span class="kw">LEFT</span> <span class="kw">JOIN</span> (</span>
+<span id="cb10-119"><a href="#cb10-119" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span></span>
+<span id="cb10-120"><a href="#cb10-120" aria-hidden="true" tabindex="-1"></a>  Z.ETAB_NO_ETAB_MSSS,</span>
+<span id="cb10-121"><a href="#cb10-121" aria-hidden="true" tabindex="-1"></a>  Z.LGEO_COD_TERRI_RLS,</span>
+<span id="cb10-122"><a href="#cb10-122" aria-hidden="true" tabindex="-1"></a>  Z.NomRLS_Etab,</span>
+<span id="cb10-123"><a href="#cb10-123" aria-hidden="true" tabindex="-1"></a>  Z.CODE_RSS,</span>
+<span id="cb10-124"><a href="#cb10-124" aria-hidden="true" tabindex="-1"></a>  Z.NOM_RSS,</span>
+<span id="cb10-125"><a href="#cb10-125" aria-hidden="true" tabindex="-1"></a>  NOM_ETAB</span>
+<span id="cb10-126"><a href="#cb10-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-127"><a href="#cb10-127" aria-hidden="true" tabindex="-1"></a>  <span class="kw">FROM</span> (</span>
+<span id="cb10-128"><a href="#cb10-128" aria-hidden="true" tabindex="-1"></a>    <span class="kw">SELECT</span> <span class="op">*</span></span>
+<span id="cb10-129"><a href="#cb10-129" aria-hidden="true" tabindex="-1"></a>      <span class="kw">FROM</span> (</span>
+<span id="cb10-130"><a href="#cb10-130" aria-hidden="true" tabindex="-1"></a>        <span class="kw">SELECT</span> <span class="kw">distinct</span></span>
+<span id="cb10-131"><a href="#cb10-131" aria-hidden="true" tabindex="-1"></a>        ETAB_NO_ETAB,</span>
+<span id="cb10-132"><a href="#cb10-132" aria-hidden="true" tabindex="-1"></a>        ETAB_NO_ETAB_MSSS,</span>
+<span id="cb10-133"><a href="#cb10-133" aria-hidden="true" tabindex="-1"></a>        ETAB_COD_POSTL</span>
+<span id="cb10-134"><a href="#cb10-134" aria-hidden="true" tabindex="-1"></a>        <span class="kw">FROM</span> RES_SSS.V_ETAB_CTRE_HOSP_MSSS_DERN</span>
+<span id="cb10-135"><a href="#cb10-135" aria-hidden="true" tabindex="-1"></a>      ) <span class="kw">AS</span> A</span>
+<span id="cb10-136"><a href="#cb10-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-137"><a href="#cb10-137" aria-hidden="true" tabindex="-1"></a>    <span class="kw">LEFT</span> <span class="kw">JOIN</span> (</span>
+<span id="cb10-138"><a href="#cb10-138" aria-hidden="true" tabindex="-1"></a>      <span class="kw">SELECT</span></span>
+<span id="cb10-139"><a href="#cb10-139" aria-hidden="true" tabindex="-1"></a>      LGEO_COD_POSTL,</span>
+<span id="cb10-140"><a href="#cb10-140" aria-hidden="true" tabindex="-1"></a>      LGEO_COD_TERRI_RLS</span>
+<span id="cb10-141"><a href="#cb10-141" aria-hidden="true" tabindex="-1"></a>      <span class="kw">FROM</span> PROD.V_DECOU_GEO_POSTL_DERN_CP</span>
+<span id="cb10-142"><a href="#cb10-142" aria-hidden="true" tabindex="-1"></a>      QUALIFY <span class="fu">ROW_NUMBER</span>() <span class="kw">OVER</span> (<span class="kw">PARTITION</span> <span class="kw">BY</span> LGEO_COD_POSTL <span class="kw">ORDER</span> <span class="kw">BY</span> LGEO_DD_PER <span class="kw">DESC</span>)<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb10-143"><a href="#cb10-143" aria-hidden="true" tabindex="-1"></a>    ) <span class="kw">AS</span> B</span>
+<span id="cb10-144"><a href="#cb10-144" aria-hidden="true" tabindex="-1"></a>    <span class="kw">ON</span> A.ETAB_COD_POSTL<span class="op">=</span>B.LGEO_COD_POSTL</span>
+<span id="cb10-145"><a href="#cb10-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-146"><a href="#cb10-146" aria-hidden="true" tabindex="-1"></a>    <span class="kw">LEFT</span> <span class="kw">JOIN</span> (</span>
+<span id="cb10-147"><a href="#cb10-147" aria-hidden="true" tabindex="-1"></a>      <span class="kw">select</span></span>
+<span id="cb10-148"><a href="#cb10-148" aria-hidden="true" tabindex="-1"></a>      NO_ETAB_MSSS,</span>
+<span id="cb10-149"><a href="#cb10-149" aria-hidden="true" tabindex="-1"></a>      NOM_ETAB,</span>
+<span id="cb10-150"><a href="#cb10-150" aria-hidden="true" tabindex="-1"></a>      CODE_RSS,</span>
+<span id="cb10-151"><a href="#cb10-151" aria-hidden="true" tabindex="-1"></a>      NOM_RSS</span>
+<span id="cb10-152"><a href="#cb10-152" aria-hidden="true" tabindex="-1"></a>      <span class="kw">FROM</span> DONNE_INESSS.tGI_NOM_ETAB_HOSP</span>
+<span id="cb10-153"><a href="#cb10-153" aria-hidden="true" tabindex="-1"></a>      <span class="kw">where</span> ROW_NO_ETAB_MSSS<span class="op">=</span><span class="dv">1</span></span>
+<span id="cb10-154"><a href="#cb10-154" aria-hidden="true" tabindex="-1"></a>    ) <span class="kw">AS</span> F</span>
+<span id="cb10-155"><a href="#cb10-155" aria-hidden="true" tabindex="-1"></a>    <span class="kw">ON</span> A.ETAB_NO_ETAB_MSSS<span class="op">=</span>F.NO_ETAB_MSSS</span>
+<span id="cb10-156"><a href="#cb10-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-157"><a href="#cb10-157" aria-hidden="true" tabindex="-1"></a>    <span class="kw">LEFT</span> <span class="kw">JOIN</span> (</span>
+<span id="cb10-158"><a href="#cb10-158" aria-hidden="true" tabindex="-1"></a>      <span class="kw">SELECT</span></span>
+<span id="cb10-159"><a href="#cb10-159" aria-hidden="true" tabindex="-1"></a>      CodRLS,</span>
+<span id="cb10-160"><a href="#cb10-160" aria-hidden="true" tabindex="-1"></a>      NomRLS <span class="kw">AS</span> NomRLS_Etab</span>
+<span id="cb10-161"><a href="#cb10-161" aria-hidden="true" tabindex="-1"></a>      <span class="kw">FROM</span> DONNE_INESSS.tGI_RLS_RTS</span>
+<span id="cb10-162"><a href="#cb10-162" aria-hidden="true" tabindex="-1"></a>    ) <span class="kw">AS</span> Y</span>
+<span id="cb10-163"><a href="#cb10-163" aria-hidden="true" tabindex="-1"></a>    <span class="kw">ON</span> B.LGEO_COD_TERRI_RLS<span class="op">=</span>Y.CodRLS</span>
+<span id="cb10-164"><a href="#cb10-164" aria-hidden="true" tabindex="-1"></a>  ) <span class="kw">AS</span> Z</span>
+<span id="cb10-165"><a href="#cb10-165" aria-hidden="true" tabindex="-1"></a>) <span class="kw">AS</span> W</span>
+<span id="cb10-166"><a href="#cb10-166" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> BD_sej_hosp.SHOP_NO_ETAB_MSSS<span class="op">=</span>W.ETAB_NO_ETAB_MSSS \n<span class="ot">&quot;,</span></span>
+<span id="cb10-167"><a href="#cb10-167" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-168"><a href="#cb10-168" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> SHOP_DAT_ADMIS_SEJ_HOSP <span class="kw">between</span> <span class="st">&#39;2021-04-01&#39;</span> <span class="kw">and</span> <span class="st">&#39;2022-03-31&#39;</span></span>
+<span id="cb10-169"><a href="#cb10-169" aria-hidden="true" tabindex="-1"></a>;</span></code></pre></div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

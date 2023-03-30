@@ -94,10 +94,12 @@ user_I_SMOD_SERV_MD_CM_AG(task,
                           cohort=NULL, # si la cohorte est fournie par l'analyste (cohort=cohort), si on veut créer une nouvelle cohorte (cohort=NULL)
                           debut_periode,
                           fin_periode,
+                          
                           CodeActe,
                           omni_spec,
                           catg_etab, 
                           code_stat_decis,
+                          
                           benef_adr,
                           date_adr, # à spécifier lorsque benef_adr="date_fixe"
                           date_age, # à spécifier lorsque keep_all=TRUE
@@ -110,13 +112,20 @@ user_I_SMOD_SERV_MD_CM_AG(task,
                           date_dx_var,
                           n1,n2,
                           nDx,
-                          setwd,
                           keep_all=FALSE,
+                          
+                          setwd,
                           verbose=TRUE)
 
 ```
 
 ## Définition des arguments
+### task 
+Permet de préciser le type de requête à exécuter.
+```{r}
+task = c("extraction_SMOD","Projet_Factuartion_Acte")
+```
+
 ### Connexion
 La fonction `SQL_connexion` permet à R de se connecter à Teradata. Simplenent inscrire l'identifant et le programme demandera le mot de passe lors de son exécution :
 ```{r}
@@ -340,35 +349,37 @@ Figure 1: variation des coûts de facturation par acte <br/>
 
 
 
+
 ## Usage de la fonction
 ```{r}
 DT_final<-user_I_SMOD_SERV_MD_CM_AG(
-  task=c("extraction_SMOD","extraction_SMOD_combin","Projet_Factuartion_Acte"), 
+  task=c("extraction_SMOD","Projet_Factuartion_Acte"), 
   conn=SQL_connexion("ms069a"), 
   cohort = NULL, 
   debut_periode = "2020-01-01",
   fin_periode = "2020-12-31",
+  
   CodeActe=c('06452','06148','06154','06265','06251','06216'),
   omni_spec="all",
   catg_etab="all",
   code_stat_decis=c("PAY","PPY"),
+  
   benef_adr="dernière_adresse",
   date_adr="2021-07-01",
   date_age="2020-07-01",
-  verbose = TRUE,
-  keep_all=FALSE,
-  setwd="C:/Users/MS069/Desktop/Ahmed/Pojet_Factur_Acte",
- 
-  Dx_table=NULL,
-# list contenant les codes diagnostics CIM9 et CIM10.
-# exemple: Dx_table = list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), '%'), CIM10 = paste0('J', 41:44, '%'))),
+  
+  Dx_table=NULL,# list contenant les codes diagnostics CIM9 et CIM10. Exemple: Dx_table = list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), '%'), CIM10 = paste0('J', 41:44, '%'))),
   debut_cohort = "2018-01-01",
   fin_cohort = "2020-12-31",
   CIM =  c("CIM9", "CIM10"),
   by_Dx = FALSE,
   date_dx_var = "admis",
   n1 = 30, n2 = 730,
-  nDx = 0
+  nDx = 0,
+  keep_all=FALSE,
+  
+  setwd="C:/Users/MS069/Desktop/Ahmed/Pojet_Factur_Acte",
+  verbose = TRUE
 )
 ```
 

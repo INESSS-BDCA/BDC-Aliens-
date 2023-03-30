@@ -1,0 +1,176 @@
+---
+title: "query_V_SEJ_SERV_HOSP_CM_AG"
+#subtitle: ""
+author: "Auteurs: Ahmed Ghachem"
+date: "Date de création: 27 mars 2023"
+output:
+  rmarkdown::html_vignette:
+    number_sections: true
+    toc: true
+params: 
+  output_dir: "C:/Users/MS069/Desktop/Ahmed/INESSS-BDCA/vignettes"
+vignette: >
+  %\VignetteIndexEntry{query_V_SEJ_SERV_HOSP_CM_AG}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  eval = FALSE
+)
+```
+
+# Installation de la librairie R *RequeteGeneriqueBDCA*
+
+## Fichier nécessaire
+
+Télécharger le fichier `RequeteGeneriqueBDCA.x.y.tar.gz` à partir de Microsoft Teams.<br>
+[INESSS - Documentation BDCA > Documents > Outils > Librairie R INESSS > RequeteGeneriqueBDCA_x.y.z.tar.gz](https://msss365.sharepoint.com/:f:/r/teams/INESSS-DocumentationBDCA/Shared%20Documents/Outils/Librairie%20R%20INESSS?csf=1&web=1&e=j5SylU).
+
+Ouvrir RStudio.
+
+Dans la console, écrire le code suivant :
+```{r, eval=FALSE}
+remotes::install_local("C:\\msXXX\\Desktop\\RequeteGeneriqueBDCA_x.y.z.tar.gz")
+```
+Prendre note que les «`\`» sont doubles.
+
+Si la librairie `remotes` n'est pas installée, écrire dans la console le code suivant : `install.packages("remotes")`.
+
+Avant d'installer une librairie, il est préférable de ne pas l'avoir *appelé* auparavant.
+
+Il est déconseillé de mettre à jour les librairies utilisées par *RequeteGeneriqueBDCA*.
+
+L'installation se termine lorsqu'on peut lire dans la console : *DONE (RequeteGeneriqueBDCA)*.
+
+
+## Activer la librairie
+      
+Après avoir installé la librairie *RequeteGeneriqueBDCA*, il suffit de l'activer pour avoir accès aux fonctions :
+```{r, eval=FALSE}
+library(RequeteGeneriqueBDCA)
+```
+
+---
+# query_V_SEJ_SERV_HOSP_CM_AG
+
+La fonction `query_V_SEJ_SERV_HOSP_CM_AG` est une `parent_function` qui retourne une syntaxe sql pour: <br/>
+1) extraire les variables pertinentes de MEDECHO `V_SEJ_SERV_HOSP_CM` <br/>
+2) extraire les diagnostics pour la création d'une cohorte <br/>
+
+Elle est utilisée par: <br/>
+- la fonction [user_MEDECHO_DIAGN_SEJ_HOSP_CM](user_MEDECHO_DIAGN_SEJ_HOSP_CM) <br/>
+- la fonction [SQL_reperage_cond_med](SQL_reperage_cond_med.html) <br/>
+
+
+## La fonction
+
+```{r, eval=FALSE}
+query_V_SEJ_SERV_HOSP_CM_AG(query,
+                    debut_periode,
+                    fin_periode,
+                    debut_cohort,
+                    fin_cohort,
+                    date_dx_var,
+                    diagn)
+```
+
+## Définition des arguments
+
+### query
+Indiquant la requête à exécuter. 
+```{r}
+query=c("extraction_MEDECHO_SEJ_SERV","extraction_Dx") 
+
+```
+
+### debut_periode & fin_periode
+
+Indiquant le début et la fin de la période d'étude au format `AAAA-MM-JJ`.
+```{r, eval=FALSE}
+debut_periode = "2021-04-01", fin_periode = "2022-03-31"
+```
+
+### Date début et fin de la cohorte 
+Date de début et de fin de la création d'une cohort au format AAAA-MM-JJ.
+```{r}
+debut_cohort = "2018-01-01" 
+fin_cohort = "2020-12-31"
+```
+
+### date_dx_var
+Un vecteur indiquant si on utilise la date d'admission ou la date de départ comme date indexe pour l'étude.   
+```{r, eval=FALSE}
+date_dx_var=c('admis','depar')
+```
+    
+### diagn 
+`list` contenant les codes diagnostics CIM9 et CIM10.
+```{r}
+diagn = list(
+  diabete = list(
+    CIM9 = c("2500%", "2501%", "2502%"),
+    CIM10 = c("E100%", "E101%", "E109%", "E110%", "E111%", "E119%", "E130%",
+              "E131%", "E139%", "E140%", "E141%", "E149%")),
+  diabete_complication = list(
+    CIM9 = paste0(2503:2509, "%"),
+    CIM10 = paste0("E", c(102:108, 112:118, 132:138, 142:148), "%")
+  )
+)
+```
+
+
+
+## Usage de la fonction
+
+La fonction `query_V_SEJ_SERV_HOSP_CM_AG` est principalement utilisée par la fonction `user_MEDECHO_DIAGN_SEJ_HOSP_CM`. Voir [user_MEDECHO_DIAGN_SEJ_HOSP_CM](user_MEDECHO_DIAGN_SEJ_HOSP_CM.html)<br/>. Elle peut-être également exécutée indépendament des autres fonctions.   
+
+```{r}
+DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
+statement=query_V_SEJ_SERV_HOSP_CM_AG (
+query="extraction_MEDECHO_SEJ_SERV",
+debut_periode="2021-04-01",
+fin_periode="2022-03-31",
+date_dx_var=c('admis', 'depar'),
+diagn = list(diabete = list(CIM9 = c("2500%", "2501%", "2502%"),CIM10 = c("E100%", "E101%", "E109%", "E110%", "E111%")))
+)
+ ))
+```
+
+# Table Résultante
+## `task="extraction_MEDECHO_SEJ_SERV"`
+ Extraction des variables pertinentes de MEDECHO: V_SEJ_SERV_HOSP_CM. Une base de données avec 11 variables.
+- **ID ** : Numéro du bénéficiaire <br/>
+- **SHOP_NO_INDIV_BEN_BANLS** :	Numéro d'individu de la personne assurée <br/>
+- **SHOP_NO_SEQ_SEJ_HOSP** :	No séquentiel séjour hospitalier <br/>
+- **SHOP_NO_SEJ_SERV_HOSP** :	No séjour service hospitalier <br/>
+- **SHOP_TYP_SEJ_SERV_HOSP** :	Type séjour service hospitalier <br/>
+- **SHOP_COD_SERV_SEJ_HOSP** :	Code service séjour hospitalier <br/>
+- **SHOP_COD_SPEC_SEJ_HOSP_SERV** :	Code spécialité séjour hospitalier service <br/>
+- **SHOP_COD_DIAGN_MDCAL_CLINQ** :	Code de diagnostic médical clinique <br/>
+- **SHOP_NO_SEQ_SYS_CLA** :	No séquentiel système classification <br/>
+- **SHOP_COD_CAR_DIAGN_SERV_HOSP** :	Caractéristique diagnostic service hospitalier <br/>
+- **SHOP_NBR_JR_SEJ_SERV_HOSP** :	Nombre jour séjour service hospitalier <br/>
+
+# Discription de la syntaxe SQL
+## `task="extraction_MEDECHO_SEJ_SERV"`
+```{sql}
+SELECT
+SHOP_NO_INDIV_BEN_BANLS as ID,
+SHOP_DAT_ADMIS_SEJ_HOSP as DATE_DX,
+SHOP_COD_DIAGN_MDCAL_CLINQ AS DX,
+SHOP_DAT_ADMIS_SEJ_HOSP,
+SHOP_DAT_DEPAR_SEJ_HOSP,
+SHOP_NO_SEQ_SEJ_HOSP,
+SHOP_NO_ETAB_MSSS,
+SHOP_TYP_SOIN_SEJ_HOSP,
+SHOP_NO_SEQ_SYS_CLA ,
+
+From RES_SSS.V_SEJ_SERV_HOSP_CM,
+WHERE SHOP_DAT_ADMIS_SEJ_HOSP between '2021-04-01' and '2022-03-31'
+AND SHOP_COD_DIAGN_MDCAL_CLINQ like any ("2500%", "2501%", "2502%","E100%", "E101%", "E109%", "E110%", "E111%")
+;
+```

@@ -13,7 +13,7 @@
 <meta name="author" content="Auteurs: Ahmed Ghachem" />
 
 
-<title>user_V_EPISO_SOIN_DURG_CM_AG</title>
+<title>user_MEDECHO_DIAGN_SEJ_HOSP_CM</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -151,9 +151,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 
 
 
-<h1 class="title toc-ignore">user_V_EPISO_SOIN_DURG_CM_AG</h1>
+<h1 class="title toc-ignore">user_MEDECHO_DIAGN_SEJ_HOSP_CM</h1>
 <h4 class="author">Auteurs: Ahmed Ghachem</h4>
-<h4 class="date">Date de création: 22 février 2023</h4>
+<h4 class="date">Date de création: 27 mars 2023</h4>
 
 
 <div id="TOC">
@@ -164,7 +164,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="#fichier-nécessaire"><span class="toc-section-number">1.1</span> Fichier nécessaire</a></li>
 <li><a href="#activer-la-librairie"><span class="toc-section-number">1.2</span> Activer la librairie</a></li>
 </ul></li>
-<li><a href="#user_v_episo_soin_durg_cm_ag"><span class="toc-section-number">2</span> user_V_EPISO_SOIN_DURG_CM_AG</a>
+<li><a href="#user_medecho_diagn_sej_hosp_cm"><span class="toc-section-number">2</span> user_MEDECHO_DIAGN_SEJ_HOSP_CM</a>
 <ul>
 <li><a href="#la-fonction"><span class="toc-section-number">2.1</span>
 La fonction</a></li>
@@ -196,12 +196,12 @@ verbose</a></li>
 </ul></li>
 <li><a href="#table-résultante"><span class="toc-section-number">3</span> Table Résultante</a>
 <ul>
-<li><a href="#taskextraction_bdcu_episo_soin_durg"><span class="toc-section-number">3.1</span>
-<code>task=&quot;extraction_BDCU_EPISO_SOIN_DURG&quot;</code></a></li>
-<li><a href="#taskextraction_bdcu_occu_civie_durg"><span class="toc-section-number">3.2</span>
-<code>task=&quot;extraction_BDCU_OCCU_CIVIE_DURG&quot;</code></a></li>
-<li><a href="#taskextraction_bdcu_cnsul_durg"><span class="toc-section-number">3.3</span>
-<code>task=&quot;extraction_BDCU_CNSUL_DURG&quot;</code></a></li>
+<li><a href="#taskextraction_medecho_sej_hosp"><span class="toc-section-number">3.1</span>
+<code>task=&quot;extraction_MEDECHO_SEJ_HOSP&quot;</code></a></li>
+<li><a href="#taskextraction_medecho_diagn_sej"><span class="toc-section-number">3.2</span>
+<code>task=&quot;extraction_MEDECHO_DIAGN_SEJ&quot;</code></a></li>
+<li><a href="#taskextraction_medecho_sej_serv"><span class="toc-section-number">3.3</span>
+<code>task=&quot;extraction_MEDECHO_SEJ_SERV&quot;</code></a></li>
 </ul></li>
 <li><a href="#discription-de-la-syntaxe-sql"><span class="toc-section-number">4</span> Discription de la syntaxe
 SQL</a></li>
@@ -241,36 +241,37 @@ suffit de l’activer pour avoir accès aux fonctions :</p>
 <hr />
 </div>
 </div>
-<div id="user_v_episo_soin_durg_cm_ag" class="section level1" number="2">
+<div id="user_medecho_diagn_sej_hosp_cm" class="section level1" number="2">
 <h1><span class="header-section-number">2</span>
-user_V_EPISO_SOIN_DURG_CM_AG</h1>
-<p>La fonction <code>user_V_EPISO_SOIN_DURG_CM_AG</code> est destinée
+user_MEDECHO_DIAGN_SEJ_HOSP_CM</h1>
+<p>La fonction <code>user_MEDECHO_DIAGN_SEJ_HOSP_CM</code> est destinée
 aux utilisateurs. Elle permet: <br /></p>
 <ol style="list-style-type: decimal">
-<li>d’extraire les variables pertinentes de la base de données BDCU
-<code>V_EPISO_SOIN_DURG_CM</code>, jumlées avec d’autres bases de
-données pour rajouter les caractéristiques du bénéficiaire et de
-l’établissement de soins. <br /></li>
-<li>d’extraire les variables pertinentes de la base de données BDCU
-<code>V_OCCU_CIVIE_DURG_CM</code>. <br /></li>
-<li>d’extraire les variables pertinentes de la base de données BDCU
-<code>V_CNSUL_DURG_CM</code>. <br /></li>
+<li>d’extraire les variables pertinentes de la base de données MEDECHO
+<code>V_SEJ_HOSP_CM</code>, jumlées avec d’autres bases de données pour
+rajouter les caractéristiques du bénéficiaire et de l’établissement de
+soins. <br /></li>
+<li>d’extraire les variables pertinentes de la base de données MEDECHO
+<code>V_DIAGN_SEJ_HOSP_CM</code>. <br /></li>
+<li>d’extraire les variables pertinentes de la base de données MEDECHO
+<code>V_SEJ_SERV_HOSP_CM</code>. <br /></li>
 </ol>
-<p>La fonction <code>user_V_EPISO_SOIN_DURG_CM_AG</code> est une
+<p>La fonction <code>user_MEDECHO_DIAGN_SEJ_HOSP_CM</code> est une
 <code>child_function</code> qui permet d’exécuter les requêtes SQL
-générées par les <code>parent_function</code> suivantes:<br /> <a href="SQL_reperage_cond_med.html">SQL_reperage_cond_med</a><br /> <a href="query_V_EPISO_SOIN_DURG_CM_AG.html">query_V_EPISO_SOIN_DURG_CM_AG</a><br />
+générées par les <code>parent_function</code> suivantes:<br /> <a href="SQL_reperage_cond_med.html">SQL_reperage_cond_med</a><br /> <a href="query_V_SEJ_HOSP_CM.html">query_V_SEJ_HOSP_CM</a><br /> <a href="query_V_DIAGN_SEJ_HOSP_CM_AG.html">query_V_DIAGN_SEJ_HOSP_CM_AG</a><br />
+<a href="query_V_SEJ_SERV_HOSP_CM_AG.html">query_V_SEJ_SERV_HOSP_CM_AG</a><br />
 <a href="query_V_FICH_ID_BEN_CM.html">query_V_FICH_ID_BEN_CM</a><br /></p>
 <p>Si la cohorte n’est pas fournie par le professionnel scientifique, et
 on veut créer une cohorte en utilisant les Dx cim-9 et/ou
 cim-10:<br /></p>
-<p>la fonction <code>user_V_EPISO_SOIN_DURG_CM_AG</code> exécute trois
+<p>la fonction <code>user_MEDECHO_DIAGN_SEJ_HOSP_CM</code> exécute trois
 étapes principales: <br /> 1) la création de la cohorte de l’étude en
 utilisant les Dx cim-9 et/ou cim-10 via la fonction
 <code>SQL_reperage_cond_med</code><br /> 2) l’extraction des variables
-pertinentes pour cette cohorte via la fonction
-<code>query_V_EPISO_SOIN_DURG_CM_AG</code><br /> 3) l’ajout des
-caractéristiques de benéficiaire, ainsi que de l’établissement de
-soins.<br /></p>
+pertinentes pour cette cohorte via les fonctions
+<code>query_V_SEJ_HOSP_CM</code>,<code>query_V_DIAGN_SEJ_HOSP_CM_AG</code>,<code>query_V_DIAGN_SEJ_HOSP_CM_AG</code><br />
+3) l’ajout des caractéristiques de benéficiaire, ainsi que de
+l’établissement de soins.<br /></p>
 <p>Si la cohorte n’est pas fournie par le professionnel scientifique, et
 on ne veut pas créer une cohorte en utilisant les Dx cim-9 et/ou cim-10:
 <br /> l’étape 1 est ignorée et les étapes 2 et 3 sont exécutées en
@@ -278,30 +279,31 @@ fonction de la nature de l’argument <code>task</code> <br /></p>
 <div id="la-fonction" class="section level2" number="2.1">
 <h2><span class="header-section-number">2.1</span> La fonction</h2>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">user_V_EPISO_SOIN_DURG_CM_AG</span>(task,</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">user_MEDECHO_DIAGN_SEJ_HOSP_CM</span>(task,</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>                          <span class="at">conn=</span><span class="fu">SQL_connexion</span>(),</span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                          <span class="at">cohort=</span><span class="cn">NULL</span>, <span class="co"># si la cohorte est fournie par l&#39;analyste (cohort=cohort), si on veut créer une nouvelle cohorte (cohort=NULL)</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                          debut_periode,</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                          fin_periode,</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                          </span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                          diagn, <span class="co"># liste de Dx pour la task: extraction_BDCU_EPISO_SOIN_DURG </span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                          </span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                          benef_adr,</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                          date_adr, <span class="co"># à spécifier lorsque benef_adr=&quot;date_fixe&quot;</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                          date_age, <span class="co"># à spécifier lorsque keep_all=TRUE</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>                          </span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>                          Dx_table, <span class="co"># si la cohorte n&#39;est pas fournie par le professionnel scientifique et nous ne voulons pas créer une nouvelle cohorte (Dx_table=NULL)</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>                          debut_cohort,</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>                          fin_cohort,</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>                          CIM,</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>                          by_Dx,</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>                          date_dx_var,</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>                          n1,n2,</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>                          nDx,</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>                          <span class="at">keep_all=</span><span class="cn">FALSE</span>,</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>                          </span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>                          <span class="at">verbose=</span><span class="cn">TRUE</span>,</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>                          setwd)</span></code></pre></div>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>                          diagn, <span class="co"># liste de Dx pour les task: query_V_DIAGN_SEJ_HOSP_CM_AG et query_V_SEJ_SERV_HOSP_CM_AG </span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>                          typ_diagn,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>                          </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>                          benef_adr,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>                          date_adr, <span class="co"># à spécifier lorsque benef_adr=&quot;date_fixe&quot;</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>                          date_age, <span class="co"># à spécifier lorsque keep_all=TRUE</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>                          Dx_table, <span class="co"># si la cohorte n&#39;est pas fournie par le professionnel scientifique et nous ne voulons pas créer une nouvelle cohorte (Dx_table=NULL)</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>                          debut_cohort,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>                          fin_cohort,</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>                          CIM,</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>                          by_Dx,</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>                          date_dx_var,</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>                          n1,n2,</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>                          nDx,</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>                          <span class="at">keep_all=</span><span class="cn">FALSE</span>,</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>                          </span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>                          <span class="at">verbose=</span><span class="cn">TRUE</span>,</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>                          setwd)</span></code></pre></div>
 </div>
 <div id="définition-des-arguments" class="section level2" number="2.2">
 <h2><span class="header-section-number">2.2</span> Définition des
@@ -309,13 +311,13 @@ arguments</h2>
 <div id="task" class="section level3" number="2.2.1">
 <h3><span class="header-section-number">2.2.1</span> task</h3>
 <p>Permet de préciser le type de requête à exécuter.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>task <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;extraction_BDCU_EPISO_SOIN_DURG&quot;</span>,<span class="st">&quot;extraction_BDCU_OCCU_CIVIE_DURG&quot;</span>,<span class="st">&quot;extraction_BDCU_CNSUL_DURG&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>task <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;extraction_MEDECHO_SEJ_HOSP&quot;</span>,<span class="st">&quot;extraction_MEDECHO_DIAGN_SEJ&quot;</span>,<span class="st">&quot;extraction_MEDECHO_SEJ_SERV&quot;</span>)</span></code></pre></div>
 </div>
 <div id="connexion" class="section level3" number="2.2.2">
 <h3><span class="header-section-number">2.2.2</span> Connexion</h3>
 <p>La fonction <code>SQL_connexion</code> permet à R de se connecter à
 Teradata. Simplenent inscrire l’identifant et le programme demandera le
-mot de passe lors de son exécution :</p>
+mot de passe lors de son exécution.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>conn <span class="ot">=</span> <span class="fu">SQL_connexion</span>(<span class="st">&quot;msXXX&quot;</span>)</span></code></pre></div>
 </div>
 <div id="cohorte" class="section level3" number="2.2.3">
@@ -352,6 +354,14 @@ diagnostics</h4>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 </div>
+<div id="type-de-diagnostic" class="section level4" number="2.2.5.2">
+<h4><span class="header-section-number">2.2.5.2</span> Type de
+diagnostic</h4>
+<p>Permettant de préciser le type de diagnostic posé pendant le séjour
+hospitalier. <code>A = Admission</code>, <code>D = Décès</code>,
+<code>P = Principal</code> et <code>S = Secondaire</code>.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>typ_diagn <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&#39;A&#39;</span>, <span class="st">&#39;P&#39;</span>, <span class="st">&#39;S&#39;</span>, <span class="st">&#39;D&#39;</span>)</span></code></pre></div>
+</div>
 </div>
 <div id="caractéristiques-du-bénéficiaires" class="section level3" number="2.2.6">
 <h3><span class="header-section-number">2.2.6</span> Caractéristiques du
@@ -361,13 +371,13 @@ bénéficiaires</h3>
 bénéficiaire</h4>
 <p>Permet de définir la méthode d’identification de l’adresse de
 bénéficiaire.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>benef_adr<span class="ot">=</span><span class="fu">c</span>(<span class="st">&quot;date_fixe&quot;</span>,<span class="st">&quot;dernière_adresse&quot;</span>,<span class="st">&quot;première_adresse&quot;</span>,<span class="st">&quot;long_adresse&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>benef_adr<span class="ot">=</span><span class="fu">c</span>(<span class="st">&quot;date_fixe&quot;</span>,<span class="st">&quot;dernière_adresse&quot;</span>,<span class="st">&quot;première_adresse&quot;</span>,<span class="st">&quot;long_adresse&quot;</span>)</span></code></pre></div>
 </div>
 <div id="date-adresse" class="section level4" number="2.2.6.2">
 <h4><span class="header-section-number">2.2.6.2</span> Date adresse</h4>
 <p>Si <code>benef_adr</code>=“date_fixe”, <code>date_adr</code> permet
 de choisir une date fixe pour identifier l’adresse de bénéficiaire.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>date_adr<span class="ot">=</span><span class="st">&quot;2020-07-01&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>date_adr<span class="ot">=</span><span class="st">&quot;2020-07-01&quot;</span></span></code></pre></div>
 </div>
 <div id="date-âge" class="section level4" number="2.2.6.3">
 <h4><span class="header-section-number">2.2.6.3</span> Date âge</h4>
@@ -375,7 +385,7 @@ de choisir une date fixe pour identifier l’adresse de bénéficiaire.</p>
 des bénéficaires qui n’ont pas eu d’acte est calculé. L’âge de
 bénéficiaires qui ont eu un acte à l’intérieur de la période de l’étude
 est calculé à la date de l’acte.</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>date_age<span class="ot">=</span><span class="st">&quot;2020-03-01&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>date_age<span class="ot">=</span><span class="st">&quot;2020-03-01&quot;</span></span></code></pre></div>
 </div>
 </div>
 <div id="paramètres-pour-la-création-de-la-cohorte-avec-sql_reperage_cond_med" class="section level3" number="2.2.7">
@@ -385,33 +395,33 @@ CRÉATION DE LA COHORTE AVEC <code>SQL_reperage_cond_med</code></h3>
 <h4><span class="header-section-number">2.2.7.1</span> Liste des
 diagnostics</h4>
 <p><code>list</code> contenant les codes diagnostics CIM9 et CIM10.</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>Dx_table <span class="ot">=</span> <span class="fu">list</span>(</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">diabete =</span> <span class="fu">list</span>(</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">CIM9 =</span> <span class="fu">c</span>(<span class="st">&quot;2500%&quot;</span>, <span class="st">&quot;2501%&quot;</span>, <span class="st">&quot;2502%&quot;</span>),</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">CIM10 =</span> <span class="fu">c</span>(<span class="st">&quot;E100%&quot;</span>, <span class="st">&quot;E101%&quot;</span>, <span class="st">&quot;E109%&quot;</span>, <span class="st">&quot;E110%&quot;</span>, <span class="st">&quot;E111%&quot;</span>, <span class="st">&quot;E119%&quot;</span>, <span class="st">&quot;E130%&quot;</span>,</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>              <span class="st">&quot;E131%&quot;</span>, <span class="st">&quot;E139%&quot;</span>, <span class="st">&quot;E140%&quot;</span>, <span class="st">&quot;E141%&quot;</span>, <span class="st">&quot;E149%&quot;</span>)),</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">diabete_complication =</span> <span class="fu">list</span>(</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">CIM9 =</span> <span class="fu">paste0</span>(<span class="dv">2503</span><span class="sc">:</span><span class="dv">2509</span>, <span class="st">&quot;%&quot;</span>),</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">CIM10 =</span> <span class="fu">paste0</span>(<span class="st">&quot;E&quot;</span>, <span class="fu">c</span>(<span class="dv">102</span><span class="sc">:</span><span class="dv">108</span>, <span class="dv">112</span><span class="sc">:</span><span class="dv">118</span>, <span class="dv">132</span><span class="sc">:</span><span class="dv">138</span>, <span class="dv">142</span><span class="sc">:</span><span class="dv">148</span>), <span class="st">&quot;%&quot;</span>)</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>Dx_table <span class="ot">=</span> <span class="fu">list</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">diabete =</span> <span class="fu">list</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">CIM9 =</span> <span class="fu">c</span>(<span class="st">&quot;2500%&quot;</span>, <span class="st">&quot;2501%&quot;</span>, <span class="st">&quot;2502%&quot;</span>),</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">CIM10 =</span> <span class="fu">c</span>(<span class="st">&quot;E100%&quot;</span>, <span class="st">&quot;E101%&quot;</span>, <span class="st">&quot;E109%&quot;</span>, <span class="st">&quot;E110%&quot;</span>, <span class="st">&quot;E111%&quot;</span>, <span class="st">&quot;E119%&quot;</span>, <span class="st">&quot;E130%&quot;</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>              <span class="st">&quot;E131%&quot;</span>, <span class="st">&quot;E139%&quot;</span>, <span class="st">&quot;E140%&quot;</span>, <span class="st">&quot;E141%&quot;</span>, <span class="st">&quot;E149%&quot;</span>)),</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">diabete_complication =</span> <span class="fu">list</span>(</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">CIM9 =</span> <span class="fu">paste0</span>(<span class="dv">2503</span><span class="sc">:</span><span class="dv">2509</span>, <span class="st">&quot;%&quot;</span>),</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">CIM10 =</span> <span class="fu">paste0</span>(<span class="st">&quot;E&quot;</span>, <span class="fu">c</span>(<span class="dv">102</span><span class="sc">:</span><span class="dv">108</span>, <span class="dv">112</span><span class="sc">:</span><span class="dv">118</span>, <span class="dv">132</span><span class="sc">:</span><span class="dv">138</span>, <span class="dv">142</span><span class="sc">:</span><span class="dv">148</span>), <span class="st">&quot;%&quot;</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div id="classification-des-diagnostics" class="section level4" number="2.2.7.2">
 <h4><span class="header-section-number">2.2.7.2</span> Classification
 des diagnostics</h4>
 <p>Permet de choisir le type de code diagnostic : CIM9, CIM10 ou les
 deux.</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>CIM <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;CIM9&quot;</span>, <span class="st">&quot;CIM10&quot;</span>)  <span class="co"># par défaut : CIM9 et CIM10</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>CIM <span class="ot">=</span> <span class="st">&quot;CIM9&quot;</span>  <span class="co"># CIM9 seulement</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>CIM <span class="ot">=</span> <span class="st">&quot;CIM10&quot;</span>  <span class="co"># CIM10 seulement</span></span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>CIM <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;CIM9&quot;</span>, <span class="st">&quot;CIM10&quot;</span>)  <span class="co"># par défaut : CIM9 et CIM10</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>CIM <span class="ot">=</span> <span class="st">&quot;CIM9&quot;</span>  <span class="co"># CIM9 seulement</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>CIM <span class="ot">=</span> <span class="st">&quot;CIM10&quot;</span>  <span class="co"># CIM10 seulement</span></span></code></pre></div>
 </div>
 <div id="date-début-et-fin-de-la-cohorte" class="section level4" number="2.2.7.3">
 <h4><span class="header-section-number">2.2.7.3</span> Date début et fin
 de la cohorte</h4>
 <p>Date de début et de fin de la création d’une cohort au format
 AAAA-MM-JJ.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>debut_cohort <span class="ot">=</span> <span class="st">&quot;2018-01-01&quot;</span> </span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>fin_cohort <span class="ot">=</span> <span class="st">&quot;2020-12-31&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>debut_cohort <span class="ot">=</span> <span class="st">&quot;2018-01-01&quot;</span> </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>fin_cohort <span class="ot">=</span> <span class="st">&quot;2020-12-31&quot;</span></span></code></pre></div>
 </div>
 <div id="stratification-de-la-cohorte" class="section level4" number="2.2.7.4">
 <h4><span class="header-section-number">2.2.7.4</span> Stratification de
@@ -425,8 +435,8 @@ Si <code>FALSE</code>, on a au maximum une ligne par individu et la
 colonne <code>DIAGN</code> est absente, car les codes de
 <code>diabete</code> et <code>diabete_complication</code> sont
 considérés comme un seul élément d’analyse dans l’algorithme.</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>by_Dx <span class="ot">=</span> <span class="cn">TRUE</span>  <span class="co"># par défaut</span></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>by_Dx <span class="ot">=</span> <span class="cn">FALSE</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>by_Dx <span class="ot">=</span> <span class="cn">TRUE</span>  <span class="co"># par défaut</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>by_Dx <span class="ot">=</span> <span class="cn">FALSE</span></span></code></pre></div>
 </div>
 <div id="date-dadmission-ou-de-départ" class="section level4" number="2.2.7.5">
 <h4><span class="header-section-number">2.2.7.5</span> Date d’admission
@@ -438,8 +448,8 @@ comme date d’incidence dans les vues suivantes :</p>
 <li>V_SEJ_SERV_HOSP_CM</li>
 <li>V_EPISO_SOIN_DURG_CM</li>
 </ul>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>date_dx_var <span class="ot">=</span> <span class="st">&quot;admis&quot;</span>  <span class="co"># par défaut</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>date_dx_var <span class="ot">=</span> <span class="st">&quot;depar&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>date_dx_var <span class="ot">=</span> <span class="st">&quot;admis&quot;</span>  <span class="co"># par défaut</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>date_dx_var <span class="ot">=</span> <span class="st">&quot;depar&quot;</span></span></code></pre></div>
 </div>
 </div>
 <div id="paramètres-de-lalgorithme-de-création-de-cohorte" class="section level3" number="2.2.8">
@@ -456,15 +466,15 @@ du diagnostic pour confirmer la condition (nDx). (Valeurs par défaut n1=
 <p>Permet de créer l’intervalle <code>[n1, n2]</code>. Le nombre de
 jours entre deux diagnostics doit se situer dans cet intervalle pour que
 le deuxième diagnostic confirme le premier.</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>n1 <span class="ot">=</span> <span class="dv">30</span> </span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>n2 <span class="ot">=</span> <span class="dv">730</span></span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>n1 <span class="ot">=</span> <span class="dv">30</span> </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>n2 <span class="ot">=</span> <span class="dv">730</span></span></code></pre></div>
 </div>
 <div id="nombre-doccurence-ndx" class="section level4" number="2.2.8.2">
 <h4><span class="header-section-number">2.2.8.2</span> Nombre
 d’occurence (nDx)</h4>
 <p>Permet de choisir le nombre de diagnostic qui permet de confirmer le
 premier.</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>nDX<span class="ot">=</span><span class="dv">1</span> <span class="co"># par défaut</span></span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>nDX<span class="ot">=</span><span class="dv">1</span> <span class="co"># par défaut</span></span></code></pre></div>
 </div>
 </div>
 <div id="cas-retenus" class="section level3" number="2.2.9">
@@ -487,7 +497,7 @@ les observations demandées par <code>cohort</code>. Si keep_all
 <p>Permet d’indiquer le chemin vers le dossier dans lequel les résultats
 de la fonction seront sauvegardés. Si <code>setwd</code>=“NULL”, les
 résultats seront seulement affichés dans l’environnement du Rstudio.</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>setwd<span class="ot">=</span><span class="st">&quot;V:/GI/Projets/4.Projets_en_cours/Nom_dossier&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>setwd<span class="ot">=</span><span class="st">&quot;V:/GI/Projets/4.Projets_en_cours/Nom_dossier&quot;</span></span></code></pre></div>
 </div>
 <div id="verbose" class="section level3" number="2.2.11">
 <h3><span class="header-section-number">2.2.11</span> verbose</h3>
@@ -499,131 +509,139 @@ nécessaire). V_DIAGN_SEJ_HOSP_CM - Coronaro (4.93 secs)
 V_SEJ_SERV_HOSP_CM - Coronaro (1.78 secs) V_EPISO_SOIN_DURG_CM -
 Coronaro (3.42 secs) I_SMOD_SERV_MD_CM - Coronaro (15.6 secs)
 Arrangement de la table cohorte… fin de création de la cohorte.</p>
-<p>Étape 2: Extraction des variables BDCU pour la cohorte crée à l’étape
-1: - Temps d’exécution (5.71 mins)</p>
+<p>Étape 2: Extraction des variables MEDECHO pour la cohorte crée à
+l’étape 1: - Temps d’exécution (5.71 mins)</p>
 <p>Étape 3: Préparation de la base de données finale: Garder les IDs de
-la cohorte crée à l’étape 1 qui ont eu recours aux services d’urgence à
+la cohorte crée à l’étape 1 qui ont eu un séjour hospitalier à
 l’intérieur de la période de l’étude - Temps d’exécution (0.2 secs)</p>
 </div>
 </div>
 <div id="usage-de-la-fonction" class="section level2" number="2.3">
 <h2><span class="header-section-number">2.3</span> Usage de la
 fonction</h2>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>DT_final<span class="ot">&lt;-</span><span class="fu">user_V_EPISO_SOIN_DURG_CM_AG</span>(</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">task=</span><span class="fu">c</span>(<span class="st">&quot;extraction_BDCU_EPISO_SOIN_DURG&quot;</span>,<span class="st">&quot;extraction_BDCU_OCCU_CIVIE_DURG&quot;</span>,<span class="st">&quot;extraction_BDCU_CNSUL_DURG&quot;</span>), </span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">conn=</span><span class="fu">SQL_connexion</span>(<span class="st">&quot;ms069a&quot;</span>), </span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cohort =</span> <span class="cn">NULL</span>, </span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">debut_periode =</span> <span class="st">&quot;2020-01-01&quot;</span>,</span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">fin_periode =</span> <span class="st">&quot;2020-12-31&quot;</span>,</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">diagn=</span><span class="cn">NULL</span>,</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">benef_adr=</span><span class="st">&quot;dernière_adresse&quot;</span>,</span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">date_adr=</span><span class="st">&quot;2021-07-01&quot;</span>,</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">date_age=</span><span class="st">&quot;2020-07-01&quot;</span>,</span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">Dx_table=</span><span class="cn">NULL</span>,</span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">debut_cohort =</span> <span class="st">&quot;2018-01-01&quot;</span>,</span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">fin_cohort =</span> <span class="st">&quot;2020-12-31&quot;</span>,</span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">CIM =</span>  <span class="fu">c</span>(<span class="st">&quot;CIM9&quot;</span>, <span class="st">&quot;CIM10&quot;</span>),</span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">by_Dx =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">date_dx_var =</span> <span class="st">&quot;admis&quot;</span>,</span>
-<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">n1 =</span> <span class="dv">30</span>, <span class="at">n2 =</span> <span class="dv">730</span>,</span>
-<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">nDx =</span> <span class="dv">0</span>,</span>
-<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">keep_all=</span><span class="cn">FALSE</span>,</span>
-<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a>  <span class="at">setwd=</span><span class="st">&quot;C:/Users/MS069/Desktop/Ahmed/BDCU_cohorte&quot;</span>, <span class="co">#NULL</span></span>
-<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
-<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>DT_final<span class="ot">&lt;-</span><span class="fu">user_MEDECHO_DIAGN_SEJ_HOSP_CM</span>(</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">task=</span><span class="fu">c</span>(<span class="st">&quot;extraction_MEDECHO_SEJ_HOSP&quot;</span>,<span class="st">&quot;extraction_MEDECHO_DIAGN_SEJ&quot;</span>,<span class="st">&quot;extraction_MEDECHO_SEJ_SERV&quot;</span>), </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">conn=</span><span class="fu">SQL_connexion</span>(<span class="st">&quot;ms069a&quot;</span>), </span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cohort =</span> <span class="cn">NULL</span>, </span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">debut_periode =</span> <span class="st">&quot;2020-01-01&quot;</span>,</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">fin_periode =</span> <span class="st">&quot;2020-12-31&quot;</span>,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">diagn=</span><span class="cn">NULL</span>,</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">typ_diagn=</span><span class="fu">c</span>(<span class="st">&#39;A&#39;</span>, <span class="st">&#39;P&#39;</span>, <span class="st">&#39;S&#39;</span>, <span class="st">&#39;D&#39;</span>),</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">benef_adr=</span><span class="st">&quot;dernière_adresse&quot;</span>,</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">date_adr=</span><span class="cn">NULL</span>,</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">date_age=</span><span class="cn">NULL</span>,</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">Dx_table=</span><span class="cn">NULL</span>,</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">debut_cohort =</span> <span class="st">&quot;2018-01-01&quot;</span>,</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">fin_cohort =</span> <span class="st">&quot;2020-12-31&quot;</span>,</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">CIM =</span>  <span class="fu">c</span>(<span class="st">&quot;CIM9&quot;</span>, <span class="st">&quot;CIM10&quot;</span>),</span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">by_Dx =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">date_dx_var =</span> <span class="st">&quot;admis&quot;</span>,</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">n1 =</span> <span class="dv">30</span>, <span class="at">n2 =</span> <span class="dv">730</span>,</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">nDx =</span> <span class="dv">0</span>,</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>  <span class="at">keep_all=</span><span class="cn">FALSE</span>,</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>  <span class="at">setwd=</span><span class="st">&quot;C:/Users/MS069/Desktop/Ahmed/BDCU_cohorte&quot;</span>, <span class="co">#NULL</span></span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 </div>
 <div id="table-résultante" class="section level1" number="3">
 <h1><span class="header-section-number">3</span> Table Résultante</h1>
-<div id="taskextraction_bdcu_episo_soin_durg" class="section level2" number="3.1">
+<div id="taskextraction_medecho_sej_hosp" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span>
-<code>task=&quot;extraction_BDCU_EPISO_SOIN_DURG&quot;</code></h2>
-<p>Extraction des variables pertinentes de BDCU: V_EPISO_SOIN_DURG_CM
+<code>task=&quot;extraction_MEDECHO_SEJ_HOSP&quot;</code></h2>
+<p>Extraction des variables pertinentes de MEDECHO: V_SEJ_HOSP_CM
 combinées avec les caractéristiques du bénéf et de l’établissement. Une
-base de données avec 33 variables. - <strong>ID </strong> : Numéro du
-bénéficiaire <br /> - <strong>SURG_NO_EPISO_SOIN_DURG </strong> : Numéro
-d’épisode de soins - Départements d’urgence <br /> -
-<strong>SURG_AN_PER_TEMPS </strong> : Année période temps <br /> -
-<strong>SURG_DHD_EPISO_SOIN_DURG </strong> : Date et heure de début d’un
-épisode de soins <br /> - <strong>DD_SOIN_DURG </strong> :
-Date_debut_epi_soins <br /> - <strong>SURG_DH_DEPAR_USAG_DURG </strong> :
-Date et heure de départ d’un usager <br /> - <strong>DF_SOIN_DURG
-</strong> : Date_fin_epi_soins <br /> - <strong>SURG_DH_PREM_TRIAG_DURG
-</strong> : Date et heure du premier triage d’urgence <br /> -
-<strong>SURG_DH_PRIS_CHARG_DURG </strong> : Date et heure de prise en
-charge <br /> - <strong>SURG_DH_DEM_ADMIS_DURG </strong> : Date et heure
-de la demande d’admission en CH <br /> - <strong>SURG_DH_DECES_DURG
-</strong> : Date et heure du décès <br /> -
-<strong>SURG_COD_PRIOR_TRIAG_DURG </strong> : Code de priorité du
-premier triage <br /> - <strong>SURG_COD_AUTNM_PREM_TRIAG_DURG </strong>
-Code d’autonomie après le premier triage <br /> -
-<strong>SURG_COD_RAIS_VISIT_DURG </strong> : Code de raison de visite en
-urgence <br /> - <strong>SURG_CATG_MAJR_DIAGN_DURG </strong> : Catégorie
-majeure de diagnostic <br /> - <strong>SURG_COD_DIAGN_MDCAL_CLINQ
-</strong> Code de diagnostic médical clinique <br /> - <strong>DATE_DX
-</strong> : Définie selon SURG_DHD_EPISO_SOIN_DURG (admis) ou
-SURG_DH_DEPAR_USAG_DURG (depar) <br /> - <strong>SURG_NBR_CNSUL_DURG
-</strong> : Nombre de consultations en département d’urgence <br /> -
-<strong>SURG_COD_MODE_ARRIV_DURG </strong> : Code du mode d’arrivée de
-l’usager en urgence <br /> - <strong>SURG_TYP_ORITN_USAG_DEPAR_DURG
-</strong> : Type d’orientation de l’usager à son départ <br /> -
-<strong>SURG_NO_ETAB_MSSS </strong> : Numero de l’etablissement attribue
-par MSSS <br /> - <strong>Sexe </strong> : Sexe du bénéficiaire <br /> -
-<strong>DatNais </strong> : Date de naissance du bénéficiaire au format
-<em>AAAA-MM-JJ</em> <br /> - <strong>DatDeces </strong> : Date de décès
-du bénéficiaire au format <em>AAAA-MM-JJ</em> <br /> - <strong>RSS_Benf
-</strong>: Régions sociosanitaires (RSS) du bénéficiaire <br /> -
-<strong>RLS_Benef </strong> : Réseaux locaux de services (RLS) du
-bénéficiaire <br /> - <strong>NomRSS_Benef </strong> : Nom régions
-sociosanitaires (RSS) du bénéficiaire <br /> - <strong>NomRLS_Benef
-</strong> : Nom réseaux locaux de services (RLS) du bénéficiaire <br /> -
-<strong>RLS_ETAB </strong> : Régions sociosanitaires (RSS) de
-l’établissement <br /> - <strong>NomRLS_Etab </strong> : Nom réseaux
-locaux de services (RLS) de l’établissement <br /> - <strong>RSS_ETAB
-</strong> : Régions sociosanitaires (RSS) de l’établissement <br /> -
-<strong>NOM_RSS_Etab </strong> : Nom régions sociosanitaires (RSS) de
-l’établissement <br /> - <strong>NOM_ETAB </strong> : Nom de
-l’établissement <br /></p>
+base de données avec 35 variables. - <strong>ID </strong> : Numéro du
+bénéficiaire <br /> - <strong>SHOP_NO_SEQ_SEJ_HOSP</strong> : No
+séquentiel séjour hospitalier <br /> - <strong>SHOP_AN_PER_TEMPS</strong>
+: Année période temps <br /> -
+<strong>SHOP_DAT_ARRIV_URG_SEJ_HOSP</strong> : Date arrivée urgence
+séjour hospitalier <br /> - <strong>SHOP_DAT_ADMIS_SEJ_HOSP</strong> :
+Date admission séjour hospitalier <br /> -
+<strong>SHOP_HRE_ADMIS_SEJ_HOSP</strong> : Heure admission séjour
+hospitalier <br /> - <strong>SHOP_DAT_DEPAR_SEJ_HOSP</strong> : Date
+départ séjour hospitalier <br /> -
+<strong>SHOP_HRE_DEPAR_SEJ_HOSP</strong> : Heure départ séjour
+hospitalier <br /> - <strong>SHOP_NBR_JR_ABSNT_SEJ_HOSP</strong> : Nombre
+jour absence séjour hospitalier <br /> -
+<strong>SHOP_TYP_LIEU_SEJ_HOSP_PROVE</strong> : Type lieu séjour
+hospitalier provenance <br /> - <strong>SHOP_NO_ETAB_MSSS_PROVE</strong>
+: No établissement MSSS provenance <br /> -
+<strong>SHOP_TYP_LIEU_SEJ_HOSP_DESTI</strong> : Type lieu séjour
+hospitalier destination <br /> - <strong>SHOP_NO_ETAB_MSSS_DESTI</strong>
+: No établissement MSSS destination <br /> -
+<strong>SHOP_TYP_SOIN_SEJ_HOSP</strong> : Type soins séjour hospitalier
+<br /> - <strong>SHOP_TYP_ADMIS_SEJ_HOSP</strong> : Type admission séjour
+hospitalier <br /> - <strong>SHOP_IND_NOUV_NE_SEJ_HOSP</strong> :
+Indicateur nouveau né séjour hospitalier <br /> -
+<strong>SHOP_TYP_DECES_SEJ_HOSP</strong> : Type décès séjour hospitalier
+<br /> - <strong>SHOP_NBR_CNSUL_SEJ_HOSP</strong> : Nombre consultation
+séjour hospitalier <br /> - <strong>SHOP_DAT_ACCID_SEJ_HOSP</strong> :
+Date accident séjour hospitalier <br /> -
+<strong>SHOP_COD_DIAGN_LIEU_ACCID</strong> : Code diagnostic lieu
+accident <br /> - <strong>SHOP_COD_DIAGN_CAUS_ACCID</strong> : Code
+diagnostic cause accident <br /> - <strong>SHOP_NO_SEQ_SYS_CLA</strong> :
+No séquentiel système classification <br /> -
+<strong>SHOP_NO_ETAB_MSSS</strong> : Numéro del’établissement attribué
+par le MSSS <br /> - <strong>Sexe </strong> : Sexe du bénéficiaire <br />
+- <strong>DatNais </strong> : Date de naissance du bénéficiaire au
+format <em>AAAA-MM-JJ</em> <br /> - <strong>DatDeces </strong> : Date de
+décès du bénéficiaire au format <em>AAAA-MM-JJ</em> <br /> -
+<strong>RSS_Benf </strong>: Régions sociosanitaires (RSS) du
+bénéficiaire <br /> - <strong>RLS_Benef </strong> : Réseaux locaux de
+services (RLS) du bénéficiaire <br /> - <strong>NomRSS_Benef </strong> :
+Nom régions sociosanitaires (RSS) du bénéficiaire <br /> -
+<strong>NomRLS_Benef </strong> : Nom réseaux locaux de services (RLS) du
+bénéficiaire <br /> - <strong>RLS_ETAB </strong> : Régions
+sociosanitaires (RSS) de l’établissement <br /> - <strong>NomRLS_Etab
+</strong> : Nom réseaux locaux de services (RLS) de l’établissement
+<br /> - <strong>RSS_ETAB </strong> : Régions sociosanitaires (RSS) de
+l’établissement <br /> - <strong>NOM_RSS_Etab </strong> : Nom régions
+sociosanitaires (RSS) de l’établissement <br /> - <strong>NOM_ETAB
+</strong> : Nom de l’établissement <br /></p>
 </div>
-<div id="taskextraction_bdcu_occu_civie_durg" class="section level2" number="3.2">
+<div id="taskextraction_medecho_diagn_sej" class="section level2" number="3.2">
 <h2><span class="header-section-number">3.2</span>
-<code>task=&quot;extraction_BDCU_OCCU_CIVIE_DURG&quot;</code></h2>
-<p>Extraction des variables pertinentes de BDCU: V_OCCU_CIVIE_DURG_CM.
+<code>task=&quot;extraction_MEDECHO_DIAGN_SEJ&quot;</code></h2>
+<p>Extraction des variables pertinentes de MEDECHO: V_DIAGN_SEJ_HOSP_CM.
 Une base de données avec 8 variables. - <strong>ID </strong> : Numéro du
-bénéficiaire <br /> - <strong>SURG_NO_EPISO_SOIN_DURG</strong> : Numéro
-d’épisode de soins - Départements d’urgence <br /> -
-<strong>SURG_NO_SEQ_OCCU_CIVIE_DURG</strong> : Numéro de séquence de
-l’occupation de civière <br /> -
-<strong>SURG_DHD_OCCU_CIVIE_DURG</strong> : Date et heure de début
-d’occupation de civière <br /> - <strong>DD_Occup_civ</strong> : Date de
-début d’occupation de civière <br /> -
-<strong>SURG_DHF_OCCU_CIVIE_DURG</strong> : Date et heure de fin
-d’occupation de civière <br /> - <strong>DF_Occup_civ</strong> : Date de
-fin d’occupation de civière <br /> -
-<strong>SURG_CATG_CIVIE_DURG</strong> : Catégorie de civière en
-département d’urgence <br /></p>
+bénéficiaire <br /> - <strong>SHOP_NO_SEQ_SEJ_HOSP</strong> : No
+séquentiel séjour hospitalier<br /> -
+<strong>SHOP_NO_DIAGN_SEJ_HOSP</strong> : No diagnostic séjour
+hospitalier<br /> - <strong>SHOP_NO_SEJ_SERV_HOSP</strong> : No séjour
+service hospitalier<br /> - <strong>SHOP_COD_DIAGN_MDCAL_CLINQ</strong> :
+Code de diagnostic médical clinique <br /> -
+<strong>SHOP_TYP_DIAGN_SEJ_HOSP</strong> : Type diagnostic séjour
+hospitalier <br /> - <strong>SHOP_COD_CAR_DIAGN_SEJ_HOSP</strong> : Code
+caractéristique diagnostic séjour hospitalier <br /> -
+<strong>SHOP_NO_SEQ_SYS_CLA</strong> : No séquentiel système
+classification <br /></p>
 </div>
-<div id="taskextraction_bdcu_cnsul_durg" class="section level2" number="3.3">
+<div id="taskextraction_medecho_sej_serv" class="section level2" number="3.3">
 <h2><span class="header-section-number">3.3</span>
-<code>task=&quot;extraction_BDCU_CNSUL_DURG&quot;</code></h2>
-<p>Extraction des variables pertinentes de BDCU: V_CNSUL_DURG_CM. Une
-base de données avec 9 variables. - <strong>ID </strong> : Numéro du
-bénéficiaire <br /> - <strong>SURG_NO_EPISO_SOIN_DURG</strong> : Numéro
-d’épisode de soins - Départements d’urgence <br /> -
-<strong>SURG_NO_SEQ_CNSUL_DURG</strong> : Numéro de séquence de
-consultation <br /> - <strong>SURG_COD_SPEC_CNSUL_DURG</strong> : Code de
-spécialité de consultation d’urgence <br /> -
-<strong>SURG_COD_ETA_CNSUL_DURG</strong> : Code spécifiant l’état de la
-consultation <br /> - <strong>SURG_DH_DEM_CNSUL_DURG</strong> : Date et
-heure de la demande de consultation <br /> -
-<strong>DD_DEM_CNSUL</strong> : Date de la demande de consultation <br />
-- <strong>SURG_DH_REAL_CNSUL_DURG</strong> : Date et heure de
-réalisation de consultation <br /> - <strong>DD_REAL_CNSUL</strong> :
-Date de réalisation de consultation <br /></p>
+<code>task=&quot;extraction_MEDECHO_SEJ_SERV&quot;</code></h2>
+<p>Extraction des variables pertinentes de MEDECHO: V_SEJ_SERV_HOSP_CM.
+Une base de données avec 11 variables. - <strong>ID </strong> : Numéro
+du bénéficiaire <br /> - <strong>SHOP_NO_INDIV_BEN_BANLS</strong> :
+Numéro d’individu de la personne assurée <br /> -
+<strong>SHOP_NO_SEQ_SEJ_HOSP</strong> : No séquentiel séjour hospitalier
+<br /> - <strong>SHOP_NO_SEJ_SERV_HOSP</strong> : No séjour service
+hospitalier <br /> - <strong>SHOP_TYP_SEJ_SERV_HOSP</strong> : Type
+séjour service hospitalier <br /> -
+<strong>SHOP_COD_SERV_SEJ_HOSP</strong> : Code service séjour
+hospitalier <br /> - <strong>SHOP_COD_SPEC_SEJ_HOSP_SERV</strong> : Code
+spécialité séjour hospitalier service <br /> -
+<strong>SHOP_COD_DIAGN_MDCAL_CLINQ</strong> : Code de diagnostic médical
+clinique <br /> - <strong>SHOP_NO_SEQ_SYS_CLA</strong> : No séquentiel
+système classification <br /> -
+<strong>SHOP_COD_CAR_DIAGN_SERV_HOSP</strong> : Caractéristique
+diagnostic service hospitalier <br /> -
+<strong>SHOP_NBR_JR_SEJ_SERV_HOSP</strong> : Nombre jour séjour service
+hospitalier <br /></p>
 </div>
 </div>
 <div id="discription-de-la-syntaxe-sql" class="section level1" number="4">
@@ -632,7 +650,8 @@ syntaxe SQL</h1>
 <p>Veuillez-svp consulter les vignettes <code>parent_function</code>
 suivantes:<br /></p>
 <p><a href="SQL_reperage_cond_med.html">SQL_reperage_cond_med</a><br />
-<a href="query_V_EPISO_SOIN_DURG_CM_AG.html">query_V_EPISO_SOIN_DURG_CM_AG</a><br />
+<a href="query_V_SEJ_HOSP_CM.html">query_V_SEJ_HOSP_CM</a><br /> <a href="query_V_DIAGN_SEJ_HOSP_CM_AG.html">query_V_DIAGN_SEJ_HOSP_CM_AG</a><br />
+<a href="query_V_SEJ_SERV_HOSP_CM_AG.html">query_V_SEJ_SERV_HOSP_CM_AG</a><br />
 <a href="query_V_FICH_ID_BEN_CM.html">query_V_FICH_ID_BEN_CM</a><br /></p>
 </div>
 

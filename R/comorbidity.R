@@ -1,4 +1,4 @@
-#' Astuce
+#' Comorbidity
 #'
 #' Calcul des indicateurs de *Charlson*, *Elixhauser* et la combinaison des deux.
 #'
@@ -29,12 +29,12 @@
 #' @encoding UTF-8
 #' @export
 comorbidity <- function(
-  dt, ID, DIAGN, DATE_DX, SOURCE,
-  n1 = 30, n2 = 730,
-  Dx_table = 'Comorbidity_Dx_CCI_INSPQ18', scores = 'CCI_INSPQ_2018_CIM10',
-  confirm_sourc = list(MEDECHO = 1, BDCU = 2, SMOD = 2),
-  exclu_diagn = NULL,
-  keep_confirm_data = FALSE
+    dt, ID, DIAGN, DATE_DX, SOURCE,
+    n1 = 30, n2 = 730,
+    Dx_table = 'Comorbidity_Dx_CCI_INSPQ18', scores = 'CCI_INSPQ_2018_CIM10',
+    confirm_sourc = list(MEDECHO = 1, BDCU = 2, SMOD = 2),
+    exclu_diagn = NULL,
+    keep_confirm_data = FALSE
 ) {
 
   ### Arranger dataset à analyser

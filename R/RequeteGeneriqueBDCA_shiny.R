@@ -30,7 +30,7 @@ RequeteGeneriqueBDCA_shiny<-function(){
                    sidebarLayout(
                      sidebarPanel(
 
-                       # Base de données - Requêt ####
+                         # Base de données - Requêt ####
                        wellPanel(
                          tags$h4("Base de données - Requête", style = "font-weight: bold;"),
                          textInput("fct", label = "Fonction générique exécutée",value = ""),
@@ -138,7 +138,6 @@ RequeteGeneriqueBDCA_shiny<-function(){
                            status = "primary",
                            circle = FALSE,
                            wellPanel(
-                             #h4("Paramètres optionnels"),
                              checkboxInput("verbose", label = HTML(paste0("verbose", div(helpText("Par défault verbose=TRUE, un message de progression est affiché sous l'onglet résultats: Message de progression et warnings:"), class = "pull-below"))),
                                            value=TRUE),
                              checkboxInput("Code_sql", label = HTML(paste0("Paramétres d'affichage du script sql", div(helpText("Selectionner ✅ pour afficher les paramétres d'affichage de script sql"), class = "pull-below"))),
@@ -146,25 +145,62 @@ RequeteGeneriqueBDCA_shiny<-function(){
                              uiOutput("Code_sql_select"),
                              selectInput("fileType", label=HTML(paste0("Format du fichier",div(helpText("Indiquer le format du fichier à télécharger"),class = "pull-below"))), choices = c("csv", "txt","png")),
                              style = "background-color: #e1f1f7;")),
-
+                         tags$br(),
+                         actionButton("Executer", "Exécuter la requête",style = "background-color: green;color: white;"),
+                         actionButton("reset", "Réinitialiser les champs"),
                          style = "background-color: #e1f1f7;"),
-                       #####
-                       actionButton("Executer", "Exécuter la requête",style = "background-color: green;color: white;"),
-                       actionButton("reset", "Réinitialiser les champs"),
+                       tags$br(),
+                         # Paramètres Teradata studio ####
+                       wellPanel(
+                         tags$h4("Teradata Studio", style = "font-weight: bold;"),
+                         dropdownButton(
+                           inputId = "mydropdown_Teradata_studio",
+                           label = "Paramètres Teradata studio",
+                           icon = icon("gear"),
+                           status = "primary",
+                           circle = FALSE,
+                           wellPanel(
+                             textInput("sql_user_tera", label = HTML(paste0("Identifiant", div(helpText("Indiquer votre identifiant teradata (ms0xx)"), class = "pull-below"))), value = "ms069a"),
+                             passwordInput("sql_pwd_tera", label = HTML(paste0("Mot de passe", div(helpText("Indiquer votre mot de passe teradata"), class="pull-below"))), value = "Kong2051"),
+                             checkboxInput("Code_sql_tera", label = HTML(paste0("Paramétres d'affichage du script sql", div(helpText("Selectionner ✅ pour afficher les paramétres d'affichage de script sql"), class = "pull-below"))),
+                                           value=FALSE),
+                             uiOutput("Code_sql_select_tera"),
+                             selectInput("fileType_tera", label=HTML(paste0("Format du fichier",div(helpText("Indiquer le format du fichier à télécharger"),class = "pull-below"))), choices = c("csv", "txt")),
+                             style = "background-color: #e1f1f7;")),
+                         tags$br(),
+                         actionButton("Executer_tera", "Exécuter la requête",style = "background-color: green;color: white;"),
+                         actionButton("reset_tera", "Réinitialiser les champs"),
+                         style = "background-color: #e1f1f7;"),
+
                      ),
+                     # Main Panel ####
                      mainPanel(
                        tabsetPanel(type="tabs",
                                    tabPanel("Résultats", style='width: 1000px; height: 1000px',
                                             h4("Résultats de la requête"),
                                             h5("Code sql:"),
                                             p("Afficher le script sql exécuté pour effectuer la requête demandée.", style = "font-family: 'times'; font-si16pt"),
-                                            aceEditor(outputId = "ace",
-                                                      selectionId = "selection",
-                                                      placeholder = "Afficher le script sql de la requête ..."),
+                                            shinyAce ::aceEditor(outputId = "ace",
+                                                                 selectionId = "selection",
+                                                                 placeholder = "Afficher le script sql de la requête ...",
+                                                                 mode="sql",
+                                                                 theme="sqlserver"),
                                             h5("Message de progression et warnings:"),
                                             verbatimTextOutput("result"),
                                             uiOutput("DT_final_ui"),
                                             uiOutput("DT_final_ui1")),
+                                   tabPanel("Teradata Studio", style='width: 1000px; height: 1000px',
+                                            h4("Résultats de la requête"),
+                                            h5("Code sql:"),
+                                            p("Afficher le script sql exécuté pour effectuer la requête demandée.", style = "font-family: 'times'; font-si16pt"),
+                                            shinyAce ::aceEditor(outputId = "ace_tera",
+                                                                 selectionId = "selection_tera",
+                                                                 placeholder = "Afficher le script sql de la requête ...",
+                                                                 mode="sql",
+                                                                 theme="sqlserver"),
+                                            h5("Message de progression et warnings:"),
+                                            verbatimTextOutput("result_tera"),
+                                            uiOutput("DT_final_ui_tera")),
                                    tabPanel("Vignettes", style='width: 1000px; height: 1000px',
                                             h4("vignette de la fonction"),
                                             conditionalPanel(
@@ -172,7 +208,10 @@ RequeteGeneriqueBDCA_shiny<-function(){
                                               includeHTML(system.file("vignettes/user_I_SMOD_SERV_MD_CM_AG.html", package = "RequeteGeneriqueBDCA"))),
                                             conditionalPanel(
                                               condition = "input.DT == 'BDCU'",
-                                              includeHTML(system.file("vignettes/user_V_EPISO_SOIN_DURG_CM_AG.html", package = "RequeteGeneriqueBDCA")))
+                                              includeHTML(system.file("vignettes/user_V_EPISO_SOIN_DURG_CM_AG.html", package = "RequeteGeneriqueBDCA"))),
+                                            conditionalPanel(
+                                              condition = "input.DT == 'MEDECHO'",
+                                              includeHTML(system.file("vignettes/user_MEDECHO_DIAGN_SEJ_HOSP_CM.html", package = "RequeteGeneriqueBDCA")))
                                    )
                        )
                      )
@@ -182,6 +221,7 @@ RequeteGeneriqueBDCA_shiny<-function(){
           tabPanel("Création d'une cohorte",style='width: 1500px; height: 1000px',
                    sidebarLayout(
                      sidebarPanel(
+                       wellPanel(
                        textInput("fct_tab2", label = h3("Fonction générique exécutée"),value = "SQL_reperage_cond_med"),
                        textInput("sql_user_tab2", label = HTML(paste0("Identifiant", div(helpText("Indiquer votre identifiant teradata (ms0xx)"), class = "pull-below"))),
                                  value = "ms069a"),
@@ -213,7 +253,8 @@ RequeteGeneriqueBDCA_shiny<-function(){
 
                        selectInput("fileType_tab2", label=HTML(paste0("Format du fichier",div(helpText("Indiquer le format du fichier à télécharger"),class = "pull-below"))), choices = c("csv", "txt")),
                        actionButton("Executer_tab2", "Exécuter la requête",style = "background-color: green;color: white;"),
-                       actionButton("reset_tab2", "Réinitialiser les champs")),
+                       actionButton("reset_tab2", "Réinitialiser les champs"),
+                       style = "background-color: #e1f1f7;")),
                      mainPanel(
                        tabsetPanel(type="tabs",
                                    tabPanel("Résultats", style='width: 1000px; height: 1000px',
@@ -233,6 +274,7 @@ RequeteGeneriqueBDCA_shiny<-function(){
           tabPanel("Standardisation",style='width: 1500px; height: 1000px',
                    sidebarLayout(
                      sidebarPanel(
+                       wellPanel(
                        textInput("fct_tab3", label = h3("Fonction générique exécutée"),value = "standardisation"),
                        textInput("donnees", label = HTML(paste0("donnees", div(helpText(""), class = "pull-below"))),
                                  value = "donnees"),
@@ -263,7 +305,8 @@ RequeteGeneriqueBDCA_shiny<-function(){
                                     value =100),
                        selectInput("fileType_tab3", "Download: Type fichier:", choices = c("csv", "txt")),
                        actionButton("Executer_tab3", "Exécuter la requête",style = "background-color: green;color: white;"),
-                       actionButton("reset_tab3", "Réinitialiser les champs")),
+                       actionButton("reset_tab3", "Réinitialiser les champs"),
+                       style = "background-color: #e1f1f7;")),
                      mainPanel(
                        tabsetPanel(type="tabs",
                                    tabPanel("Résultats", style='width: 1000px; height: 1000px',
@@ -284,9 +327,10 @@ RequeteGeneriqueBDCA_shiny<-function(){
           tabPanel("combine périodes / épisodes de soins",style='width: 1500px; height: 1000px',
                    sidebarLayout(
                      sidebarPanel(
+                       wellPanel(
                        textInput("fct_tab4", label = h3("Fonction générique exécutée"),value = "combine_periodes"),
-                       textInput("dt", label = HTML(paste0("Table de données", div(helpText("Cohorte d'intérêt. Ne pas changer le nom 'Data'"), class = "pull-below"))),
-                                 value = "Data"),
+                       selectInput("dt", label = HTML(paste0("Table de données", div(helpText("Cohorte d'intérêt"), class = "pull-below"))),
+                                   choices = "Data"),
                        fileInput("file_tab4", label = HTML(paste0("Choisir votre cohorte d'intérêt", div(helpText("Importer la cohorte d'intérêt"), class = "pull-below")))),
                        textInput("id", label = HTML(paste0("Identifiant du bénéficiaire", div(helpText("Indiquer le nom de la colonne de l'identifiant du bénéficiaire"), class = "pull-below"))),
                                  value = "ID"),
@@ -305,22 +349,103 @@ RequeteGeneriqueBDCA_shiny<-function(){
 
                        selectInput("fileType_tab4", "Download: Type fichier:", choices = c("csv", "txt")),
                        actionButton("Executer_tab4", "Exécuter la requête",style = "background-color: green;color: white;"),
-                       actionButton("reset_tab4", "Réinitialiser les champs")),
+                       actionButton("reset_tab4", "Réinitialiser les champs"),
+                       style = "background-color: #e1f1f7;")),
                      mainPanel(
                        tabsetPanel(type="tabs",
                                    tabPanel("Résultats", style='width: 1000px; height: 1000px',
                                             h4("Résultats de la requête"),
                                             h5("Script:"),
                                             p("Afficher le script exécuté pour effectuer la requête demandée.", style = "font-family: 'times'; font-si16pt"),
-                                            aceEditor(outputId = "ace_tab4",
-                                                      selectionId = "selection_tab4",
-                                                      placeholder = "Afficher le script de la requête ..."),
+                                            shinyAce ::aceEditor(outputId = "ace_tab4",
+                                                                 selectionId = "selection_tab4",
+                                                                 placeholder = "Afficher le script de la requête ...",
+                                                                 mode="r",
+                                                                 theme="cobalt"),
                                             h5("Message de progression et warnings:"),
                                             verbatimTextOutput("result_tab4"),
                                             uiOutput("DT_final_ui_tab4")),
                                    tabPanel("Vignettes", style='width: 1000px; height: 1000px',
                                             h4("vignette de la fonction"),
                                             includeHTML(system.file("vignettes/combiner_periodes.html", package = "RequeteGeneriqueBDCA"))
+                                   )
+                       )
+                     )
+                   )
+          ),
+          # Indice de comorbidités ####
+          tabPanel("Indice de comorbidités",style='width: 1500px; height: 1000px',
+                   sidebarLayout(
+                     sidebarPanel(
+                       wellPanel(
+                         textInput("fct_tab5", label = h3("Fonction générique exécutée"),value = "comorbidity_index"),
+
+                         textInput("sql_user_tab5", label = HTML(paste0("Identifiant", div(helpText("Indiquer votre identifiant teradata (ms0xx)"), class = "pull-below"))), value = "ms069a"),
+                         passwordInput("sql_pwd_tab5", label = HTML(paste0("Mot de passe", div(helpText("Indiquer votre mot de passe teradata"), class="pull-below"))), value = "Kong2051"),
+
+
+                         selectInput("dt_tab5", label = HTML(paste0("Table de données", div(helpText("Indiquer votre cohorte. Une DT ayant au moins deux colonnes : ID et DATE_INDEX"), class = "pull-below"))),
+                                     choices ="Data"),
+                         fileInput("file_tab5", label = HTML(paste0("Choisir votre cohorte d'intérêt", div(helpText("Importer la cohorte d'intérêt"), class = "pull-below")))),
+                         textInput("id_tab5", label = HTML(paste0("Identifiant du bénéficiaire", div(helpText("Indiquer le nom de la colonne contenant l'identifiant du bénéficiaire"), class = "pull-below"))),
+                                   value="ID"),
+                         textInput("DATE_INDEX_tab5", label = HTML(paste0("Date index", div(helpText("Indiquer le nom de la colonne contenant la date index de chaque bénéficiaire"), class = "pull-below"))),
+                                   value="DATE_INDEX"),
+
+
+                         selectInput("Dx_table_tab5", label = HTML(paste0("Liste des diagnostics", div(helpText("Indiquer la base de données contenant la liste des codes de diagnostics identifiés pour le calcul de l'indice de comorbidité",tags$br(),
+                                                                                                                "Par exemple : Charlson_Dx_CCI_INSPQ18"), class = "pull-below"))),
+                                     choices = c("Charlson_Dx_CCI_INSPQ18", "Charlson_Dx_UManitoba16", "Elixhauser_Dx_CCI_INSPQ18", "Combine_Dx_CCI_INSPQ18")),
+                         textInput("CIM_tab5", label = HTML(paste0("Classification des diagnostics", div(helpText("Indiquer la classification des diagnostics à utiliser (CIM9, CIM10 ou les deux)"), class = "pull-below"))),
+                                   value = paste(c("CIM9","CIM10"),collapse = ",")),
+                         h4("PARAMÈTRES DE L’ALGORITHME"),
+                         helpText("Indiquer les paramètres de l’algorithme soit : le nombre de jours (n1) entre 2 diagnostics, la période de temps (n2) à considérer pour confirmer le premier diagnostic et le nombre minimum d’occurrences du diagnostic pour confirmer la condition (nDx).",
+                                  "(Valeurs par défaut n1= 30 jours, n2= 730 jours et nDx=1)"),
+                         numericInput("n1_tab5", label = HTML(paste0("n1 (nombre de jours)", div(helpText("Indiquer le nombre de jours entre lesquels deux diagnostics doit se situer pour que le deuxième Dx confirme le premier"), class = "pull-below"))),
+                                      value = 30),
+                         numericInput("n2_tab5", label = HTML(paste0("n2 (période de temps) ", div(helpText("Indiquer le nombre de jours entre lesquels deux diagnostics doit se situer pour que le deuxième Dx confirme le premier"), class = "pull-below"))),
+                                      value = 730),
+
+                         selectInput("scores", label = HTML(paste0("Poids à donner pour chaque comorbidité", div(helpText("Indiquer le nom de la table contenant le poids de chaque comorbidité à utiliser pour le calcul des indices",tags$br(),
+                                                                                                                          "Par exemple : CCI_INSPQ_2018_CIM10"), class = "pull-below"))),
+                                     choices = c("CCI_INSPQ_2018_CIM9", "CCI_INSPQ_2018_CIM10", "UManitoba_2016")),
+                         numericInput("lookup", label = HTML(paste0("Période de recule", div(helpText("Indiquer le nombre d'années à concidérer avant la date indexe de chaque bénéficiaire"), class = "pull-below"))),
+                                      value = 2),
+                         selectInput("date_dx_var_tab5", label = HTML(paste0("Date d'admission ou de départ", div(helpText("Indiquer si on doit utiliser la date d’admission ou de départ comme date d’incidence lors des hospitalisations ou des visites à l’urgence"), class = "pull-below"))),
+                                     choices = c("admis","depar"),selected="admis"),
+                         selectInput("obstetric_exclu", label = HTML(paste0("Exclusion des diagnostics obstetric", div(helpText("Indiquer Si on doit exclure (TRUE) les diabètes et les hypertensions de type gestationnel"), class = "pull-below"))),
+                                     choices = c(FALSE,TRUE)),
+                         textInput("exclu_diagn_tab5", label = HTML(paste0("Exclusion des diagnostics", div(helpText("Indiquer Si on doit exclure un ou plusieurs Dx de la liste des diagnostics",tags$br(),
+                                                                                                                     "Par exemple: exclu_diagn = c('ld'), pour 'Liver disease'"), class = "pull-below"))),
+                                   value = "NULL"),
+                         checkboxInput("verbose_tab5", label = HTML(paste0("verbose", div(helpText("Par défault verbose=TRUE, un message de progression est affiché sous l'onglet résultats: Message de progression et warnings:"), class = "pull-below"))),
+                                       value=TRUE),
+
+                         selectInput("keep_confirm_data", label = HTML(paste0("Exclusion des diagnostics obstetric", div(helpText("Indiquer Si on doit exclure (TRUE) les diabètes et les hypertensions de type gestationnel"), class = "pull-below"))),
+                                     choices = c(FALSE,TRUE)),
+
+                         selectInput("fileType_tab5", label=HTML(paste0("Format du fichier",div(helpText("Indiquer le format du fichier à télécharger"),class = "pull-below"))), choices = c("csv", "txt")),
+                         actionButton("Executer_tab5", "Exécuter la requête",style = "background-color: green;color: white;"),
+                         actionButton("reset_tab5", "Réinitialiser les champs"),
+                         style = "background-color: #e1f1f7;")),
+
+                     mainPanel(
+                       tabsetPanel(type="tabs",
+                                   tabPanel("Résultats", style='width: 1000px; height: 1000px',
+                                            h4("Résultats de la requête"),
+                                            h5("Script:"),
+                                            p("Afficher le script exécuté pour effectuer la requête demandée.", style = "font-family: 'times'; font-si16pt"),
+                                            shinyAce ::aceEditor(outputId = "ace_tab5",
+                                                                 selectionId = "selection_tab5",
+                                                                 placeholder = "Afficher le script de la requête ...",
+                                                                 mode="r",
+                                                                 theme="cobalt"),
+                                            h5("Message de progression et warnings:"),
+                                            verbatimTextOutput("result_tab5"),
+                                            uiOutput("DT_final_ui_tab5")),
+                                   tabPanel("Vignettes", style='width: 1000px; height: 1000px',
+                                            h4("vignette de la fonction")#,
+                                            #includeHTML(system.file("vignettes/combiner_periodes.html", package = "RequeteGeneriqueBDCA"))
                                    )
                        )
                      )
@@ -332,13 +457,13 @@ RequeteGeneriqueBDCA_shiny<-function(){
 
 
 
+
   # server- Define the server logic for the Shiny app ####
   server<-shinyServer(function(input, output, session) {
     #bs_themer()
 
     # Extraction Donnees ####
     ## renderUI: ####
-
     ### Fonction exécutée####
     observeEvent(input$DT, {
       if (input$DT == "SMOD") {
@@ -359,7 +484,7 @@ RequeteGeneriqueBDCA_shiny<-function(){
           textInput(inputId = "CodeActe", label = HTML(paste0("Codes d'acte SMOD",
                                                               div(helpText("Indiquer les codes d'acte SMOD d'intérêt.",tags$br(),
                                                                            "Exemple: 07122,07237,07800,07089"),
-                                                                  class = "pull-below"))),value = "07122,07237,07800,07089,0780"),
+                                                                  class = "pull-below"))),value = "07122,07237,07800,07089,07800"),
           selectInput(inputId = "omni_spec", label = HTML(paste0("Spécialité du médecin", div(helpText("Indiquer la spécialité du médecin (défaut=all)"), class = "pull-below"))),
                       choices = c("all","omni","spec")),
           selectInput(inputId = "catg_etab", label = HTML(paste0("Catégorie du lieu", div(helpText("Indiquer la catégorie de lieu ou l’acte a été réalisé (défaut=all)"), class = "pull-below"))),
@@ -370,40 +495,40 @@ RequeteGeneriqueBDCA_shiny<-function(){
       }
       else if (input$DT == "MEDECHO") {
         if (input$task == "extraction_MEDECHO_DIAGN_SEJ"){
-        tagList(
-          selectInput("date_dx_var", label = HTML(paste0("Date d'admission ou de départ", div(helpText("Indiquer si on doit utiliser la date d’admission ou de départ comme date d’incidence lors des visites à l’urgence"), class = "pull-below"))),
-                      choices = c("admis","depar"),selected="admis"),
-          textInput("diagn", label = HTML(paste0("Liste des diagnostics", div(helpText("Indiquer la liste des diagnostics de la condition médicale à utiliser pour la création de la cohorte.",tags$br(),
-                                                                                          "Par exemple : list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), '%'), CIM10 = paste0('J', 41:44, '%')))"), class = "pull-below")))),
-          textInput("typ_diagn", label = HTML(paste0("Type de diagnostic", div(helpText("Indiquer le type de diagnostic du séjour hospitalier (défaut=A,P,S,D)"), class = "pull-below"))),
-                    value = paste(c("A","P","S","D"),collapse = ","))
+          tagList(
+            selectInput("date_dx_var", label = HTML(paste0("Date d'admission ou de départ", div(helpText("Indiquer si on doit utiliser la date d’admission ou de départ comme date d’incidence lors des visites à l’urgence"), class = "pull-below"))),
+                        choices = c("admis","depar"),selected="admis"),
+            textInput("diagn", label = HTML(paste0("Liste des diagnostics", div(helpText("Indiquer la liste des diagnostics de la condition médicale à utiliser pour la création de la cohorte.",tags$br(),
+                                                                                         "Par exemple : list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), '%'), CIM10 = paste0('J', 41:44, '%')))"), class = "pull-below")))),
+            textInput("typ_diagn", label = HTML(paste0("Type de diagnostic", div(helpText("Indiquer le type de diagnostic du séjour hospitalier (défaut=A,P,S,D)"), class = "pull-below"))),
+                      value = paste(c("A","P","S","D"),collapse = ","))
           )
         }
         else if (input$task == "extraction_MEDECHO_SEJ_SERV") {
-        tagList(
-          selectInput("date_dx_var", label = HTML(paste0("Date d'admission ou de départ", div(helpText("Indiquer si on doit utiliser la date d’admission ou de départ comme date d’incidence lors des visites à l’urgence"), class = "pull-below"))),
-                      choices = c("admis","depar"),selected="admis"),
-          textInput("diagn", label = HTML(paste0("Liste des diagnostics", div(helpText("Indiquer la liste des diagnostics de la condition médicale à utiliser pour la création de la cohorte.",tags$br(),
-                                                                                          "Par exemple : list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), '%'), CIM10 = paste0('J', 41:44, '%')))"), class = "pull-below"))))
-        )
-      }
+          tagList(
+            selectInput("date_dx_var", label = HTML(paste0("Date d'admission ou de départ", div(helpText("Indiquer si on doit utiliser la date d’admission ou de départ comme date d’incidence lors des visites à l’urgence"), class = "pull-below"))),
+                        choices = c("admis","depar"),selected="admis"),
+            textInput("diagn", label = HTML(paste0("Liste des diagnostics", div(helpText("Indiquer la liste des diagnostics de la condition médicale à utiliser pour la création de la cohorte.",tags$br(),
+                                                                                         "Par exemple : list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), '%'), CIM10 = paste0('J', 41:44, '%')))"), class = "pull-below"))))
+          )
+        }
         else if (input$task == "extraction_MEDECHO_SEJ_HOSP"){
-        tagList(
-          selectInput("date_dx_var", label = HTML(paste0("Date d'admission ou de départ", div(helpText("Indiquer si on doit utiliser la date d’admission ou de départ comme date d’incidence lors des visites à l’urgence"), class = "pull-below"))),
-                      choices = c("admis","depar"),selected="admis")
-        )
+          tagList(
+            selectInput("date_dx_var", label = HTML(paste0("Date d'admission ou de départ", div(helpText("Indiquer si on doit utiliser la date d’admission ou de départ comme date d’incidence lors des visites à l’urgence"), class = "pull-below"))),
+                        choices = c("admis","depar"),selected="admis")
+          )
         }
       }
       else if (input$DT=="BDCU"){
         if(input$task == "extraction_BDCU_EPISO_SOIN_DURG"){
-        tagList(
-          selectInput("date_dx_var", label = HTML(paste0("Date d'admission ou de départ", div(helpText("Indiquer si on doit utiliser la date d’admission ou de départ comme date d’incidence lors des visites à l’urgence"), class = "pull-below"))),
-                      choices = c("admis","depar"),selected="admis"),
-          textInput("diagn", label = HTML(paste0("Liste des diagnostics", div(helpText("Indiquer la liste des diagnostics de la condition médicale à utiliser pour la création de la cohorte.",tags$br(),
-                                                                                       "Par exemple : list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), '%'), CIM10 = paste0('J', 41:44, '%')))"), class = "pull-below"))))
-        )
+          tagList(
+            selectInput("date_dx_var", label = HTML(paste0("Date d'admission ou de départ", div(helpText("Indiquer si on doit utiliser la date d’admission ou de départ comme date d’incidence lors des visites à l’urgence"), class = "pull-below"))),
+                        choices = c("admis","depar"),selected="admis"),
+            textInput("diagn", label = HTML(paste0("Liste des diagnostics", div(helpText("Indiquer la liste des diagnostics de la condition médicale à utiliser pour la création de la cohorte.",tags$br(),
+                                                                                         "Par exemple : list(Coronaro = list(CIM9 = paste0(c(491, 492, 496), '%'), CIM10 = paste0('J', 41:44, '%')))"), class = "pull-below"))))
+          )
         }
-        }
+      }
       else {
         tagList()
       }
@@ -670,11 +795,20 @@ RequeteGeneriqueBDCA_shiny<-function(){
           })
 
           # Définir les noms tableaux / figs à affichés ####
-          output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs", # we can use a tabsetPanel instide navbarPage
-                                                     tabPanel("DT_final",
-                                                              downloadButton("downloadData", "Download"),
-                                                              dataTableOutput("DT_final")
-                                                     ))})
+          output$DT_final_ui <- renderUI({
+            navbarPage(
+              "Cohorte et Tableaux descriptifs",
+              theme = "bootstrap",
+              header = tags$style(".navbar-default .navbar-brand {color: black;}"),# font-weight: bold;
+              tabPanel("DT_final",
+                       downloadButton("downloadData", "Download"),
+                       dataTableOutput("DT_final")
+              )
+            )
+          })
+
+
+
           # Afficher la cohorte ####
           output$DT_final <- renderDataTable(result()) #DT::renderDT()
           # Download BD ####
@@ -818,14 +952,15 @@ RequeteGeneriqueBDCA_shiny<-function(){
 
           output$DT_final_ui1 <- renderUI({
             if (!is.null(result())) {
-              do.call(navbarPage, c("Cohorte et Tableaux discriptifs",
+              do.call(navbarPage, c("Cohorte et Tableaux descriptifs",
+                                    list(theme = "bootstrap",
+                                         header = tags$style(".navbar-default .navbar-brand {color: black;}")),
                                     lapply(1:length(result()), function(i) {
                                       if (names(result())[i] == "Tab1_Nb_Acte_annee") {
                                         tabPanel(names(result())[i],
                                                  downloadButton(paste0("downloadData_", i), "Download"),
                                                  dataTableOutput(paste0("DT_final_", i)),
                                                  plotly::plotlyOutput(paste0("DT_final_plot_", i), height = 500, width = 1500)
-
                                         )
                                       } else if (is.data.frame(result()[[i]])) {
                                         tabPanel(names(result())[i],
@@ -844,6 +979,7 @@ RequeteGeneriqueBDCA_shiny<-function(){
               ))
             }
           })
+
           # Afficher les tables et figures ####
           observe({
             lapply(1:length(result()), function(i) {
@@ -1016,7 +1152,9 @@ RequeteGeneriqueBDCA_shiny<-function(){
             }
           })
           # Définir les noms tableaux / figs à affichés ####
-          output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs", # we can use a tabsetPanel instide navbarPage
+          output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs",
+                                                     theme = "bootstrap",
+                                                     header = tags$style(".navbar-default .navbar-brand {color: black;}"),# font-weight: bold;
                                                      tabPanel("DT_final",
                                                               downloadButton("downloadData", "Download"),
                                                               dataTableOutput("DT_final")
@@ -1144,7 +1282,9 @@ RequeteGeneriqueBDCA_shiny<-function(){
             }
           })
           # Définir les noms tableaux / figs à affichés ####
-          output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs", # we can use a tabsetPanel instide navbarPage
+          output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs",
+                                                     theme = "bootstrap",
+                                                     header = tags$style(".navbar-default .navbar-brand {color: black;}"),# font-weight: bold;
                                                      tabPanel("DT_final",
                                                               downloadButton("downloadData", "Download"),
                                                               dataTableOutput("DT_final")
@@ -1272,7 +1412,9 @@ RequeteGeneriqueBDCA_shiny<-function(){
             }
           })
           # Définir les noms tableaux / figs à affichés ####
-          output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs", # we can use a tabsetPanel instide navbarPage
+          output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs",
+                                                     theme = "bootstrap",
+                                                     header = tags$style(".navbar-default .navbar-brand {color: black;}"),# font-weight: bold;
                                                      tabPanel("DT_final",
                                                               downloadButton("downloadData", "Download"),
                                                               dataTableOutput("DT_final")
@@ -1405,7 +1547,9 @@ RequeteGeneriqueBDCA_shiny<-function(){
             }
           })
           # Définir les noms tableaux / figs à affichés ####
-          output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs", # we can use a tabsetPanel instide navbarPage
+          output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs",
+                                                     theme = "bootstrap",
+                                                     header = tags$style(".navbar-default .navbar-brand {color: black;}"),# font-weight: bold;
                                                      tabPanel("DT_final",
                                                               downloadButton("downloadData", "Download"),
                                                               dataTableOutput("DT_final")
@@ -1499,12 +1643,12 @@ RequeteGeneriqueBDCA_shiny<-function(){
               typ_diagn <- unlist(str_split(input$typ_diagn, ","))
 
               return(query_V_DIAGN_SEJ_HOSP_CM_AG(query=input$task,
-                                         debut_periode=input$debut_periode,
-                                         fin_periode=input$fin_periode,
-                                         diagn =diagn,
-                                         date_dx_var=input$date_dx_var,
-                                         typ_diagn=typ_diagn))
-              }
+                                                  debut_periode=input$debut_periode,
+                                                  fin_periode=input$fin_periode,
+                                                  diagn =diagn,
+                                                  date_dx_var=input$date_dx_var,
+                                                  typ_diagn=typ_diagn))
+            }
             else{
               return("Afficher le code sql de la requête ...")
             }
@@ -1545,7 +1689,9 @@ RequeteGeneriqueBDCA_shiny<-function(){
             }
           })
           # Définir les noms tableaux / figs à affichés ####
-          output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs", # we can use a tabsetPanel instide navbarPage
+          output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs",
+                                                     theme = "bootstrap",
+                                                     header = tags$style(".navbar-default .navbar-brand {color: black;}"),# font-weight: bold;
                                                      tabPanel("DT_final",
                                                               downloadButton("downloadData", "Download"),
                                                               dataTableOutput("DT_final")
@@ -1685,7 +1831,9 @@ RequeteGeneriqueBDCA_shiny<-function(){
             }
           })
           # Définir les noms tableaux / figs à affichés ####
-          output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs", # we can use a tabsetPanel instide navbarPage
+          output$DT_final_ui <- renderUI({navbarPage("Cohorte et Tableaux descriptifs",
+                                                     theme = "bootstrap",
+                                                     header = tags$style(".navbar-default .navbar-brand {color: black;}"),# font-weight: bold;
                                                      tabPanel("DT_final",
                                                               downloadButton("downloadData", "Download"),
                                                               dataTableOutput("DT_final")
@@ -1714,14 +1862,106 @@ RequeteGeneriqueBDCA_shiny<-function(){
         }
       }
     })
+    # Résultats: Requete Tearadata ####
+    mode_tera <- reactiveVal("sql")
+    observeEvent(input$mode_tera, {
+      mode_tera(input$mode_tera)
+      updateAceEditor(session, "ace_tera", mode = mode_tera())
+    })
+
+    theme_tera <- reactiveVal("sqlserver")
+    observeEvent(input$theme_tera, {
+      theme_tera(input$theme_tera)
+      updateAceEditor(session, "ace_tera", theme = theme_tera())
+    })
+
+    output$Code_sql_select_tera <- renderUI({
+      if (input$Code_sql_tera) {
+        tagList(
+          selectInput("mode_tera", label = HTML(paste0("Mode d'affichage du code générique: ", div(helpText("Par défaut, le code est affiché en mode sql sous l'onglet 'Code sql:'. Il est possible de choisir d'autres modes"), class = "pull-below"))),
+                      choices = getAceModes(), selected = mode_tera()),
+          selectInput("theme_tera", label = HTML(paste0("Thème d'affichage du code générique: ", div(helpText("Par défaut, le code est affiché avec le thème 'sqlserver'. Il est possible de choisir d'autres thèmes"), class = "pull-below"))),
+                      choices = getAceThemes(), selected = theme_tera())
+        )
+      }
+    })
+
+    observeEvent(input$Executer_tera, {
+
+      observe({cat(input$ace_tera, "\n")})
+      observe({cat(input$selection_tera, "\n")})
+      updateAceEditor(
+        session,
+        "ace_tera",
+        value = input$ace_tera,
+        theme = theme_tera(),
+        mode = mode_tera()
+      )
+
+      warnings <- reactiveValues(data = character(0))
+      result <- eventReactive(input$Executer_tera, {
+        conn <- RequeteGeneriqueBDCA::SQL_connexion(noquote(input$sql_user_tera),noquote(input$sql_pwd_tera))
+        withCallingHandlers(
+          {
+            DT_final <- dbGetQuery(conn, input$ace_tera)
+            DT_final <- data.frame(DT_final)
+          },
+          warning = function(w) {
+            warnings$data <- c(warnings$data, w$message)
+          }
+        )
+      })
+
+      # afficher le message de progression ####
+      output$result_tera <- renderPrint({
+        withProgress(message = "La requête est en exécution. Veuillez-svp patienter....", value = 0, {
+          n<-10
+          for (i in 1:9) {
+            Sys.sleep(0.5)
+            incProgress(1/n, detail = paste("Doing part", i*10,"%"))
+          }
+          result<-result()
+          if (length(warnings$data) > 0) {
+            print(paste("Warnings: ", warnings$data))
+          }
+        })
+      })
+
+      # Définir les noms tableaux / figs à affichés ####
+      output$DT_final_ui_tera <- renderUI({navbarPage("Cohorte et Tableaux descriptifs",
+                                                      theme = "bootstrap",
+                                                      header = tags$style(".navbar-default .navbar-brand {color: black;}"),# font-weight: bold;
+                                                      tabPanel("DT_final_tera",
+                                                               downloadButton("downloadData_tera", "Download"),
+                                                               dataTableOutput("DT_final_tera")
+                                                      ))})
+      # Afficher la cohorte ####
+      output$DT_final_tera <- renderDataTable(result()) #DT::renderDT()
+      # Download BD ####
+      observeEvent(input$Executer_tera, {
+        output$downloadData_tera <- downloadHandler(
+          filename = function() {
+            paste("DT_final_", format(Sys.Date(), "%Y%m%d"), ".", input$fileType_tera, sep = "")
+          },
+          content = function(file) {
+            if (input$fileType_tera == "csv") {
+              write.csv(result(), file, row.names = FALSE)
+            } else {
+              write.table(result(), file, sep = ";", dec = ".",quote=FALSE,row.names = FALSE, col.names = TRUE)
+            }
+          }
+        )
+      })
+
+    })
     #####
     '#####
      #####'
     # Creation cohorte ####
-    # Résultat: Création cohort ####
+    # renderUI: ####
     textInput("code_stat_decis_tab2", label = HTML(paste0("code_stat_decis", div(helpText("Indiquer si vous voulez des actes payés et/ou prépayés"), class = "pull-below"))),
               value = paste(c("PAY","PPY"),collapse = ","))
-
+    # Résultat: Création cohort ####
     observeEvent(input$Executer_tab2, {
       warnings <- reactiveValues(data = character(0))
       result_tab2 <- eventReactive(input$Executer_tab2, {
@@ -1771,7 +2011,9 @@ RequeteGeneriqueBDCA_shiny<-function(){
       })
 
       # Définir les noms tableaux / figs à affichés ####
-      output$DT_final_ui_tab2 <- renderUI({navbarPage("Cohorte et Tableaux descriptifs", # we can use a tabsetPanel instide navbarPage
+      output$DT_final_ui_tab2 <- renderUI({navbarPage("Cohorte et Tableaux descriptifs",
+                                                      theme = "bootstrap",
+                                                      header = tags$style(".navbar-default .navbar-brand {color: black;}"),# font-weight: bold;
                                                       tabPanel("cohort_final",
                                                                downloadButton("downloadData_tab2", "Download"),
                                                                dataTableOutput("cohort_final")
@@ -1802,7 +2044,7 @@ RequeteGeneriqueBDCA_shiny<-function(){
     observeEvent(input$Executer_tab3, {
       output$image <- renderImage({
         list(
-          src = "image/Trav_cours.jpg",
+          src = system.file("image/Trav_cours.jpg", package = "RequeteGeneriqueBDCA"),
           contentType = "image/jpeg"
         )
       }, deleteFile = FALSE)
@@ -1811,24 +2053,24 @@ RequeteGeneriqueBDCA_shiny<-function(){
     '#####
      #####'
     # combine périodes / episodes soins ####
-    ## renderUI: ####
-    ### Affichage code sql ####
-    tmp<- reactiveVal("r")
+    # renderUI: ####
+    # Affichage code sql ####
+    mode_r<- reactiveVal("r")
     observeEvent(input$mode_tab4, {
-      tmp(input$mode_tab4)
+      mode_r(input$mode_tab4)
     })
 
-    tmp1<- reactiveVal("cobalt")
+    theme_r<- reactiveVal("cobalt")
     observeEvent(input$theme_tab4, {
-      tmp1(input$theme_tab4)
+      theme_r(input$theme_tab4)
     })
 
     output$Code_sql_select_tab4 <- renderUI({
       if (input$Code_sql_tab4) {
         tagList(selectInput("mode_tab4", label = HTML(paste0("Mode d'affichage du code générique: ", div(helpText("Par défaut, le code est affiché en mode r sous l'onglet 'script:'. Il est possible de choisir d'autres modes"), class = "pull-below"))),
-                            choices = getAceModes(), selected = tmp()),
+                            choices = getAceModes(), selected = mode_r()),
                 selectInput("theme_tab4", label = HTML(paste0("Thème d'affichage du code générique: ", div(helpText("Par défaut, le code est affiché avec le thème 'cobalt'. Il est possible de choisir d'autres thèmes"), class = "pull-below"))),
-                            choices = getAceThemes(), selected = tmp1())
+                            choices = getAceThemes(), selected = theme_r())
         )
       }
     })
@@ -1871,7 +2113,7 @@ RequeteGeneriqueBDCA_shiny<-function(){
             warnings$data <- c(warnings$data, w$message)})
 
       })
-      # afficher du script R ####
+      # afficher le script R ####
       init <- eventReactive(input$Executer_tab4,{
         if (input$dt == "Data") {
           return('
@@ -1948,8 +2190,8 @@ RequeteGeneriqueBDCA_shiny<-function(){
           session,
           "ace_tab4",
           value = init(),
-          theme = tmp1(),
-          mode = tmp(),
+          theme = theme_r(),
+          mode = mode_r(),
         )
       })
 
@@ -1981,7 +2223,9 @@ RequeteGeneriqueBDCA_shiny<-function(){
       )
 
       # Définir les noms tableaux / figs à affichés ####
-      output$DT_final_ui_tab4 <- renderUI({navbarPage("Cohorte et Tableaux descriptifs", # we can use a tabsetPanel instide navbarPage
+      output$DT_final_ui_tab4 <- renderUI({navbarPage("Cohorte et Tableaux descriptifs",
+                                                      theme = "bootstrap",
+                                                      header = tags$style(".navbar-default .navbar-brand {color: black;}"),# font-weight: bold;
                                                       tabPanel("DT_final_combin",
                                                                downloadButton("downloadData_tab4", "Download"),
                                                                dataTableOutput("DT_final_combin")
@@ -2005,10 +2249,9 @@ RequeteGeneriqueBDCA_shiny<-function(){
       })
 
     })
-
-
-
-
+    #####
+    '#####
+     #####'
     # rénésialisation des champs ####
     # Extraction données ####
     observeEvent(input$reset, {
@@ -2017,6 +2260,13 @@ RequeteGeneriqueBDCA_shiny<-function(){
       output$DT_final_ui <- renderUI({NULL})
       output$DT_final_ui1 <- renderUI({NULL})
       output$DT_final <- renderDataTable({NULL})
+    })
+    # Teradata Studio ####
+    observeEvent(input$reset_tera, {
+      updateAceEditor(session, "ace_tera", value = "")
+      output$result_tera <- renderPrint({NULL})
+      output$DT_final_ui_tera <- renderUI({NULL})
+      output$DT_final_tera <- renderDataTable({NULL})
     })
     # Creation cohorte ####
     observeEvent(input$reset_tab2, {

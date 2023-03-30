@@ -58,8 +58,10 @@ library(RequeteGeneriqueBDCA)
 # query_V_EPISO_SOIN_DURG_CM_AG
 
 La fonction `query_V_EPISO_SOIN_DURG_CM_AG` est une `parent_function` qui retourne une syntaxe sql pour: <br/>
-1) extraire les variables pertinentes de BDCU combinées avec d'autres vues de données <br/>
-2) extraire les diagnostics pour la création d'une cohorte <br/>
+1) extraire les variables pertinentes de BDCU `V_EPISO_SOIN_DURG_CM` combinées avec d'autres bases de données pour rajouter les caractéristiques du bénéficiaire et de l'établissement de soins. <br/>
+2) extraire les variables pertinentes de la base de données BDCU `V_OCCU_CIVIE_DURG_CM`. <br/>
+3) extraire les variables pertinentes de la base de données BDCU `V_CNSUL_DURG_CM`. <br/>
+4) extraire les diagnostics pour la création d'une cohorte <br/>
 
 
 Elle est utilisée par: <br/>
@@ -70,7 +72,7 @@ Elle est utilisée par: <br/>
 ## La fonction
 
 ```{r, eval=FALSE}
-query_I_SMOD_SERV_MD_CM_AG(query,
+query_V_EPISO_SOIN_DURG_CM_AG(query,
                            debut_periode, 
                            fin_periode, 
                            diagn,
@@ -84,11 +86,9 @@ query_I_SMOD_SERV_MD_CM_AG(query,
 ## Définition des arguments
 
 ### query
-Indiquant la requête qu'on veut exécuter. 
+Indiquant la requête à exécuter. 
 ```{r}
-query="extraction_BDCU" # extraire les variables pertinentes de BDCU combinées avec d'autres vues de données pour rajouter les caractéristiques de bénéficiaire, dispensateur et l'établissement du soins. 
-query="extraction_Dx" # extraire les diagnostics pour la création d'une cohort.
-
+query=c("extraction_BDCU_EPISO_SOIN_DURG","extraction_BDCU_OCCU_CIVIE_DURG","extraction_BDCU_CNSUL_DURG","extraction_Dx") 
 
 ```
 
@@ -100,10 +100,19 @@ debut_periode = "2021-04-01", fin_periode = "2022-03-31"
 ```
 
 ### diagn
-
 Un vecteur indiquant les codes de diagnostics *CIM9* et/ou *CIM10* à extraire dont l'objectif est de créer une cohorte. 
 ```{r}
-diagn=c('5995%','6180%','6181%','6183%','6184%','N810%','N811%','N812%')
+diagn = list(
+  diabete = list(
+    CIM9 = c("2500%", "2501%", "2502%"),
+    CIM10 = c("E100%", "E101%", "E109%", "E110%", "E111%", "E119%", "E130%",
+              "E131%", "E139%", "E140%", "E141%", "E149%")),
+  diabete_complication = list(
+    CIM9 = paste0(2503:2509, "%"),
+    CIM10 = paste0("E", c(102:108, 112:118, 132:138, 142:148), "%")
+  )
+)
+
 ```
 
 ### date_dx_var
@@ -134,18 +143,18 @@ debut_cohort = "2021-04-01", fin_cohort = "2022-03-31"
 ```
 
 
+
 ## Usage de la fonction
 
 La fonction `query_V_EPISO_SOIN_DURG_CM_AG` est principalement utilisée par la fonction `user_V_EPISO_SOIN_DURG_CM_AG`. Voir [user_V_EPISO_SOIN_DURG_CM_AG](user_V_EPISO_SOIN_DURG_CM_AG.html)<br/>. Elle peut-être également exécutée indépendament des autres fonctions.   
 
--  **Extraction des variables pertinantes de SMOD combinées avec d'autres vues de données:**
 ```{r}
 DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
 statement=query_V_EPISO_SOIN_DURG_CM_AG (
-query="extraction_BDCU",
+query="extraction_BDCU_EPISO_SOIN_DURG",
 debut_periode="2021-04-01",
 fin_periode="2022-03-31",
-diagn = NULL, #  à préciser si on veut extraire des actes pour des bénéficiaires ayant un ou plusieurs Dx spécifiques 
+diagn = NULL, #  à préciser si on veut extraire les variables BDCU pour des bénéficiaires ayant un ou plusieurs Dx spécifiques dans V_EPISO_SOIN_DURG_CM 
 date_dx_var=c('admis', 'depar'),
 benef_adr="dernière_adresse",
 date_adr=NULL,
@@ -155,11 +164,7 @@ fin_cohort=NULL)
 ```
 
 # Table Résultante
-
-## Variables
-
-### Extraction des variables pertinantes de BDCU combinées avec d'autres vues de données:
-
+## `task="extraction_BDCU_EPISO_SOIN_DURG"`
 - **ID ** : Numéro du bénéficiaire <br/>
 - **SURG_NO_EPISO_SOIN_DURG ** :	Numéro d'épisode de soins - Départements d'urgence	<br/>
 - **SURG_AN_PER_TEMPS ** :	Année période temps	<br/>
@@ -193,34 +198,34 @@ fin_cohort=NULL)
 - **RSS_ETAB ** : Régions sociosanitaires (RSS) de l'établissement <br/>
 - **NOM_RSS_Etab ** : Nom régions sociosanitaires (RSS) de l'établissement <br/>
 - **NOM_ETAB ** : Nom de l'établissement <br/>
-***
+## `task="extraction_BDCU_OCCU_CIVIE_DURG"`
+ Extraction des variables pertinentes de BDCU: V_OCCU_CIVIE_DURG_CM. Une base de données avec 8 variables.
+- **ID ** : Numéro du bénéficiaire <br/>
+- **SURG_NO_EPISO_SOIN_DURG** :	Numéro d'épisode de soins - Départements d'urgence <br/>
+- **SURG_NO_SEQ_OCCU_CIVIE_DURG** :	Numéro de séquence de l'occupation de civière <br/>
+- **SURG_DHD_OCCU_CIVIE_DURG** :	Date et heure de début d'occupation de civière <br/>
+- **DD_Occup_civ** :	Date de début d'occupation de civière <br/>
+- **SURG_DHF_OCCU_CIVIE_DURG** :	Date et heure de fin d'occupation de civière <br/>
+- **DF_Occup_civ** :	Date de fin d'occupation de civière <br/>
+- **SURG_CATG_CIVIE_DURG** :	Catégorie de civière en département d'urgence <br/>
+
+## `task="extraction_BDCU_CNSUL_DURG"`
+ Extraction des variables pertinentes de BDCU: V_CNSUL_DURG_CM. Une base de données avec 9 variables.
+- **ID ** : Numéro du bénéficiaire <br/>
+- **SURG_NO_EPISO_SOIN_DURG** :	Numéro d'épisode de soins - Départements d'urgence <br/>
+- **SURG_NO_SEQ_CNSUL_DURG** :	Numéro de séquence de consultation <br/>
+- **SURG_COD_SPEC_CNSUL_DURG** :	Code de spécialité de consultation d'urgence <br/>
+- **SURG_COD_ETA_CNSUL_DURG** :	Code spécifiant l'état de la consultation <br/>
+- **SURG_DH_DEM_CNSUL_DURG** :	Date et heure de la demande de consultation <br/>
+- **DD_DEM_CNSUL** :	Date de la demande de consultation <br/>
+- **SURG_DH_REAL_CNSUL_DURG** :	Date et heure de réalisation de consultation <br/>
+- **DD_REAL_CNSUL** :	Date de réalisation de consultation <br/>
+
 
 
 # Discription de la syntaxe SQL
-    
-## Vues utilisées
-
-### Extraction des variables pertinantes de BDCU combinées avec d'autres vues de données:
-- RES_SSS.V_EPISO_SOIN_DURG_CM (BDCU)
-- PROD.V_FICH_ID_BEN_CM (FIPA)
-- PROD.D_DISP_SPEC_CM (FIP)
-- Prod.V_ETAB_USUEL
-- Prod.I_BENEF_ADR_CM
-- DONNE_INESSS.tGI_RLS_RTS
-- Prod.V_ETAB_USUEL_DERN
-- RES_SSS.V_NOM_ETAB_DERN_TYP_NOM
-- Prod.V_RPERT_COD_ACTE
-- Prod.V_DECOU_GEO_POSTL_DERN_CP
-- Prod.V_COD_CATG_ETAB_EI
-
-### Extraction des diagnostics:
-- RES_SSS.V_EPISO_SOIN_DURG_CM (BDCU)
-
-
-## Syntaxe SQL
-
-### Extraction des variables pertinantes de SMOD:
-```{r}
+## `task="extraction_BDCU_EPISO_SOIN_DURG"`
+```{sql}
 SELECT
 -- vue: RES_SSS.V_EPISO_SOIN_DURG_CM
 BD_BDCU.SURG_NO_INDIV_BEN_BANLS AS ID,
@@ -312,7 +317,17 @@ Autres méthodes :
 3- cibler ladresse à une date fixe (p. ex. 31 mars, 1 juillet, mi-année) */
 
 LEFT JOIN (
-query_V_EPISO_SOIN_DURG_CM.where_I_BENF_ADR_CM(benef_adr,debut_periode,fin_periode,date_adr),
+SELECT
+              BENF_NO_INDIV_BEN_BANLS,
+              BENF_DD_ADR_BEN,
+              BENF_DF_ADR_BEN,
+              LGEO_COD_RSS,
+              LGEO_COD_TERRI_RLS
+
+              FROM Prod.I_BENF_ADR_CM
+              WHERE BENF_IND_ADR_HQ IN ('N') AND BENF_COD_TYP_ADR IN ('R')
+              AND (BENF_DD_ADR_BEN<='2022-03-31' AND BENF_DF_ADR_BEN>='2021-04-01')
+              QUALIFY Row_Number()Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN DESC)=1 --dernière adresse
 ) AS BD_Adr
 ON B.BENF_NO_INDIV_BEN_BANLS=BD_Adr.BENF_NO_INDIV_BEN_BANLS
 
@@ -381,8 +396,37 @@ ON B.LGEO_COD_TERRI_RLS=Y.CodRLS
 ) AS W
 ON BD_BDCU.SURG_NO_ETAB_MSSS=W.ETAB_NO_ETAB_MSSS
 
-/* WHERE query_V_EPISO_SOIN_DURG_CM.date_dx_var(date_dx_var) between to_date('",debut_periode,"') and to_date('",fin_periode,"')*/
-/* query_V_EPISO_SOIN_DURG_CM.diagn(diagn)*/
+WHERE SURG_DHD_EPISO_SOIN_DURG between '2021-04-01' and '2022-03-31'
+AND SURG_COD_DIAGN_MDCAL_CLINQ like any ("2500%", "2501%", "2502%","E100%", "E101%", "E109%", "E110%", "E111%")
 AND SURG_COD_PRIOR_TRIAG_DURG IN ('1','2','3','4','5')
-ORDER BY 1
+ORDER BY 1;
 ```
+## `task="extraction_BDCU_OCCU_CIVIE_DURG"`
+```{sql}
+SELECT
+BD_OCCUCIVIE.SURG_NO_INDIV_BEN_BANLS AS ID,--	Numéro d'individu de la personne assurée
+BD_OCCUCIVIE.SURG_NO_SEQ_OCCU_CIVIE_DURG,--	Numéro de séquence de l'occupation de civière
+BD_OCCUCIVIE.SURG_DHD_OCCU_CIVIE_DURG,--	Date et heure de début d'occupation de civière
+Cast(BD_OCCUCIVIE.SURG_DHD_OCCU_CIVIE_DURG AS DATE) AS DD_Occup_civ, -- Date début d'occupation de civière
+BD_OCCUCIVIE.SURG_DHF_OCCU_CIVIE_DURG,--	Date et heure de fin_cohort d'occupation de civière
+Cast(BD_OCCUCIVIE.SURG_DHF_OCCU_CIVIE_DURG AS DATE) AS DF_Occup_civ, -- Date début d'occupation de civière
+BD_OCCUCIVIE.SURG_CATG_CIVIE_DURG --	Catégorie de civière en département d'urgence
+FROM RES_SSS.V_OCCU_CIVIE_DURG_CM AS BD_OCCUCIVIE
+ORDER BY 1;
+```
+## `task="extraction_BDCU_CNSUL_DURG"`
+```{sql}
+SELECT
+BD_CNSUL.SURG_NO_INDIV_BEN_BANLS AS ID,--	Numéro d'individu de la personne assurée
+BD_CNSUL.SURG_NO_SEQ_CNSUL_DURG,--	Numéro de séquence de consultation
+BD_CNSUL.SURG_COD_SPEC_CNSUL_DURG,--	Code de spécialité de consultation d'urgence
+BD_CNSUL.SURG_COD_ETA_CNSUL_DURG,--	Code spécifiant l'état de la consultation
+BD_CNSUL.SURG_DH_DEM_CNSUL_DURG,--	Date et heure de la demande de consultation
+Cast(BD_CNSUL.SURG_DH_DEM_CNSUL_DURG AS DATE) AS DD_DEM_CNSUL, -- Date demande consult
+BD_CNSUL.SURG_DH_REAL_CNSUL_DURG, --	Date et heure de réalisation de consultation
+Cast(BD_CNSUL.SURG_DH_REAL_CNSUL_DURG AS DATE) AS DD_REAL_CNSUL -- Date realisation consult
+FROM RES_SSS.V_CNSUL_DURG_CM AS BD_CNSUL
+ORDER BY 1;
+```
+
+

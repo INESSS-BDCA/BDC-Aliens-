@@ -66,3 +66,59 @@ rmNA <- function(x) {
     return(x)
   }
 }
+
+#' Astuce
+#'
+#' Combinaison de `sort()` et `unique()`.
+#'
+#' @param x Vecteur à trier et supprimer doublons.
+#' @param decreasing Ordre décroissant = `TRUE`, sinon `FALSE`.
+#' @param na.last Afficher les `NA` à la fin = `TRUE`, sinon `FALSE`. `NA` n'affiche pas les valeurs `NA`.
+#'
+#' @encoding UTF-8
+#' @export
+#' @examples
+#' x <- sample(c(1:10, NA, NaN))
+#' x
+#'
+#' sunique(x)
+#' sunique(x, na.last = TRUE)
+#' sunique(x, decreasing = TRUE, na.last = NA)
+sunique <- function(x, decreasing = FALSE, na.last = FALSE) {
+
+  return(sort(unique(x), decreasing = decreasing, na.last = na.last))
+
+}
+
+
+#' Astuce
+#'
+#' Remplace les `NA`s dans un tableau par `by`.
+#'
+#' @param dt Tableau contenant des `NA`s.
+#' @param by Valeur de remplacement.
+#'
+#' @encoding UTF-8
+#' @export
+replace_NA_in_dt <- function(dt, by) {
+
+  if (!data.table::is.data.table(dt)) {
+    dt <- data.table::as.data.table(dt)
+  }
+
+  if (is.character(by)) {
+    to_char <- TRUE
+  } else {
+    to_char <- FALSE
+  }
+
+  for (j in 1:ncol(dt)) {
+    if (to_char && !is.character(dt[[j]])) {
+      dt[[j]] <- as.character(dt[[j]])
+    }
+    data.table::set(dt, which(is.na(dt[[j]])), j, by)
+  }
+
+  return(dt)
+
+}

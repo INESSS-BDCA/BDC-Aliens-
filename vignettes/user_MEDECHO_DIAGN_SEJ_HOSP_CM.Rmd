@@ -1,19 +1,408 @@
 ---
 title: "user_MEDECHO_DIAGN_SEJ_HOSP_CM"
-output: rmarkdown::html_vignette
+#subtitle: ""
+author: "Auteurs: Ahmed Ghachem"
+date: "Date de création: 27 mars 2023"
+# output:
+#   rmarkdown::html_vignette:
+output:
+  rmarkdown::html_vignette:
+    css: styles.css
+    #self_contained: false
+    number_sections: true
+    toc: true
+params: 
+  output_dir: "vignettes"
 vignette: >
   %\VignetteIndexEntry{user_MEDECHO_DIAGN_SEJ_HOSP_CM}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  echo = TRUE,
+  eval = FALSE
 )
 ```
 
-```{r setup}
+# Installation de la librairie R *RequeteGeneriqueBDCA*
+
+## Fichier nécessaire
+
+Télécharger le fichier `RequeteGeneriqueBDCA.x.y.tar.gz` à partir de Microsoft Teams.<br>
+[INESSS - Documentation BDCA > Documents > Outils > Librairie R INESSS > RequeteGeneriqueBDCA_x.y.z.tar.gz](https://msss365.sharepoint.com/:f:/r/teams/INESSS-DocumentationBDCA/Shared%20Documents/Outils/Librairie%20R%20INESSS?csf=1&web=1&e=j5SylU).
+
+Ouvrir RStudio.
+
+Dans la console, écrire le code suivant :
+```{r, eval=FALSE}
+remotes::install_local("C:\\msXXX\\Desktop\\RequeteGeneriqueBDCA_x.y.z.tar.gz")
+```
+Prendre note que les «`\`» sont doubles.
+
+Si la librairie `remotes` n'est pas installée, écrire dans la console le code suivant : `install.packages("remotes")`.
+
+Avant d'installer une librairie, il est préférable de ne pas l'avoir *appelé* auparavant.
+
+Il est déconseillé de mettre à jour les librairies utilisées par *RequeteGeneriqueBDCA*.
+
+L'installation se termine lorsqu'on peut lire dans la console : *DONE (RequeteGeneriqueBDCA)*.
+
+
+## Activer la librairie
+      
+Après avoir installé la librairie *RequeteGeneriqueBDCA*, il suffit de l'activer pour avoir accès aux fonctions :
+```{r, eval=FALSE}
 library(RequeteGeneriqueBDCA)
 ```
+
+---
+
+# user_MEDECHO_DIAGN_SEJ_HOSP_CM
+
+La fonction `user_MEDECHO_DIAGN_SEJ_HOSP_CM` est destinée aux utilisateurs. Elle permet: <br/>
+
+1) d'extraire les variables pertinentes de la base de données MEDECHO `V_SEJ_HOSP_CM`, jumlées avec d'autres bases de données pour rajouter les caractéristiques du bénéficiaire et de l'établissement de soins. <br/>
+2) d'extraire les variables pertinentes de la base de données MEDECHO `V_DIAGN_SEJ_HOSP_CM`. <br/>
+3) d'extraire les variables pertinentes de la base de données MEDECHO `V_SEJ_SERV_HOSP_CM`. <br/>
+
+La fonction `user_MEDECHO_DIAGN_SEJ_HOSP_CM` est une `child_function` qui permet d'exécuter les requêtes SQL générées par les `parent_function` suivantes:<br/>
+[SQL_reperage_cond_med](SQL_reperage_cond_med.html)<br/>
+[query_V_SEJ_HOSP_CM](query_V_SEJ_HOSP_CM.html)<br/>
+[query_V_DIAGN_SEJ_HOSP_CM_AG](query_V_DIAGN_SEJ_HOSP_CM_AG.html)<br/>
+[query_V_SEJ_SERV_HOSP_CM_AG](query_V_SEJ_SERV_HOSP_CM_AG.html)<br/>
+[query_V_FICH_ID_BEN_CM](query_V_FICH_ID_BEN_CM.html)<br/>
+
+Si la cohorte n'est pas fournie par le professionnel scientifique, et on veut créer une cohorte en utilisant les Dx cim-9 et/ou cim-10:<br/>
+
+la fonction `user_MEDECHO_DIAGN_SEJ_HOSP_CM` exécute trois étapes principales: <br/>
+1) la création de la cohorte de l'étude en utilisant les Dx cim-9 et/ou cim-10 via la fonction `SQL_reperage_cond_med`<br/> 
+2) l'extraction des variables pertinentes pour cette cohorte via les fonctions `query_V_SEJ_HOSP_CM`,`query_V_DIAGN_SEJ_HOSP_CM_AG`,`query_V_DIAGN_SEJ_HOSP_CM_AG`<br/>
+3) l'ajout des caractéristiques de benéficiaire, ainsi que de l'établissement de soins.<br/> 
+
+Si la cohorte n'est pas fournie par le professionnel scientifique, et on ne veut pas créer une cohorte en utilisant les Dx cim-9 et/ou cim-10: <br/>
+l'étape 1 est ignorée et les étapes 2 et 3 sont exécutées en fonction de la nature de l'argument `task` <br/> 
+
+## La fonction
+
+```{r, eval=FALSE}
+
+user_MEDECHO_DIAGN_SEJ_HOSP_CM(task,
+                          conn=SQL_connexion(),
+                          cohort=NULL, # si la cohorte est fournie par l'analyste (cohort=cohort), si on veut créer une nouvelle cohorte (cohort=NULL)
+                          debut_periode,
+                          fin_periode,
+                          
+                          diagn, # liste de Dx pour les task: query_V_DIAGN_SEJ_HOSP_CM_AG et query_V_SEJ_SERV_HOSP_CM_AG 
+                          typ_diagn,
+                          
+                          benef_adr,
+                          date_adr, # à spécifier lorsque benef_adr="date_fixe"
+                          date_age, # à spécifier lorsque keep_all=TRUE
+
+                          Dx_table, # si la cohorte n'est pas fournie par le professionnel scientifique et nous ne voulons pas créer une nouvelle cohorte (Dx_table=NULL)
+                          debut_cohort,
+                          fin_cohort,
+                          CIM,
+                          by_Dx,
+                          date_dx_var,
+                          n1,n2,
+                          nDx,
+                          keep_all=FALSE,
+                          
+                          verbose=TRUE,
+                          setwd)
+```
+
+## Définition des arguments
+### task 
+Permet de préciser le type de requête à exécuter.
+```{r}
+task = c("extraction_MEDECHO_SEJ_HOSP","extraction_MEDECHO_DIAGN_SEJ","extraction_MEDECHO_SEJ_SERV")
+```
+
+### Connexion 
+La fonction `SQL_connexion` permet à R de se connecter à Teradata. Simplenent inscrire l'identifant et le programme demandera le mot de passe lors de son exécution.
+```{r}
+conn = SQL_connexion("msXXX")
+```
+
+### cohorte 
+Vecteur indiquant les numéros d'identification des bénéficiaires définisant la cohorte de l'étude.
+```{r}
+cohort<-cohort$BENF_NO_INDIV_BEN_BANLS
+cohort=cohort #ou 
+cohort=NULL
+```
+
+### Période de l'étude 
+Date de début et de fin de la période d'étude au format AAAA-MM-JJ.
+```{r}
+debut_periode = "2020-01-01" 
+fin_periode = "2020-12-31"
+```
+
+### Paramètres spécifiques de la requête
+#### Liste des diagnostics 
+`list` contenant les codes diagnostics CIM9 et CIM10.
+```{r}
+diagn = list(
+  diabete = list(
+    CIM9 = c("2500%", "2501%", "2502%"),
+    CIM10 = c("E100%", "E101%", "E109%", "E110%", "E111%", "E119%", "E130%",
+              "E131%", "E139%", "E140%", "E141%", "E149%")),
+  diabete_complication = list(
+    CIM9 = paste0(2503:2509, "%"),
+    CIM10 = paste0("E", c(102:108, 112:118, 132:138, 142:148), "%")
+  )
+)
+```
+
+#### Type de diagnostic 
+Permettant de préciser le type de diagnostic posé pendant le séjour hospitalier. `A = Admission`, `D = Décès`, `P = Principal` et `S = Secondaire`. 
+```{r}
+typ_diagn = c('A', 'P', 'S', 'D')
+```
+
+
+### Caractéristiques du bénéficiaires
+#### Adresse du bénéficiaire 
+Permet de définir la méthode d'identification de l'adresse de bénéficiaire.
+```{r}
+benef_adr=c("date_fixe","dernière_adresse","première_adresse","long_adresse")
+
+```
+
+#### Date adresse
+Si `benef_adr`="date_fixe", `date_adr` permet de choisir une date fixe pour identifier l'adresse de bénéficiaire. 
+```{r}
+date_adr="2020-07-01"
+```
+
+#### Date âge 
+Permet d'indiquer une date `"AAAA-MM-JJ"` à laquelle l'âge des bénéficaires qui n'ont pas eu d'acte est calculé. L'âge de bénéficiaires qui ont eu un acte à l'intérieur de la période de l'étude est calculé à la date de l'acte.  
+```{r}
+date_age="2020-03-01"
+```
+
+
+### PARAMÈTRES POUR LA CRÉATION DE LA COHORTE AVEC `SQL_reperage_cond_med`
+#### Liste des diagnostics 
+`list` contenant les codes diagnostics CIM9 et CIM10.
+```{r}
+Dx_table = list(
+  diabete = list(
+    CIM9 = c("2500%", "2501%", "2502%"),
+    CIM10 = c("E100%", "E101%", "E109%", "E110%", "E111%", "E119%", "E130%",
+              "E131%", "E139%", "E140%", "E141%", "E149%")),
+  diabete_complication = list(
+    CIM9 = paste0(2503:2509, "%"),
+    CIM10 = paste0("E", c(102:108, 112:118, 132:138, 142:148), "%")
+  )
+)
+```
+
+#### Classification des diagnostics 
+Permet de choisir le type de code diagnostic : CIM9, CIM10 ou les deux.
+```{r}
+CIM = c("CIM9", "CIM10")  # par défaut : CIM9 et CIM10
+CIM = "CIM9"  # CIM9 seulement
+CIM = "CIM10"  # CIM10 seulement
+```
+
+#### Date début et fin de la cohorte 
+Date de début et de fin de la création d'une cohort au format AAAA-MM-JJ.
+```{r}
+debut_cohort = "2018-01-01" 
+fin_cohort = "2020-12-31"
+```
+
+#### Stratification de la cohorte 
+Vrai (`TRUE`) ou FAUX (`FALSE`).  
+
+À partir de `DX_table` créé précédemment, si `TRUE`, on aurait au maximum deux lignes par individu où la colonne `DIAGN` indiquerait `diabete` ou `diabete_complication`.  
+Si `FALSE`, on a au maximum une ligne par individu et la colonne `DIAGN` est absente, car les codes de `diabete` et `diabete_complication` sont considérés comme un seul élément d'analyse dans l'algorithme.
+```{r}
+by_Dx = TRUE  # par défaut
+by_Dx = FALSE
+```
+
+#### Date d'admission ou de départ 
+Permet de choisir entre la date d'admission ou la date de départ comme date d'incidence dans les vues suivantes :
+
+* V_DIAGN_SEJ_HOSP_CM
+* V_SEJ_SERV_HOSP_CM
+* V_EPISO_SOIN_DURG_CM
+
+```{r}
+date_dx_var = "admis"  # par défaut
+date_dx_var = "depar"
+```
+
+### Paramètres de l'algorithme de création de cohorte
+Permet d'indiquer les paramètres de l’algorithme soit : le nombre de jours (n1) entre 2 diagnostics, la période de temps (n2) à considérer pour confirmer le premier diagnostic et le nombre minimum d’occurrences du diagnostic pour confirmer la condition (nDx). (Valeurs par défaut n1= 30 jours, n2= 730 jours et nDx=1)<br/>
+
+#### Nombre de jours (n1 & n2)
+Permet de créer l'intervalle `[n1, n2]`. Le nombre de jours entre deux diagnostics doit se situer dans cet intervalle pour que le deuxième diagnostic confirme le premier.
+```{r}
+n1 = 30 
+n2 = 730
+```
+
+
+#### Nombre d'occurence (nDx) 
+Permet de choisir le nombre de diagnostic qui permet de confirmer le premier.
+```{r}
+nDX=1 # par défaut
+```
+
+### Cas retenus
+#### keep_all
+`TRUE` ou `FALSE`. Par défaut `FALSE`, soit filter les observations ayant eu un DX et un code d'acte. Si `TRUE` garder toutes les observations, soit ceux qui ont eu un DX et qui ont eu ou pas un code d'acte. Si `cohort` est fournit, keep_all `TRUE` garde toutes les observations demandées par `cohort`. Si keep_all `FALSE` filtrer les observations demandées par `cohort`qui ont eu un code d'acte.
+
+---
+
+### setwd 
+Permet d'indiquer le chemin vers le dossier dans lequel les résultats de la fonction seront sauvegardés. Si `setwd`="NULL", les résultats seront seulement affichés dans l'environnement du Rstudio.  
+```{r}
+setwd="V:/GI/Projets/4.Projets_en_cours/Nom_dossier"
+```
+
+### verbose
+`TRUE` ou `FALSE`. Message de progression affiché dans la console.
+
+Étape 1: Création d'une cohorte en utilisant les Dx cim-9 et/ou cim-10:
+nDx=0 : Extraction des résultats (Pas de confirmation nécessaire).
+V_DIAGN_SEJ_HOSP_CM 
+ - Coronaro (4.93 secs)
+V_SEJ_SERV_HOSP_CM 
+ - Coronaro (1.78 secs)
+V_EPISO_SOIN_DURG_CM 
+ - Coronaro (3.42 secs)
+I_SMOD_SERV_MD_CM 
+ - Coronaro (15.6 secs)
+Arrangement de la table cohorte...
+fin de création de la cohorte.
+
+Étape 2: Extraction des variables MEDECHO pour la cohorte crée à l'étape 1:
+ - Temps d'exécution (5.71 mins)
+
+Étape 3: Préparation de la base de données finale:
+  Garder les IDs de la cohorte crée à l'étape 1 qui ont eu un séjour hospitalier à l'intérieur de la période de l'étude
+- Temps d'exécution (0.2 secs)
+
+
+
+
+
+
+## Usage de la fonction
+```{r}
+DT_final<-user_MEDECHO_DIAGN_SEJ_HOSP_CM(
+  task=c("extraction_MEDECHO_SEJ_HOSP","extraction_MEDECHO_DIAGN_SEJ","extraction_MEDECHO_SEJ_SERV"), 
+  conn=SQL_connexion("ms069a"), 
+  cohort = NULL, 
+  debut_periode = "2020-01-01",
+  fin_periode = "2020-12-31",
+  
+  diagn=NULL,
+  typ_diagn=c('A', 'P', 'S', 'D'),
+  
+  benef_adr="dernière_adresse",
+  date_adr=NULL,
+  date_age=NULL,
+  
+  Dx_table=NULL,
+  debut_cohort = "2018-01-01",
+  fin_cohort = "2020-12-31",
+  CIM =  c("CIM9", "CIM10"),
+  by_Dx = FALSE,
+  date_dx_var = "admis",
+  n1 = 30, n2 = 730,
+  nDx = 0,
+  keep_all=FALSE,
+  
+  setwd="C:/Users/MS069/Desktop/Ahmed/BDCU_cohorte", #NULL
+  verbose = TRUE
+)
+```
+
+
+# Table Résultante
+## `task="extraction_MEDECHO_SEJ_HOSP"`
+ Extraction des variables pertinentes de MEDECHO: V_SEJ_HOSP_CM combinées avec les caractéristiques du bénéf et de l'établissement. Une base de données avec 35 variables.
+- **ID ** : Numéro du bénéficiaire <br/>
+- **SHOP_NO_SEQ_SEJ_HOSP** : No séquentiel séjour hospitalier <br/>
+- **SHOP_AN_PER_TEMPS** : Année période temps <br/>
+- **SHOP_DAT_ARRIV_URG_SEJ_HOSP** : Date arrivée urgence séjour hospitalier <br/>
+- **SHOP_DAT_ADMIS_SEJ_HOSP** : Date admission séjour hospitalier <br/>
+- **SHOP_HRE_ADMIS_SEJ_HOSP** : Heure admission séjour hospitalier <br/>
+- **SHOP_DAT_DEPAR_SEJ_HOSP** : Date départ séjour hospitalier <br/>
+- **SHOP_HRE_DEPAR_SEJ_HOSP** : Heure départ séjour hospitalier <br/>
+- **SHOP_NBR_JR_ABSNT_SEJ_HOSP** : Nombre jour absence séjour hospitalier <br/>
+- **SHOP_TYP_LIEU_SEJ_HOSP_PROVE** : Type lieu séjour hospitalier provenance <br/>
+- **SHOP_NO_ETAB_MSSS_PROVE** : No établissement MSSS provenance <br/>
+- **SHOP_TYP_LIEU_SEJ_HOSP_DESTI** :	Type lieu séjour hospitalier destination <br/>
+- **SHOP_NO_ETAB_MSSS_DESTI** :	No établissement MSSS destination <br/>
+- **SHOP_TYP_SOIN_SEJ_HOSP** :	Type soins séjour hospitalier <br/>
+- **SHOP_TYP_ADMIS_SEJ_HOSP** :	Type admission séjour hospitalier <br/>
+- **SHOP_IND_NOUV_NE_SEJ_HOSP** :	Indicateur nouveau né séjour hospitalier <br/>
+- **SHOP_TYP_DECES_SEJ_HOSP** :	Type décès séjour hospitalier <br/>
+- **SHOP_NBR_CNSUL_SEJ_HOSP** :	Nombre consultation séjour hospitalier <br/>
+- **SHOP_DAT_ACCID_SEJ_HOSP** :	Date accident séjour hospitalier <br/>
+- **SHOP_COD_DIAGN_LIEU_ACCID** :	Code diagnostic lieu accident <br/>
+- **SHOP_COD_DIAGN_CAUS_ACCID** :	Code diagnostic cause accident <br/>
+- **SHOP_NO_SEQ_SYS_CLA** :	No séquentiel système classification <br/>
+- **SHOP_NO_ETAB_MSSS** :	Numéro del'établissement attribué par le MSSS <br/>
+- **Sexe ** : Sexe du bénéficiaire <br/>
+- **DatNais ** : Date de naissance du bénéficiaire au format *AAAA-MM-JJ* <br/>
+- **DatDeces ** : Date de décès du bénéficiaire au format *AAAA-MM-JJ* <br/>
+- **RSS_Benf **: Régions sociosanitaires (RSS) du bénéficiaire <br/>
+- **RLS_Benef ** : Réseaux locaux de services (RLS) du bénéficiaire <br/>
+- **NomRSS_Benef ** : Nom régions sociosanitaires (RSS) du bénéficiaire <br/>
+- **NomRLS_Benef ** : Nom réseaux locaux de services (RLS) du bénéficiaire <br/>
+- **RLS_ETAB ** : Régions sociosanitaires (RSS) de l'établissement <br/>
+- **NomRLS_Etab ** : Nom réseaux locaux de services (RLS) de l'établissement <br/>
+- **RSS_ETAB ** : Régions sociosanitaires (RSS) de l'établissement <br/>
+- **NOM_RSS_Etab ** : Nom régions sociosanitaires (RSS) de l'établissement <br/>
+- **NOM_ETAB ** : Nom de l'établissement <br/>
+
+
+## `task="extraction_MEDECHO_DIAGN_SEJ"`
+ Extraction des variables pertinentes de MEDECHO: V_DIAGN_SEJ_HOSP_CM. Une base de données avec 8 variables.
+- **ID ** : Numéro du bénéficiaire <br/>
+- **SHOP_NO_SEQ_SEJ_HOSP** :	No séquentiel séjour hospitalier<br/>
+- **SHOP_NO_DIAGN_SEJ_HOSP** :	No diagnostic séjour hospitalier<br/>
+- **SHOP_NO_SEJ_SERV_HOSP** :	No séjour service hospitalier<br/>
+- **SHOP_COD_DIAGN_MDCAL_CLINQ** :	Code de diagnostic médical clinique <br/>
+- **SHOP_TYP_DIAGN_SEJ_HOSP** :	Type diagnostic séjour hospitalier <br/>
+- **SHOP_COD_CAR_DIAGN_SEJ_HOSP** :	Code caractéristique diagnostic séjour hospitalier <br/>
+- **SHOP_NO_SEQ_SYS_CLA** :	No séquentiel système classification <br/>
+
+
+## `task="extraction_MEDECHO_SEJ_SERV"`
+ Extraction des variables pertinentes de MEDECHO: V_SEJ_SERV_HOSP_CM. Une base de données avec 11 variables.
+- **ID ** : Numéro du bénéficiaire <br/>
+- **SHOP_NO_INDIV_BEN_BANLS** :	Numéro d'individu de la personne assurée <br/>
+- **SHOP_NO_SEQ_SEJ_HOSP** :	No séquentiel séjour hospitalier <br/>
+- **SHOP_NO_SEJ_SERV_HOSP** :	No séjour service hospitalier <br/>
+- **SHOP_TYP_SEJ_SERV_HOSP** :	Type séjour service hospitalier <br/>
+- **SHOP_COD_SERV_SEJ_HOSP** :	Code service séjour hospitalier <br/>
+- **SHOP_COD_SPEC_SEJ_HOSP_SERV** :	Code spécialité séjour hospitalier service <br/>
+- **SHOP_COD_DIAGN_MDCAL_CLINQ** :	Code de diagnostic médical clinique <br/>
+- **SHOP_NO_SEQ_SYS_CLA** :	No séquentiel système classification <br/>
+- **SHOP_COD_CAR_DIAGN_SERV_HOSP** :	Caractéristique diagnostic service hospitalier <br/>
+- **SHOP_NBR_JR_SEJ_SERV_HOSP** :	Nombre jour séjour service hospitalier <br/>
+
+
+
+# Discription de la syntaxe SQL
+Veuillez-svp consulter les vignettes `parent_function` suivantes:<br/>
+
+[SQL_reperage_cond_med](SQL_reperage_cond_med.html)<br/> 
+[query_V_SEJ_HOSP_CM](query_V_SEJ_HOSP_CM.html)<br/>
+[query_V_DIAGN_SEJ_HOSP_CM_AG](query_V_DIAGN_SEJ_HOSP_CM_AG.html)<br/>
+[query_V_SEJ_SERV_HOSP_CM_AG](query_V_SEJ_SERV_HOSP_CM_AG.html)<br/>
+[query_V_FICH_ID_BEN_CM](query_V_FICH_ID_BEN_CM.html)<br/>

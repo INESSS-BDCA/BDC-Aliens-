@@ -1,0 +1,344 @@
+---
+title: "query_V_SEJ_HOSP_CM"
+#subtitle: ""
+author: "Auteurs: Ahmed Ghachem"
+date: "Date de création: 27 mars 2023"
+output:
+  rmarkdown::html_vignette:
+    number_sections: true
+    toc: true
+params: 
+  output_dir: "C:/Users/MS069/Desktop/Ahmed/INESSS-BDCA/vignettes"
+vignette: >
+  %\VignetteIndexEntry{query_V_SEJ_HOSP_CM}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo = TRUE,
+  eval = FALSE
+)
+```
+
+# Installation de la librairie R *RequeteGeneriqueBDCA*
+
+## Fichier nécessaire
+
+Télécharger le fichier `RequeteGeneriqueBDCA.x.y.tar.gz` à partir de Microsoft Teams.<br>
+[INESSS - Documentation BDCA > Documents > Outils > Librairie R INESSS > RequeteGeneriqueBDCA_x.y.z.tar.gz](https://msss365.sharepoint.com/:f:/r/teams/INESSS-DocumentationBDCA/Shared%20Documents/Outils/Librairie%20R%20INESSS?csf=1&web=1&e=j5SylU).
+
+Ouvrir RStudio.
+
+Dans la console, écrire le code suivant :
+```{r, eval=FALSE}
+remotes::install_local("C:\\msXXX\\Desktop\\RequeteGeneriqueBDCA_x.y.z.tar.gz")
+```
+Prendre note que les «`\`» sont doubles.
+
+Si la librairie `remotes` n'est pas installée, écrire dans la console le code suivant : `install.packages("remotes")`.
+
+Avant d'installer une librairie, il est préférable de ne pas l'avoir *appelé* auparavant.
+
+Il est déconseillé de mettre à jour les librairies utilisées par *RequeteGeneriqueBDCA*.
+
+L'installation se termine lorsqu'on peut lire dans la console : *DONE (RequeteGeneriqueBDCA)*.
+
+
+## Activer la librairie
+      
+Après avoir installé la librairie *RequeteGeneriqueBDCA*, il suffit de l'activer pour avoir accès aux fonctions :
+```{r, eval=FALSE}
+library(RequeteGeneriqueBDCA)
+```
+
+---
+# query_V_SEJ_HOSP_CM
+
+La fonction `query_V_SEJ_HOSP_CM` est une `parent_function` qui retourne une syntaxe sql pour: <br/>
+1) extraire les variables pertinentes de MEDECHO `V_SEJ_HOSP_CM` combinées avec d'autres bases de données pour rajouter les caractéristiques du bénéficiaire et de l'établissement de soins. <br/>
+
+
+Elle est utilisée par: <br/>
+- la fonction [user_MEDECHO_DIAGN_SEJ_HOSP_CM](user_MEDECHO_DIAGN_SEJ_HOSP_CM) <br/>
+- la fonction [SQL_reperage_cond_med](SQL_reperage_cond_med.html) <br/>
+- ...
+
+## La fonction
+
+```{r, eval=FALSE}
+query_V_SEJ_HOSP_CM(query,
+                    debut_periode,
+                    fin_periode,
+                    date_dx_var,
+                    benef_adr,
+                    date_adr)
+```
+
+## Définition des arguments
+
+### query
+Indiquant la requête à exécuter. 
+```{r}
+query=c("extraction_MEDECHO_SEJ_HOSP") 
+
+```
+
+### debut_periode & fin_periode
+
+Indiquant le début et la fin de la période d'étude au format `AAAA-MM-JJ`.
+```{r, eval=FALSE}
+debut_periode = "2021-04-01", fin_periode = "2022-03-31"
+```
+
+### date_dx_var
+Un vecteur indiquant si on utilise la date d'admission ou la date de départ comme date indexe pour l'étude.   
+```{r, eval=FALSE}
+date_dx_var=c('admis','depar')
+```
+    
+### benef_adr
+Permet de définir la méthode d'identification de l'adresse du bénéficiaire.
+```{r}
+benef_adr=c("date_fixe","dernière_adresse","première_adresse","long_adresse")
+
+```
+
+### date_adr
+Si `benef_adr`="date_fixe", `date_adr` permet de choisir une date fixe pour identifier l'adresse de bénéficiaire. 
+```{r}
+date_adr="2020-07-01"
+```
+
+
+## Usage de la fonction
+
+La fonction `query_V_SEJ_HOSP_CM` est principalement utilisée par la fonction `user_MEDECHO_DIAGN_SEJ_HOSP_CM`. Voir [user_MEDECHO_DIAGN_SEJ_HOSP_CM](user_MEDECHO_DIAGN_SEJ_HOSP_CM.html)<br/>. Elle peut-être également exécutée indépendament des autres fonctions.   
+
+```{r}
+DT<-data.table::as.data.table(odbc::dbGetQuery(conn=SQL_connexion(),
+statement=query_V_SEJ_HOSP_CM (
+query="extraction_MEDECHO_SEJ_HOSP",
+debut_periode="2021-04-01",
+fin_periode="2022-03-31",
+date_dx_var=c('admis', 'depar'),
+benef_adr="dernière_adresse",
+date_adr=NULL)
+ ))
+```
+
+# Table Résultante
+## `task="extraction_MEDECHO_SEJ_HOSP"`
+Extraction des variables pertinentes de MEDECHO: V_SEJ_HOSP_CM combinées avec les caractéristiques du bénéf et de l'établissement. Une base de données avec 35 variables.
+- **ID ** : Numéro du bénéficiaire <br/>
+- **SHOP_NO_SEQ_SEJ_HOSP** : No séquentiel séjour hospitalier <br/>
+- **SHOP_AN_PER_TEMPS** : Année période temps <br/>
+- **SHOP_DAT_ARRIV_URG_SEJ_HOSP** : Date arrivée urgence séjour hospitalier <br/>
+- **SHOP_DAT_ADMIS_SEJ_HOSP** : Date admission séjour hospitalier <br/>
+- **SHOP_HRE_ADMIS_SEJ_HOSP** : Heure admission séjour hospitalier <br/>
+- **SHOP_DAT_DEPAR_SEJ_HOSP** : Date départ séjour hospitalier <br/>
+- **SHOP_HRE_DEPAR_SEJ_HOSP** : Heure départ séjour hospitalier <br/>
+- **SHOP_NBR_JR_ABSNT_SEJ_HOSP** : Nombre jour absence séjour hospitalier <br/>
+- **SHOP_TYP_LIEU_SEJ_HOSP_PROVE** : Type lieu séjour hospitalier provenance <br/>
+- **SHOP_NO_ETAB_MSSS_PROVE** : No établissement MSSS provenance <br/>
+- **SHOP_TYP_LIEU_SEJ_HOSP_DESTI** :	Type lieu séjour hospitalier destination <br/>
+- **SHOP_NO_ETAB_MSSS_DESTI** :	No établissement MSSS destination <br/>
+- **SHOP_TYP_SOIN_SEJ_HOSP** :	Type soins séjour hospitalier <br/>
+- **SHOP_TYP_ADMIS_SEJ_HOSP** :	Type admission séjour hospitalier <br/>
+- **SHOP_IND_NOUV_NE_SEJ_HOSP** :	Indicateur nouveau né séjour hospitalier <br/>
+- **SHOP_TYP_DECES_SEJ_HOSP** :	Type décès séjour hospitalier <br/>
+- **SHOP_NBR_CNSUL_SEJ_HOSP** :	Nombre consultation séjour hospitalier <br/>
+- **SHOP_DAT_ACCID_SEJ_HOSP** :	Date accident séjour hospitalier <br/>
+- **SHOP_COD_DIAGN_LIEU_ACCID** :	Code diagnostic lieu accident <br/>
+- **SHOP_COD_DIAGN_CAUS_ACCID** :	Code diagnostic cause accident <br/>
+- **SHOP_NO_SEQ_SYS_CLA** :	No séquentiel système classification <br/>
+- **SHOP_NO_ETAB_MSSS** :	Numéro del'établissement attribué par le MSSS <br/>
+- **Sexe ** : Sexe du bénéficiaire <br/>
+- **DatNais ** : Date de naissance du bénéficiaire au format *AAAA-MM-JJ* <br/>
+- **DatDeces ** : Date de décès du bénéficiaire au format *AAAA-MM-JJ* <br/>
+- **RSS_Benf **: Régions sociosanitaires (RSS) du bénéficiaire <br/>
+- **RLS_Benef ** : Réseaux locaux de services (RLS) du bénéficiaire <br/>
+- **NomRSS_Benef ** : Nom régions sociosanitaires (RSS) du bénéficiaire <br/>
+- **NomRLS_Benef ** : Nom réseaux locaux de services (RLS) du bénéficiaire <br/>
+- **RLS_ETAB ** : Régions sociosanitaires (RSS) de l'établissement <br/>
+- **NomRLS_Etab ** : Nom réseaux locaux de services (RLS) de l'établissement <br/>
+- **RSS_ETAB ** : Régions sociosanitaires (RSS) de l'établissement <br/>
+- **NOM_RSS_Etab ** : Nom régions sociosanitaires (RSS) de l'établissement <br/>
+
+# Discription de la syntaxe SQL
+## `task="extraction_MEDECHO_SEJ_HOSP"`
+```{sql}
+select
+BD_sej_hosp.SHOP_NO_INDIV_BEN_BANLS AS ID,
+BD_sej_hosp.SHOP_NO_SEQ_SEJ_HOSP,
+BD_sej_hosp.SHOP_AN_PER_TEMPS,
+BD_sej_hosp.SHOP_DAT_ARRIV_URG_SEJ_HOSP,
+BD_sej_hosp.SHOP_DAT_ADMIS_SEJ_HOSP,
+BD_sej_hosp.SHOP_HRE_ADMIS_SEJ_HOSP,
+BD_sej_hosp.SHOP_DAT_DEPAR_SEJ_HOSP,
+BD_sej_hosp.SHOP_HRE_DEPAR_SEJ_HOSP,
+BD_sej_hosp.SHOP_NBR_JR_ABSNT_SEJ_HOSP,
+BD_sej_hosp.SHOP_TYP_LIEU_SEJ_HOSP_PROVE,
+BD_sej_hosp.SHOP_NO_ETAB_MSSS_PROVE,
+BD_sej_hosp.SHOP_TYP_LIEU_SEJ_HOSP_DESTI,
+BD_sej_hosp.SHOP_NO_ETAB_MSSS_DESTI,
+BD_sej_hosp.SHOP_TYP_SOIN_SEJ_HOSP,
+BD_sej_hosp.SHOP_TYP_ADMIS_SEJ_HOSP,
+BD_sej_hosp.SHOP_IND_NOUV_NE_SEJ_HOSP,
+BD_sej_hosp.SHOP_TYP_DECES_SEJ_HOSP,
+BD_sej_hosp.SHOP_NBR_CNSUL_SEJ_HOSP,
+BD_sej_hosp.SHOP_DAT_ACCID_SEJ_HOSP,
+BD_sej_hosp.SHOP_COD_DIAGN_LIEU_ACCID,
+BD_sej_hosp.SHOP_COD_DIAGN_CAUS_ACCID,
+BD_sej_hosp.SHOP_NO_SEQ_SYS_CLA,
+BD_sej_hosp.SHOP_NO_ETAB_MSSS,
+
+-- vue: PROD.V_FICH_ID_BEN_CM (FIPA); Prod.I_BENF_ADR_CM; DONNE_INESSS.tGI_RLS_RTS
+BD_Caract_benef.Sexe,
+BD_Caract_benef.DatNais,
+BD_Caract_benef.DatDeces,
+BD_Caract_benef.RSS_Benf,
+BD_Caract_benef.RLS_Benef,
+BD_Caract_benef.NomRSS_Benef,
+BD_Caract_benef.NomRLS_Benef,
+
+-- vue: RES_SSS.V_ETAB_CTRE_HOSP_MSSS_DERN; PROD.V_DECOU_GEO_POSTL_DERN_CP; DONNE_INESSS.tGI_NOM_ETAB_HOSP; DONNE_INESSS.tGI_RLS_RTS
+W.LGEO_COD_TERRI_RLS AS RLS_ETAB,
+W.NomRLS_Etab,
+W.CODE_RSS AS RSS_ETAB,
+W.NOM_RSS AS NOM_RSS_Etab,
+W.NOM_ETAB
+
+FROM RES_SSS.V_SEJ_HOSP_CM AS BD_sej_hosp
+
+---Requête caractéristiques, rss, rls bénéficiaire
+LEFT JOIN (
+  SELECT
+  ID,
+  Sexe,
+  DatNais,
+  DatDeces,
+  --Age,
+  RSS_Benf,
+  RLS_Benef,
+  NomRSS_Benef,
+  NomRLS_Benef
+
+  FROM (
+    SELECT
+    B.BENF_NO_INDIV_BEN_BANLS AS ID,
+    B.BENF_COD_SEXE AS Sexe,  --Sexe du bénéficiaire
+    B.BENF_DAT_NAISS AS DatNais,  --Date de naissance
+    B.BENF_DAT_DECES AS DatDeces, --Date de décès
+
+    /* On fait le recodage du code RSS pour le code RLS 1610, les variables avec les NOMS (RSS) sont correctes  */
+      CASE WHEN BD_Adr.LGEO_COD_RSS=16 AND BD_Adr.LGEO_COD_TERRI_RLS IN ('1610') THEN 15
+    ELSE BD_Adr.LGEO_COD_RSS END AS RSS_Benf,
+    BD_NomReg_Ben.NomRSS_Benef,
+
+    /* On ajoute un codes RLS fonctionnel pour les régions sans RLS on fait le recodgae de code RLS 1610, les variables avec les NOMS (RLS) sont correctes */
+      CASE
+    WHEN BD_Adr.LGEO_COD_RSS=10 THEN '1001'
+    WHEN BD_Adr.LGEO_COD_RSS=17 THEN '1701'
+    WHEN BD_Adr.LGEO_COD_RSS=18 THEN '1801'
+    WHEN BD_Adr.LGEO_COD_TERRI_RLS IN ('1610') THEN '0511' ELSE BD_Adr.LGEO_COD_TERRI_RLS END AS RLS_Benef,
+    BD_NomReg_Ben.NomRLS_Benef
+
+    FROM PROD.V_FICH_ID_BEN_CM AS B
+
+    /**********************************************************
+      Découpage géographique du bénéficiaire : codes RSS et RLS
+    ***********************************************************/
+      /* On sélectionne la dernière adresse du bénéficiaire durant la période sélectionnée.
+    Autres méthodes :
+      1- cibler la première (la plus récente) adresse de la période
+      2- cibler l'adresse dans laquelle le BEN a résidé le plus longtemps durant la période
+      3- cibler l'adresse à une date fixe (p. ex. 31 mars, 1 juillet, mi-année) */
+
+      LEFT JOIN (SELECT
+              BENF_NO_INDIV_BEN_BANLS,
+              BENF_DD_ADR_BEN,
+              BENF_DF_ADR_BEN,
+              LGEO_COD_RSS,
+              LGEO_COD_TERRI_RLS
+
+              FROM Prod.I_BENF_ADR_CM
+              WHERE BENF_IND_ADR_HQ IN ('N') AND BENF_COD_TYP_ADR IN ('R')
+              AND (BENF_DD_ADR_BEN<='2022-03-31' AND BENF_DF_ADR_BEN>='2021-04-01')
+              QUALIFY Row_Number()Over (PARTITION BY BENF_NO_INDIV_BEN_BANLS ORDER BY BENF_DD_ADR_BEN DESC)=1 --dernière adresse
+              ) AS BD_Adr
+              
+    ON B.BENF_NO_INDIV_BEN_BANLS=BD_Adr.BENF_NO_INDIV_BEN_BANLS
+
+    /* On ajoute ici les NOMS des codes RSS et RLS du bénéficiaire : ceci serait optionnel si la requête est trop lourde */
+      LEFT JOIN (
+        SELECT
+        CodRLS,
+        NomRLS AS NomRLS_Benef,
+        NomRSS AS NomRSS_Benef
+        FROM DONNE_INESSS.tGI_RLS_RTS) AS BD_NomReg_Ben
+    ON BD_Adr.LGEO_COD_TERRI_RLS=BD_NomReg_Ben.CodRLS
+  ) AS BD_Caract
+) AS BD_Caract_benef
+ON BD_Caract_benef.ID=BD_sej_hosp.SHOP_NO_INDIV_BEN_BANLS \n",
+
+
+
+ ---Requête Étabilissement de soins
+LEFT JOIN (
+  SELECT
+  Z.ETAB_NO_ETAB_MSSS,
+  Z.LGEO_COD_TERRI_RLS,
+  Z.NomRLS_Etab,
+  Z.CODE_RSS,
+  Z.NOM_RSS,
+  NOM_ETAB
+
+  FROM (
+    SELECT *
+      FROM (
+        SELECT distinct
+        ETAB_NO_ETAB,
+        ETAB_NO_ETAB_MSSS,
+        ETAB_COD_POSTL
+        FROM RES_SSS.V_ETAB_CTRE_HOSP_MSSS_DERN
+      ) AS A
+
+    LEFT JOIN (
+      SELECT
+      LGEO_COD_POSTL,
+      LGEO_COD_TERRI_RLS
+      FROM PROD.V_DECOU_GEO_POSTL_DERN_CP
+      QUALIFY ROW_NUMBER() OVER (PARTITION BY LGEO_COD_POSTL ORDER BY LGEO_DD_PER DESC)=1
+    ) AS B
+    ON A.ETAB_COD_POSTL=B.LGEO_COD_POSTL
+
+    LEFT JOIN (
+      select
+      NO_ETAB_MSSS,
+      NOM_ETAB,
+      CODE_RSS,
+      NOM_RSS
+      FROM DONNE_INESSS.tGI_NOM_ETAB_HOSP
+      where ROW_NO_ETAB_MSSS=1
+    ) AS F
+    ON A.ETAB_NO_ETAB_MSSS=F.NO_ETAB_MSSS
+
+    LEFT JOIN (
+      SELECT
+      CodRLS,
+      NomRLS AS NomRLS_Etab
+      FROM DONNE_INESSS.tGI_RLS_RTS
+    ) AS Y
+    ON B.LGEO_COD_TERRI_RLS=Y.CodRLS
+  ) AS Z
+) AS W
+ON BD_sej_hosp.SHOP_NO_ETAB_MSSS=W.ETAB_NO_ETAB_MSSS \n",
+
+WHERE SHOP_DAT_ADMIS_SEJ_HOSP between '2021-04-01' and '2022-03-31'
+;
+```
+
+

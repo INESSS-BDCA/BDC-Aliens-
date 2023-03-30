@@ -25,8 +25,8 @@ user_MEDECHO_DIAGN_SEJ_HOSP_CM(
   n1,
   n2,
   nDx,
-  setwd,
   keep_all = FALSE,
+  setwd,
   verbose = TRUE
 )
 }
@@ -90,18 +90,18 @@ La fonction \code{user_MEDECHO_DIAGN_SEJ_HOSP_CM} utilise plusieurs autres fonct
 \dontrun{
 
 DT_final<-user_MEDECHO_DIAGN_SEJ_HOSP_CM(
-                      task=c("extraction_SMOD","projet_facturation_acte"),
+                      task=c("extraction_MEDECHO_SEJ_HOSP","extraction_MEDECHO_DIAGN_SEJ","extraction_MEDECHO_SEJ_SERV"),
                       conn=SQL_connexion("ms069a"),
                       cohort = c(NULL, cohort),
                       debut_periode = "2020-01-01",
                       fin_periode = "2020-12-31",
-                      CodeActe = c('06452','06148','06154','06265','06251','06216','06208'),
-                      omni_spec="all",
-                      catg_etab="all",
-                      code_stat_decis="PAY-PPY",
+
                       benef_adr="dernière_adresse",
                       date_adr="2020-07-01",
                       date_age="2020-07-01",
+                      diagn,
+                      typ_diagn,
+
                       Dx_table = list(Prolapsus = list(CIM9 = c('5995','6180','6181','6183'),CIM10 = c('N810','N811','N812','N813'))),
                       debut_cohort="1998-12-31",
                       fin_cohort="2020-12-31",
@@ -110,9 +110,10 @@ DT_final<-user_MEDECHO_DIAGN_SEJ_HOSP_CM(
                       date_dx_var = "admis",
                       n1 = 30, n2 = 730,
                       nDx=0 ,
-                      setwd="V:/GI/Projets/4.Projets_en_cours/..."
-                      verbose = TRUE,
-                      keep_all=FALSE)
+                      keep_all=FALSE,
+
+                      setwd="V:/GI/Projets/4.Projets_en_cours/...",
+                      verbose = TRUE)
 
 }
 }

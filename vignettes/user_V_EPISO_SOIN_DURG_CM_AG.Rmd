@@ -92,10 +92,12 @@ user_V_EPISO_SOIN_DURG_CM_AG(task,
                           cohort=NULL, # si la cohorte est fournie par l'analyste (cohort=cohort), si on veut créer une nouvelle cohorte (cohort=NULL)
                           debut_periode,
                           fin_periode,
+                          
+                          diagn, # liste de Dx pour la task: extraction_BDCU_EPISO_SOIN_DURG 
+                          
                           benef_adr,
                           date_adr, # à spécifier lorsque benef_adr="date_fixe"
                           date_age, # à spécifier lorsque keep_all=TRUE
-                          diagn, # liste de Dx pour la task: extraction_BDCU_EPISO_SOIN_DURG 
                           
                           Dx_table, # si la cohorte n'est pas fournie par le professionnel scientifique et nous ne voulons pas créer une nouvelle cohorte (Dx_table=NULL)
                           debut_cohort,
@@ -112,16 +114,24 @@ user_V_EPISO_SOIN_DURG_CM_AG(task,
 ```
 
 ## Définition des arguments
+### task 
+Permet de préciser le type de requête à exécuter.
+```{r}
+task = c("extraction_BDCU_EPISO_SOIN_DURG","extraction_BDCU_OCCU_CIVIE_DURG","extraction_BDCU_CNSUL_DURG")
+```
+
 ### Connexion 
 La fonction `SQL_connexion` permet à R de se connecter à Teradata. Simplenent inscrire l'identifant et le programme demandera le mot de passe lors de son exécution :
 ```{r}
 conn = SQL_connexion("msXXX")
 ```
 
-### cohorte 
+### Cohorte 
 Vecteur indiquant les numéros d'identification des bénéficiaires définisant la cohorte de l'étude.
 ```{r}
 cohort<-cohort$BENF_NO_INDIV_BEN_BANLS
+cohort=cohort #ou 
+cohort=NULL
 ```
 
 ### Période de l'étude 
@@ -134,7 +144,7 @@ fin_periode = "2020-12-31"
 
 
 ### Paramètres spécifiques de la requête
-### Liste des diagnostics 
+#### Liste des diagnostics 
 `list` contenant les codes diagnostics CIM9 et CIM10.
 ```{r}
 diagn = list(
@@ -148,10 +158,6 @@ diagn = list(
   )
 )
 ```
-
-
-
-
 
 
 ### Caractéristiques du bénéficiaires
@@ -283,6 +289,8 @@ fin de création de la cohorte.
 
 
 
+
+
 ## Usage de la fonction
 ```{r}
 DT_final<-user_V_EPISO_SOIN_DURG_CM_AG(
@@ -291,11 +299,13 @@ DT_final<-user_V_EPISO_SOIN_DURG_CM_AG(
   cohort = NULL, 
   debut_periode = "2020-01-01",
   fin_periode = "2020-12-31",
+  
+  diagn=NULL,
+  
   benef_adr="dernière_adresse",
   date_adr="2021-07-01",
   date_age="2020-07-01",
-  diagn=NULL,
-
+  
   Dx_table=NULL,
   debut_cohort = "2018-01-01",
   fin_cohort = "2020-12-31",
@@ -304,12 +314,13 @@ DT_final<-user_V_EPISO_SOIN_DURG_CM_AG(
   date_dx_var = "admis",
   n1 = 30, n2 = 730,
   nDx = 0,
-  
   keep_all=FALSE,
-  verbose = TRUE,
-  setwd="C:/Users/MS069/Desktop/Ahmed/BDCU_cohorte" #NULL
-)
+  
+  setwd="C:/Users/MS069/Desktop/Ahmed/BDCU_cohorte", #NULL
+  verbose = TRUE
+  )
 ```
+
 
 
 # Table Résultante
@@ -369,8 +380,9 @@ DT_final<-user_V_EPISO_SOIN_DURG_CM_AG(
 - **SURG_COD_ETA_CNSUL_DURG** :	Code spécifiant l'état de la consultation <br/>
 - **SURG_DH_DEM_CNSUL_DURG** :	Date et heure de la demande de consultation <br/>
 - **DD_DEM_CNSUL** :	Date de la demande de consultation <br/>
-- **SURG_DH_REAL_CNSUL_DURG** :	Date et heure de réalisation de consultation <br/
-- **DD_REAL_CNSUL** :	Date de réalisation de consultation<br/>>
+- **SURG_DH_REAL_CNSUL_DURG** :	Date et heure de réalisation de consultation <br/>
+- **DD_REAL_CNSUL** :	Date de réalisation de consultation <br/>
+
 
 
 # Discription de la syntaxe SQL
