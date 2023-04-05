@@ -8,8 +8,8 @@
 SQL_obstetric(
   conn = SQL_connexion(),
   cohort,
-  debut,
-  fin,
+  debut_cohort,
+  fin_cohort,
   CIM = c("CIM9", "CIM10"),
   dt_source = c("V_DIAGN_SEJ_HOSP_CM", "V_SEJ_SERV_HOSP_CM", "V_EPISO_SOIN_DURG_CM",
     "I_SMOD_SERV_MD_CM"),
@@ -17,6 +17,7 @@ SQL_obstetric(
     V_EPISO_SOIN_DURG_CM = "BDCU", I_SMOD_SERV_MD_CM = "SMOD"),
   date_dx_var = "depar",
   typ_diagn = c("A", "P", "S"),
+  code_stat_decis = c("PAY", "PPA"),
   verbose = TRUE
 )
 }

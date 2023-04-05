@@ -108,12 +108,12 @@ comorbidity_index <- function(
     DIAGN <- RequeteGeneriqueBDCA:::SQL_comorbidity_diagn(
       conn,
       cohort = cohort,
-      debut = lubridate::as_date(ifelse(
+      debut_cohort = lubridate::as_date(ifelse(
         2 %in% unlist(confirm_sourc),
         min(dt$DATE_INDEX) %m-% months(lookup*12) - n2,
         min(dt$DATE_INDEX) %m-% months(lookup*12)
       )),
-      fin = max(dt$DATE_INDEX),
+      fin_cohort = max(dt$DATE_INDEX),
       Dx_table = Dx_table, CIM = CIM,
       dt_source = dt_source, dt_desc = dt_desc,
       date_dx_var = date_dx_var, typ_diagn = c("A", "P", "S"),
@@ -137,6 +137,7 @@ comorbidity_index <- function(
         dt <- dt[!idx]
       }
     }
+
 
     ### Exclusion des cas gestationnels
     if (verbose) {
@@ -208,13 +209,13 @@ comorbidity_index <- function(
 #' @encoding UTF-8
 SQL_obstetric <- function(
     conn = SQL_connexion(),
-    cohort, debut, fin,
+    cohort, debut_cohort, fin_cohort,
     CIM = c('CIM9', 'CIM10'),
     dt_source = c('V_DIAGN_SEJ_HOSP_CM', 'V_SEJ_SERV_HOSP_CM',
                   'V_EPISO_SOIN_DURG_CM', 'I_SMOD_SERV_MD_CM'),
     dt_desc = list(V_DIAGN_SEJ_HOSP_CM = 'MED-ECHO', V_SEJ_SERV_HOSP_CM = 'MED-ECHO',
                    V_EPISO_SOIN_DURG_CM = 'BDCU', I_SMOD_SERV_MD_CM = 'SMOD'),
-    date_dx_var = "depar", typ_diagn = c('A', 'P', 'S'), verbose = TRUE
+    date_dx_var = "depar", typ_diagn = c('A', 'P', 'S'), code_stat_decis=c('PAY','PPA'),verbose = TRUE
 ) {
 
   ### Arranger les arguments
@@ -237,32 +238,86 @@ SQL_obstetric <- function(
       diagn_codes$obstetric$CIM9 <- NULL
     }
 
-    # Extraction des diagnostiques
+    # Extraction des diagnostics
     DT <- vector("list", length(dt_source) * length(diagn_codes))  # contiendra toutes les requêtes
     i <- 1L
     for (sour in dt_source) {
       if (verbose) {
-        cat(sour,"\n")
+        cat(sour, "\n")
       }
-      fct <- get(paste0("SQL_comorbidity_diagn.",sour))  # fonction d'extraction selon la source
-      for (dia in names(diagn_codes)) {
-        t1 <- Sys.time()
-        DT[[i]] <- fct(  # tableau provenant de la requête
-          conn = conn, ids = sunique(cohort), diagn = diagn_codes[[dia]],
-          debut = debut, fin = fin,
-          diag_desc = dia, sourc_desc = dt_desc[[sour]],
-          date_dx_var = date_dx_var,
-          typ_diagn = typ_diagn
-        )
-        t2 <- Sys.time()
-        i <- i + 1L
-        # Afficher le temps d'exécution
-        if (verbose) {
-          cat(" - ",dia,
-              " (",round(as.numeric(difftime(t2, t1)), 2),
-              " ",attr(difftime(t2, t1), "units"), ")\n",
-              sep = "")
+      # Différencier V_DIAGN_SEJ_HOSP_CM des autres sources
+      if (sour == "V_DIAGN_SEJ_HOSP_CM") {
+        for (dia in names(diagn_codes)) {
+          t1 <- Sys.time()
+          DT[[i]] <- SQL_comorbidity_diagn.V_DIAGN_SEJ_HOSP_CM(
+            conn = conn,
+            ids = cohort,
+            diagn = diagn_codes[[dia]],
+            debut_cohort = debut_cohort,
+            fin_cohort = fin_cohort,
+            diag_desc = dia,
+            sourc_desc = dt_desc[[sour]],
+            date_dx_var = date_dx_var,
+            typ_diagn = typ_diagn
+          )
+          t2 <- Sys.time()
+          i <- i + 1L
+          # Afficher le temps d'exécution
+          if (verbose) {
+            cat(" - ",dia,
+                " (",round(as.numeric(difftime(t2, t1)), 2),
+                " ",attr(difftime(t2, t1), "units"), ")\n",
+                sep = "")
 
+          }
+        }
+      }
+
+      else if (sour == "I_SMOD_SERV_MD_CM"){
+        for (dia in names(diagn_codes)) {
+          t1 <- Sys.time()
+          DT[[i]] <- SQL_comorbidity_diagn.I_SMOD_SERV_MD_CM(  # tableau provenant de la requête
+            conn = conn,
+            ids = cohort,
+            diagn = diagn_codes[[dia]],
+            debut_cohort = debut_cohort, fin_cohort = fin_cohort,
+            diag_desc = dia,
+            sourc_desc = dt_desc[[sour]],
+            code_stat_decis=code_stat_decis
+          )
+          t2 <- Sys.time()
+          i <- i + 1L
+          # Afficher le temps d'exécution
+          if (verbose) {
+            cat(" - ",dia,
+                " (",round(as.numeric(difftime(t2, t1)), 2),
+                " ",attr(difftime(t2, t1), "units"), ")\n",
+                sep = "")
+
+          }
+
+        }
+      }
+      else {
+        fct <- get(paste0("SQL_comorbidity_diagn.",sour))  # fonction d'extraction selon la source
+        for (dia in names(diagn_codes)) {
+          t1 <- Sys.time()
+          DT[[i]] <- fct(  # tableau provenant de la requête
+            conn = conn, ids = cohort, diagn = diagn_codes[[dia]],
+            debut_cohort = debut_cohort, fin_cohort = fin_cohort,
+            diag_desc = dia, sourc_desc = dt_desc[[sour]],
+            date_dx_var = date_dx_var
+          )
+          t2 <- Sys.time()
+          i <- i + 1L
+          # Afficher le temps d'exécution
+          if (verbose) {
+            cat(" - ",dia,
+                " (",round(as.numeric(difftime(t2, t1)), 2),
+                " ",attr(difftime(t2, t1), "units"), ")\n",
+                sep = "")
+
+          }
         }
       }
     }
@@ -298,7 +353,7 @@ SQL_comorbidity.exclu_diab_gross <- function(conn, dt, CIM, dt_source, dt_desc, 
     dt_gross <-RequeteGeneriqueBDCA:::SQL_obstetric(
       conn,
       cohort = sunique(dt_diab_hyp$ID),
-      debut = min(dt_diab_hyp$DATE_DX) - 180, fin = max(dt_diab_hyp$DATE_DX) + 120,
+      debut_cohort = min(dt_diab_hyp$DATE_DX) - 180, fin_cohort = max(dt_diab_hyp$DATE_DX) + 120,
       CIM, dt_source, dt_desc, date_dx_var, typ_diagn,verbose
     )
 

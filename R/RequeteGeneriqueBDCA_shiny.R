@@ -328,10 +328,10 @@ RequeteGeneriqueBDCA_shiny<-function(){
                    sidebarLayout(
                      sidebarPanel(
                        wellPanel(
-                       textInput("fct_tab4", label = h3("Fonction générique exécutée"),value = "combine_periodes"),
-                       selectInput("dt", label = HTML(paste0("Table de données", div(helpText("Cohorte d'intérêt"), class = "pull-below"))),
-                                   choices = "Data"),
-                       fileInput("file_tab4", label = HTML(paste0("Choisir votre cohorte d'intérêt", div(helpText("Importer la cohorte d'intérêt"), class = "pull-below")))),
+                         textInput("fct_tab4", label = h3("Fonction générique exécutée"),value = "combine_periodes"),
+                         selectInput("dt", label = HTML(paste0("Table de données", div(helpText("Indiquer si vous voulez importer une cohorte à partir de l'environnement R ou d'un fichier externe"), class = "pull-below"))),
+                                     choices = c("Data à partir du R","Data à partir d'un fichier externe")),
+                         uiOutput("File_tab4"),
                        textInput("id", label = HTML(paste0("Identifiant du bénéficiaire", div(helpText("Indiquer le nom de la colonne de l'identifiant du bénéficiaire"), class = "pull-below"))),
                                  value = "ID"),
                        textInput("debut", label = HTML(paste0("Début de la période", div(helpText("Indiquer le nom de la colonne de la date de début de la période"), class = "pull-below"))),
@@ -2075,17 +2075,29 @@ RequeteGeneriqueBDCA_shiny<-function(){
       }
     })
     # Résultats: combine périodes / epi soins ####
+    output$File_tab4 <- renderUI({
+      if (input$dt == "Data à partir du R"){
+        textInput("dt_tab4", label = HTML(paste0("Nom de la base de données", div(helpText("Indiquer le nom de la base de données telle qu'affiché dans l'environnement R"), class = "pull-below"))),
+                  value = "")
+      }
+      else if (input$dt == "Data à partir d'un fichier externe"){
+        fileInput("file_tab4", label = HTML(paste0("Choisir votre cohorte d'intérêt externe", div(helpText("Importer la cohorte d'intérêt"), class = "pull-below"))))
+      }
+    })
+
     observeEvent(input$Executer_tab4, {
       # Test des arguments ####
-      if(is.null(input$file_tab4)){
+      if(input$dt == "Data à partir d'un fichier externe" && is.null(input$file_tab4)) {
         showNotification("L'exécution de la requête est intérompue: L'argument 'file' est vide. Veuillez-svp selectionner un fichier pour votre cohorte d'intérêt", duration = 0, type="warning")
       }
-      #####
+      else if (input$dt == "Data à partir d'un fichier externe" && !is.null(input$file_tab4)){
+
       warnings <- reactiveValues(data = character(0))
       result_tab4 <- eventReactive(input$Executer_tab4, {
 
-        DT <- if (input$dt == "NULL") {
-          NULL
+        DT <- if (input$dt == "Data à partir du R") {
+          DT<-get(input$dt_tab4)
+          DT
         } else {
           tmp <- data.table::fread(input$file_tab4$datapath)
           DT<-tmp
@@ -2115,7 +2127,7 @@ RequeteGeneriqueBDCA_shiny<-function(){
       })
       # afficher le script R ####
       init <- eventReactive(input$Executer_tab4,{
-        if (input$dt == "Data") {
+        if (input$dt == "Data à partir du R" || input$dt == "Data à partir d'un fichier externe") {
           return('
     # Convertir data.table au besoin
     if (!is.data.table(dt)) {
@@ -2232,6 +2244,7 @@ RequeteGeneriqueBDCA_shiny<-function(){
                                                       ))})
       # Afficher la cohorte ####
       output$DT_final_combin <- renderDataTable(result_tab4()) #DT::renderDT()
+      assign("DT_final_combin", result_tab4(), envir = .GlobalEnv)
       # Download BD ####
       observeEvent(input$Executer_tab4, {
         output$downloadData_tab4 <- downloadHandler(
@@ -2248,7 +2261,8 @@ RequeteGeneriqueBDCA_shiny<-function(){
         )
       })
 
-    })
+      }
+      })
     #####
     '#####
      #####'
